@@ -5,7 +5,8 @@ import { tagColor } from "../lib/utils";
 /**
  * Tarjeta 3D que se voltea al hacer clic.
  *
- * - En la parrilla (no controlada): se voltea con hover (desktop) o clic.
+ * - En la parrilla (no controlada): se voltea con clic (o teclado: `Enter` /
+ *   espacio).
  * - En el modo estudio (controlled): el estado de volteo lo da el padre
  *   vía la prop `flipped`, y el clic llama a `onFlip`.
  */

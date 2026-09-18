@@ -312,11 +312,6 @@ h1 {
   transform: rotateY(180deg);
 }
 
-/* En la parrilla también se voltea con hover (desktop) */
-.deck .flash-card:hover .flash-card-inner {
-  transform: rotateY(180deg);
-}
-
 .flash-face {
   position: absolute;
   inset: 0;

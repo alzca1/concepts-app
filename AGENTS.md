@@ -165,9 +165,9 @@ localStorage (clave `concepts-app:v1`)
 ### 5.4 Tarjeta 3D y UX
 
 - [x] Tarjeta **3D** con animación de volteo (0.55s, `cubic-bezier(0.4,0,0.2,1)`).
-- [x] Volteado con **hover** en la parrilla (desktop) y con **clic** en cualquier dispositivo
-      (incluye teclado: `Enter` / espacio).
-- [x] En modo estudio, el volteo es **controlado** (botones / estado), no por hover.
+- [x] Volteado **solo con clic** (o teclado: `Enter` / espacio) en la parrilla y
+      cualquier dispositivo; **sin volteo por hover**.
+- [x] En modo estudio, el volteo es **controlado** (botones / estado).
 - [x] **Mantener la pila 3D estable**: cada cara debe tener su rotación propia
   (`.flash-front { transform: rotateY(0) }`, `.flash-back { transform: rotateY(180deg) }`);
   sin esto ambas caras quedan en el mismo plano y la trasera (respuesta) pinta
@@ -203,6 +203,7 @@ localStorage (clave `concepts-app:v1`)
 | 2025-07-14 (v1 inicial) | CSS global (no módulos) | Un solo estilo por sección; prefijo `.flash-card` para el componente 3D |
 | 2026-09-18 | Rotación propia por cara en `.flash-face` | **Fix bug**: en Home se veía la respuesta en vez de la pregunta; las dos caras compartían plano 3D y la trasera pintaba encima. |
 | 2026-09-18 | Registro de requisitos en `AGENTS.md` | Fuente de verdad para agentes y humanos; actualizarse ante cada cambio |
+| 2026-09-18 | Volteo en la parrilla **solo por clic** (se elimina el hover) | El hover rotaba la tarjeta en Home; el requisito cambia a clic/teclado para revelar la respuesta. |
 
 ---
 
@@ -219,7 +220,7 @@ localStorage (clave `concepts-app:v1`)
 5. **Respetá las convenciones** (sección 2): JS (no TS), estados en hooks, CSS
    global por secciones, `aria` en controles interactivos.
 6. **Después de un cambio visible** ejecuta `npm run lint` y, si cambia la UI,
-   verifica el estado de la tarjeta 3D en los **dos** modos (parrilla con hover
+   verifica el estado de la tarjeta 3D en los **dos** modos (parrilla por clic
    y tarjeta grande controlada).
 7. **Git**: commits pequeños con mensaje en español que explique el *por qué*;
    si se cierra un requisito de la sección 5, el commit debe mencionarlo
@@ -236,6 +237,7 @@ localStorage (clave `concepts-app:v1`)
 | 2026-09-18 | **v1 del proyecto en git**: primer commit (`1a3abe7`). |
 | 2026-09-18 | **Fix UI**: tarjetas de Home mostraban la respuesta en vez de la pregunta. Faltaban las rotaciones 3D por cara (`.flash-front`/`.flash-back`). Ver sección 7. |
 | 2026-09-18 | Añadido `AGENTS.md` como fuente de verdad de requisitos. |
+| 2026-09-18 | **UX**: se elimina el volteo por hover en «Mis tarjetas»: ahora solo clic (o teclado) revela la respuesta. Se sincronizan README, JSDoc de `FlashCard` y AGENTS.md. |
 
 ---
 

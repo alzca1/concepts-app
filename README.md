@@ -11,7 +11,7 @@ Aplicación de *flashcards* construida con **React + Vite** para recordar concep
 - 📊 **Resumen de sesión** — visitas, repeticiones y porcentaje dominado al terminar.
 - ✏️ **CRUD completo** — crea, edita y elimina tarjetas mediante una modal.
 - 💾 **Persistencia en `localStorage`** — se guarda cada cambio; incluye 9 tarjetas de ejemplo la primera vez.
-- 🎨 **Tarjetas 3D** con animación de volteo (hover en desktop y clic en cualquier dispositivo).
+- 🎨 **Tarjetas 3D** con animación de volteo (clic o teclado, en cualquier dispositivo).
 
 ## Ejecución
 
