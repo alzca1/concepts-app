@@ -172,6 +172,11 @@ localStorage (clave `concepts-app:v1`)
   (`.flash-front { transform: rotateY(0) }`, `.flash-back { transform: rotateY(180deg) }`);
   sin esto ambas caras quedan en el mismo plano y la trasera (respuesta) pinta
   por encima de la frontal. *(Corregido 2026-09-18.)*
+- [x] **Sin saltos de layout al voltear**: la pregunta debe mantenerse centrada y
+  el texto «Clic para revelar» no se elimina del DOM al voltear: se oculta con
+  `opacity: 0`, la cara frontal no pierde altura y el `h3` no se pega al borde
+  inferior al iniciar el giro (aplica a la parrilla y a la tarjeta grande de
+  estudio). *(Corregido 2026-09-18.)*
 - [x] **Accesibilidad**: `role="button"`, teclado, `aria-label` en controles.
 
 ### 5.5 Requisitos abiertos / pendientes
@@ -204,6 +209,7 @@ localStorage (clave `concepts-app:v1`)
 | 2026-09-18 | Rotación propia por cara en `.flash-face` | **Fix bug**: en Home se veía la respuesta en vez de la pregunta; las dos caras compartían plano 3D y la trasera pintaba encima. |
 | 2026-09-18 | Registro de requisitos en `AGENTS.md` | Fuente de verdad para agentes y humanos; actualizarse ante cada cambio |
 | 2026-09-18 | Volteo en la parrilla **solo por clic** (se elimina el hover) | El hover rotaba la tarjeta en Home; el requisito cambia a clic/teclado para revelar la respuesta. |
+| 2026-09-18 | Hint «Clic para revelar» permanece en el DOM al voltear (oculto con `opacity: 0` + transición) y pregunta centrada con `margin: auto` | **Fix bug**: al condicionar el hint con `{!isFlipped && …}`, la cara frontal perdía altura al girar y con `justify-content: space-between` la pregunta saltaba al borde inferior antes del flip |
 
 ---
 
@@ -238,6 +244,7 @@ localStorage (clave `concepts-app:v1`)
 | 2026-09-18 | **Fix UI**: tarjetas de Home mostraban la respuesta en vez de la pregunta. Faltaban las rotaciones 3D por cara (`.flash-front`/`.flash-back`). Ver sección 7. |
 | 2026-09-18 | Añadido `AGENTS.md` como fuente de verdad de requisitos. |
 | 2026-09-18 | **UX**: se elimina el volteo por hover en «Mis tarjetas»: ahora solo clic (o teclado) revela la respuesta. Se sincronizan README, JSDoc de `FlashCard` y AGENTS.md. |
+| 2026-09-18 | **Fix UX**: al voltear una tarjeta, la pregunta se pegaba al borde inferior (el hint «Clic para revelar» se eliminaba del DOM justo al girar). El hint ahora se oculta con opacidad y la pregunta se centra con márgenes auto, en parrilla y en modo estudio. |
 
 ---
 

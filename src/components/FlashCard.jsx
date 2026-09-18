@@ -48,9 +48,15 @@ export function FlashCard({
         <div className="flash-face flash-front">
           <span className="card-tag">{concept.tag || "General"}</span>
           <h3>{concept.front}</h3>
-          {!isFlipped && (
-            <span className="flip-hint">Clic para revelar ↩</span>
-          )}
+          {/* El hint permanece en el DOM al voltear (solo se oculta con
+            opacidad): si desapareciera, la cara perdería altura y la
+            pregunta saltaría a la parte inferior justo al girar. */}
+          <span
+            className={`flip-hint${isFlipped ? " flip-hint--hidden" : ""}`}
+            aria-hidden={isFlipped}
+          >
+            Clic para revelar ↩
+          </span>
         </div>
         <div className="flash-face flash-back">
           <span className="card-tag">Respuesta</span>

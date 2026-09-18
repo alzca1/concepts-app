@@ -302,8 +302,12 @@ h1 {
   cursor: pointer;
 }
 
+/* Las caras son absolutas; el contenedor necesita altura para que
+ * no desborden por debajo y pinten sobre los elementos posteriores
+ * (ej. los botones de «Estudiar»). */
 .flash-card-inner {
   position: relative;
+  min-height: 190px;
   transform-style: preserve-3d;
   transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -344,11 +348,16 @@ h1 {
   display: inline-block;
 }
 
+/* La pregunta se centra entre la etiqueta y el hint: los márgenes auto
+ * absorben el espacio libre (también con `justify-content: space-between`),
+ * por lo que no importa si hay poco o mucho texto. */
 .flash-face h3 {
   font-size: 1.02rem;
   font-weight: 600;
   line-height: 1.45;
   overflow-wrap: break-word;
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 .flash-face p {
@@ -356,10 +365,18 @@ h1 {
   line-height: 1.55;
 }
 
+/* El hint se oculta con opacidad (no se retira del DOM): sigue ocupando
+ * su espacio, así la cara frontal no pierde altura y la pregunta se
+ * mantiene en su posición al iniciar el giro. */
 .flip-hint {
   font-size: 0.72rem;
   font-style: italic;
   color: #64748b;
+  transition: opacity 0.3s ease;
+}
+
+.flip-hint--hidden {
+  opacity: 0;
 }
 
 /* Cada cara se apila en 3D: la trasera va pre-rotada 180°.
@@ -378,6 +395,10 @@ h1 {
 .flash-card--big .flash-face {
   min-height: 300px;
   padding: 2rem 2.1rem;
+}
+
+.flash-card--big .flash-card-inner {
+  min-height: 300px;
 }
 
 .flash-card--big .flash-face h3 {
