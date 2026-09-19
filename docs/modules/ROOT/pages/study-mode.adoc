@@ -1,0 +1,31 @@
+= Study mode
+
+The study page runs an active-recall session over the whole deck.
+
+== Session rules
+
+* The deck starts **shuffled** (Fisher–Yates, `common/utils/shuffle`).
+* The big card flips on click/keyboard, controlled by the page
+  state; see xref:flash-card.adoc[flash card].
+* The answer buttons («La tengo clara» / «Volver a ver») appear
+  **1500 ms after the flip** (`STUDY_ACTIONS_DELAY`): the container
+  reserves its space from the flip and the buttons fade in, staying
+  out of the tab order while invisible. Going back to the question,
+  answering or restarting cancels the pending timer.
+* *La tengo clara* → the card is marked as cleared and leaves the
+  deck.
+* *Volver a ver* → the card is **requeued at the end** of the deck
+  and is not counted as cleared.
+* The session ends when every card has been cleared at least once.
+
+== Summary
+
+When the deck is empty the page shows:
+
+* Total visits, repetitions and mastery percentage
+  (cleared / visits).
+* Actions: restart the session (new shuffle) or go back to the
+  cards.
+
+Statistics are per-session only; nothing is persisted between
+sessions.

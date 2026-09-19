@@ -264,9 +264,12 @@ and `AGENTS.md` stay at the root.
 | `AGENTS.md` (root) | Source of truth for requirements and decisions |
 | `docs/ARCHITECTURE.md` (this file) | File and code organization |
 | `docs/GIT_CONVENTIONS.md` | Branches, commits and PRs |
+| `docs/modules/ROOT/pages/*.adoc` | Application documentation site (AsciiDoc, generated with `npm run docs`) |
 
-When adding a new document: create it in `docs/`, reference it here
-and in AGENTS.md.
+When adding a new document: create it in `docs/` (repo meta) or as
+an AsciiDoc page in `docs/modules/ROOT/pages/` (application
+documentation, registered in `nav.adoc`), and reference it here and
+in AGENTS.md.
 
 ---
 
