@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-import { FlashCard } from "../common/components/presentational/flash-card";
-import { tagColor } from "../common/utils/tag-color";
+import { FlashCard } from "../../../../common/components/presentational/flash-card";
+import { tagColor } from "../../../../common/utils/tag-color";
 
 /**
  * Modo "Mis tarjetas": búsqueda, filtro por etiqueta y parrilla de tarjetas

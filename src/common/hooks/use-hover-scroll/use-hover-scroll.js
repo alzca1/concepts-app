@@ -1,19 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 
-/**
- * Píxeles por segundo del scroll automático al hacer hover sobre la
- * tarjeta. Muy lento, para que el desborde sea legible mientras el
- * cursor está sobre la tarjeta.
- */
-const HOVER_SCROLL_SPEED = 16;
-
-/**
- * Pausa (ms) antes de arrancar el scroll automático tras entrar con
- * el mouse (o foco): da tiempo a leer el principio del texto antes
- * de que empiece a moverse. Si el cursor sale antes, no se llega a
- * mover.
- */
-const HOVER_SCROLL_DELAY = 750;
+import {
+  HOVER_SCROLL_DELAY,
+  HOVER_SCROLL_SPEED,
+} from "../../../application/config/constants";
 
 /**
  * Devuelve `ref` y eventos para aplicar un scroll vertical lento y

@@ -1,26 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 
-import { FlashCard } from "../common/components/presentational/flash-card";
-import { shuffle } from "../common/utils/shuffle";
-
-/**
- * Retardo (ms) con el que aparecen los botones de respuesta una vez
- * volteada la tarjeta: da tiempo a leer la respuesta antes de decidir
- * si se tiene clara o se quiere volver a verla.
- */
-const STUDY_ACTIONS_DELAY = 1500;
+import { STUDY_ACTIONS_DELAY } from "../../application/config/constants";
+import { FlashCard } from "../../common/components/presentational/flash-card";
+import { shuffle } from "../../common/utils/shuffle";
 
 function initialStats(count) {
   return { initial: count, known: 0, repeated: 0 };
 }
 
 /**
- * Modo estudio:
+ * Página «Estudiar»:
  * - la pila empieza barajada y se reduce al marcar "la tengo clara";
  * - "volver a ver" devuelve la tarjeta al final de la pila;
  * - cuando la pila se vacía se muestra un resumen de la sesión.
  */
-export function StudyView({ concepts, onBack }) {
+export function StudyPage({ concepts, onBack }) {
   const [queue, setQueue] = useState(() => shuffle(concepts));
   const [stats, setStats] = useState(() => initialStats(concepts.length));
   const [flipped, setFlipped] = useState(false);

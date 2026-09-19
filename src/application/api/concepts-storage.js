@@ -5,8 +5,7 @@
  * siembra las tarjetas de ejemplo.
  */
 import { seedConcepts } from "./seed/seed-concepts";
-
-const STORAGE_KEY = "concepts-app:v1";
+import { STORAGE_KEY } from "../config/constants";
 
 /** Carga las tarjetas guardadas; si no hay datos válidos, siembra. */
 export function loadConcepts() {
