@@ -1,4 +1,4 @@
-/** Copia barajada de un array (Fisher–Yates). */
+/** Shuffled copy of an array (Fisher–Yates). */
 export function shuffle(items) {
   const result = [...items];
   for (let i = result.length - 1; i > 0; i -= 1) {

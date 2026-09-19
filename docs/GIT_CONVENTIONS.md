@@ -158,6 +158,8 @@ dependencies — decide first via AGENTS.md rule 4.
 ## 5. Language
 
 - Commits and pull requests: **English**.
+- Source code comments and JSDoc: **English** (UI text stays in
+  Spanish — it is a product decision).
 - Repository documentation (`README.md`, guides, every `.md` file):
   **English** from now on. Existing Spanish documents are translated
   in dedicated `docs/` branches (README.md translation is pending).

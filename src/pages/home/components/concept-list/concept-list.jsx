@@ -4,9 +4,9 @@ import { FlashCard } from "../../../../common/components/presentational/flash-ca
 import { tagColor } from "../../../../common/utils/tag-color";
 
 /**
- * Modo "Mis tarjetas": búsqueda, filtro por etiqueta y parrilla de tarjetas
- * con acciones de editar / eliminar. Solo una tarjeta muestra su respuesta
- * a la vez: voltear una reinicia la anterior.
+ * "My cards" mode: search, tag filter and the card grid with
+ * edit / delete actions. Only one card shows its answer at a time:
+ * flipping one resets the previous one.
  */
 export function ConceptList({ concepts, deleteConcept, onEdit }) {
   const [search, setSearch] = useState("");

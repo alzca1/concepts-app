@@ -1,6 +1,6 @@
 let counter = 0;
 
-/** ID único (suficiente para tarjetas; sin dependencias externas). */
+/** Unique ID (good enough for cards; no external dependencies). */
 export function uid() {
   counter += 1;
   return (

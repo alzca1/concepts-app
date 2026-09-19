@@ -4,13 +4,13 @@ import { loadConcepts, saveConcepts } from "../../api/concepts-storage";
 import { uid } from "../../../common/utils/uid";
 
 /**
- * Hook con las tarjetas + persistencia en localStorage.
- * Carga las tarjetas de ejemplo la primera vez que no hay nada guardado.
+ * Hook with the cards + localStorage persistence.
+ * Loads the sample cards the first time there is nothing saved.
  */
 export function useConcepts() {
   const [concepts, setConcepts] = useState(() => loadConcepts());
 
-  // Persistencia: cada vez que cambian las tarjetas se guardan.
+  // Persistence: whenever the cards change, they are saved.
   useEffect(() => {
     saveConcepts(concepts);
   }, [concepts]);

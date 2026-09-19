@@ -2,8 +2,8 @@ import { ConceptList } from "./components/concept-list";
 import { StatsBar } from "./components/stats-bar";
 
 /**
- * Página «Mis tarjetas»: estadísticas, acceso a nueva tarjeta y
- * parrilla con búsqueda y filtros.
+ * «My cards» page: stats bar, new-card action and the card grid
+ * with search and filters.
  */
 export function HomePage({ concepts, deleteConcept, onEdit, resetToSeed }) {
   return (

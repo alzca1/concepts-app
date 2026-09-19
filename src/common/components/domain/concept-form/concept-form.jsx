@@ -1,9 +1,9 @@
 import { useState } from "react";
 
 /**
- * Modal para crear o editar una tarjeta.
- * Se monta/desmonta en App con un `key` propio, así el estado inicial
- * de los inputs se ajusta solo a la tarjeta que se está editando.
+ * Modal to create or edit a card.
+ * It is mounted/unmounted in App with its own `key`, so the initial
+ * input state adapts by itself to the card being edited.
  */
 export function ConceptForm({ concept, onClose, onSave }) {
   const isEdit = concept != null;

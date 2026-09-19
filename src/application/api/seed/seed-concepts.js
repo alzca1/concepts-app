@@ -1,8 +1,8 @@
 import { uid } from "../../../common/utils/uid";
 
 /**
- * Tarjetas de ejemplo. Se usan solo la primera vez que no hay nada
- * guardado en localStorage (o al pulsar "Restaurar iniciales").
+ * Sample cards. Only used the first time there is nothing stored in
+ * localStorage (or when pressing "Restore initial data").
  */
 export function seedConcepts() {
   const base = [

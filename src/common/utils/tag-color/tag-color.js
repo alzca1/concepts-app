@@ -1,5 +1,6 @@
 /**
- * Color estable por etiqueta: el mismo tag siempre pinta con el mismo color.
+ * Stable color per tag: the same tag always paints with the same
+ * color.
  */
 const TAG_COLORS = [
   "#a78bfa",

@@ -2,13 +2,12 @@ import { useHoverScroll } from "../../../hooks/use-hover-scroll";
 import { tagColor } from "../../../utils/tag-color";
 
 /**
- * Tarjeta 3D que se voltea al hacer clic (o teclado: `Enter` /
- * espacio).
+ * 3D card that flips on click (or keyboard: `Enter` / space).
  *
- * El volteo lo controla siempre el padre (`flipped` + `onFlip`), y
- * `actions` (p. ej. botones de editar/eliminar) se pinta sobre la
- * cara frontal y rota con la tarjeta. La descripción completa del
- * comportamiento (hint, auto-scroll en hover, tamaños) vive en
+ * The flip is always controlled by the parent (`flipped` +
+ * `onFlip`), and `actions` (e.g. edit/delete buttons) render over
+ * the front face and rotate with the card. The full behavior
+ * description (hint, hover auto-scroll, sizes) lives in
  * `docs/modules/ROOT/pages/flash-card.adoc`.
  */
 export function FlashCard({
@@ -75,9 +74,10 @@ export function FlashCard({
           <h3 ref={frontTextRef} onScroll={onFrontTextScroll}>
             {concept.front}
           </h3>
-          {/* El hint permanece en el DOM al voltear (solo se oculta con
-            opacidad): si desapareciera, la cara perdería altura y la
-            pregunta saltaría a la parte inferior justo al girar. */}
+          {/* The hint stays in the DOM when flipped (it is only
+            hidden with opacity): if it were removed, the face would
+            lose height and the question would jump to the bottom
+            right before the flip starts. */}
           <span
             className={`flip-hint${flipped ? " flip-hint--hidden" : ""}`}
             aria-hidden={flipped}

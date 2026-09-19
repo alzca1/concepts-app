@@ -1,25 +1,24 @@
 /**
- * Constantes compartidas de la aplicación.
+ * Shared application constants.
  */
 
-/** Clave versionada de localStorage para el modelo de datos v1. */
+/** Versioned localStorage key for the v1 data model. */
 export const STORAGE_KEY = "concepts-app:v1";
 
 /**
- * Pausa (ms) antes de arrancar el auto-scroll por hover: da tiempo a
- * leer el principio del texto antes de que empiece a moverse.
+ * Pause (ms) before the hover auto-scroll starts: gives time to read
+ * the beginning of the text before it starts moving.
  */
 export const HOVER_SCROLL_DELAY = 750;
 
 /**
- * Píxeles por segundo del auto-scroll por hover. Muy lento, para que
- * el desborde sea legible mientras el cursor está sobre la tarjeta.
+ * Pixels per second of the hover auto-scroll. Very slow, so the
+ * overflow stays readable while the pointer is over the card.
  */
 export const HOVER_SCROLL_SPEED = 16;
 
 /**
- * Retardo (ms) con el que aparecen los botones de respuesta una vez
- * volteada la tarjeta en el modo estudio: da tiempo a leer la
- * respuesta antes de decidir.
+ * Delay (ms) after which the answer buttons appear once the study
+ * card is flipped: gives time to read the answer before deciding.
  */
 export const STUDY_ACTIONS_DELAY = 1500;
