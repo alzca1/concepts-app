@@ -1,53 +1,74 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { loadConcepts, saveConcepts } from "../../api/concepts-storage";
-import { seedConcepts } from "../../api/seed/seed-concepts";
+import {
+  createConcept,
+  deleteConcept as deleteConceptRow,
+  listConcepts,
+  updateConcept as updateConceptRow,
+} from "../../api/concepts-repository";
 import type { Concept, ConceptInput } from "../../api/types";
-import { uid } from "../../../common/utils/uid";
+import { useAuth } from "../../../context/use-auth";
 
 import type { UseConceptsResult } from "./utils/interfaces";
 
 /**
- * Hook with the cards + localStorage persistence.
- * Loads the sample cards the first time there is nothing saved.
+ * Hook with the cards scoped to the signed-in user.
+ * Loads on mount and whenever the session changes; mutations hit
+ * Supabase and update the local list optimistically.
  */
 export function useConcepts(): UseConceptsResult {
-  const [concepts, setConcepts] = useState<Concept[]>(() => loadConcepts());
+  const { user } = useAuth();
+  const [concepts, setConcepts] = useState<Concept[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
-  // Persistence: whenever the cards change, they are saved.
   useEffect(() => {
-    saveConcepts(concepts);
-  }, [concepts]);
+    if (!user) {
+      setConcepts([]);
+      setIsLoading(false);
+      setError(null);
+      return;
+    }
 
-  const addConcept = useCallback(
-    (data: ConceptInput) =>
-      setConcepts((prev) => [
-        ...prev,
-        {
-          ...data,
-          id: uid(),
-          createdAt: Date.now(),
-        },
-      ]),
-    []
-  );
+    let active = true;
+    setIsLoading(true);
+
+    listConcepts()
+      .then((data) => {
+        if (!active) return;
+        setConcepts(data);
+        setError(null);
+      })
+      .catch((err) => {
+        if (!active) return;
+        setError(err instanceof Error ? err : new Error(String(err)));
+      })
+      .finally(() => {
+        if (active) setIsLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [user]);
+
+  const addConcept = useCallback(async (data: ConceptInput) => {
+    const created = await createConcept(data);
+    setConcepts((prev) => [created, ...prev]);
+  }, []);
 
   const updateConcept = useCallback(
-    (id: string, data: ConceptInput) =>
-      setConcepts((prev) =>
-        prev.map((c) =>
-          c.id === id ? { ...c, ...data, createdAt: c.createdAt } : c
-        )
-      ),
-    []
+    async (id: string, data: ConceptInput) => {
+      const updated = await updateConceptRow(id, data);
+      setConcepts((prev) => prev.map((c) => (c.id === id ? updated : c)));
+    },
+    [],
   );
 
-  const deleteConcept = useCallback(
-    (id: string) => setConcepts((prev) => prev.filter((c) => c.id !== id)),
-    []
-  );
+  const deleteConcept = useCallback(async (id: string) => {
+    await deleteConceptRow(id);
+    setConcepts((prev) => prev.filter((c) => c.id !== id));
+  }, []);
 
-  const resetToSeed = useCallback(() => setConcepts(seedConcepts()), []);
-
-  return { concepts, addConcept, updateConcept, deleteConcept, resetToSeed };
+  return { concepts, isLoading, error, addConcept, updateConcept, deleteConcept };
 }
