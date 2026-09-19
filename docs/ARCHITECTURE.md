@@ -235,14 +235,17 @@ anticipación.
 
 ## 9. Mapa de documentación
 
+La documentación de referencia vive en la carpeta `docs/`; solo
+`README.md` y `AGENTS.md` permanecen en la raíz.
+
 | Documento | Contenido |
 |---|---|
-| `README.md` | Qué es, cómo ejecutarlo, estructura rápida |
-| `AGENTS.md` | Fuente de verdad de requisitos y decisiones |
-| `ARCHITECTURE.md` (este) | Organización de archivos y código |
-| `GIT_CONVENTIONS.md` | Ramas, commits y PRs |
+| `README.md` (raíz) | Qué es, cómo ejecutarlo, estructura rápida |
+| `AGENTS.md` (raíz) | Fuente de verdad de requisitos y decisiones |
+| `docs/ARCHITECTURE.md` (este) | Organización de archivos y código |
+| `docs/GIT_CONVENTIONS.md` | Ramas, commits y PRs |
 
-Al añadir un documento nuevo: crearlo en la raíz, referenciarlo aquí
+Al añadir un documento nuevo: crearlo en `docs/`, referenciarlo aquí
 y en AGENTS.md.
 
 ---
