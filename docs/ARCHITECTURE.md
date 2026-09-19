@@ -201,8 +201,8 @@ Migrate only once the stylesheet layout is stable.
   that same `utils/`**, split by kind: `types.ts` for `type`
   aliases, `interfaces.ts` for `interface` declarations,
   `enums.ts` for `enum` declarations. Helpers private to the unit
-  (e.g. `format-fix-item.ts`) also live here. Mirror's spa-modexp's
-  convention — one role per file inside the unit's `utils/`. A
+  (e.g. `format-fix-item.ts`) also live here. Convention: one role
+  per file inside the unit's `utils/`. A
   component, hook or page whose only artefact is a single `.tsx`/
   `.ts` file in `src/` (e.g. `App.tsx`) may keep its local types
   inline; the rule applies once the unit lives in its own folder.

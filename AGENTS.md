@@ -122,7 +122,7 @@ Unique historical record — current behavior is documented in the
 | 2026-09-18 | No bounce: single downward pass, stop at the end | To re-read, leave and re-enter the hover/focus |
 | 2026-09-18 | Flip always parent-controlled; grid keeps a single `flippedId` | Only one visible answer at a time; FlashCard's uncontrolled mode removed |
 | 2026-09-18 | Edit/delete icons move inside the front face (`actions` prop) | They flip with the card instead of floating fixed over the animation |
-| 2026-09-19 | Types/interfaces/enums live in `utils/types.ts` / `utils/interfaces.ts` / `utils/enums.ts` of each unit | Mirrors the spa-modexp convention: one role per file inside the unit's `utils/`; improves discoverability; only inline a type when the unit is a single-file (e.g. `App.tsx`) and the type is local |
+| 2026-09-19 | Types/interfaces/enums live in `utils/types.ts` / `utils/interfaces.ts` / `utils/enums.ts` of each unit | One role per file inside the unit's `utils/`; improves discoverability; only inline a type when the unit is a single-file (e.g. `App.tsx`) and the type is local |
 
 ---
 
@@ -168,7 +168,7 @@ Full history in [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
 | 2026-09-19 | **Docs**: AsciiDoc documentation site with Antora (`npm run docs`); behavior extracted from code comments into `.adoc` pages. |
 | 2026-09-19 | **Architecture**: layered structure migration `pages/` / `common/` / `application/` (3 phases, no behavior changes). |
 | 2026-09-19 | **Docs**: AGENTS.md restructured as a lean English agent guide; full changelog moved to `docs/CHANGELOG.md`. |
-| 2026-09-19 | **Convention**: extract component/hook/page props and local types into `utils/{types,interfaces,enums}.ts`. | Mirrors spa-modexp; one file per kind (type alias vs. interface vs. enum); helpers private to the unit also live in the same `utils/`. |
+| 2026-09-19 | **Convention**: extract component/hook/page props and local types into `utils/{types,interfaces,enums}.ts`. | One file per kind (type alias vs. interface vs. enum); helpers private to the unit also live in the same `utils/`. |
 
 ---
 
