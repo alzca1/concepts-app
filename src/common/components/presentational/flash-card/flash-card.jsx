@@ -2,23 +2,14 @@ import { useHoverScroll } from "../../../hooks/use-hover-scroll";
 import { tagColor } from "../../../utils/tag-color";
 
 /**
- * Tarjeta 3D que se voltea al hacer clic (o teclado: `Enter` / espacio).
+ * Tarjeta 3D que se voltea al hacer clic (o teclado: `Enter` /
+ * espacio).
  *
- * El estado de volteo lo controla siempre el padre vía la prop
- * `flipped`; el clic llama a `onFlip`. La parrilla lo usa para
- * garantizar que solo una tarjeta muestra su respuesta a la vez, y
- * el modo estudio para controlar la tarjeta grande.
- *
- * La prop opcional `actions` (p. ej. botones de editar / eliminar)
- * se pinta sobre la cara frontal, de modo que participa en la
- * rotación 3D y se voltea junto con la tarjeta.
- * - El texto envuelve: si la pregunta o la respuesta son más altas
- *   que la tarjeta, un scroll vertical muy lento se activa —tras una
- *   pausa de ~0,75 s— al hacer hover (o foco) sobre la tarjeta y se
- *   detiene al llegar al final (ver `useHoverScroll`); si el
- *   contenido cabe, la tarjeta se mantiene estática. Con desborde, la
- *   cara recibe `flash-face--overflow` (degradado inferior como pista
- *   de que hay más texto).
+ * El volteo lo controla siempre el padre (`flipped` + `onFlip`), y
+ * `actions` (p. ej. botones de editar/eliminar) se pinta sobre la
+ * cara frontal y rota con la tarjeta. La descripción completa del
+ * comportamiento (hint, auto-scroll en hover, tamaños) vive en
+ * `docs/modules/ROOT/pages/flash-card.adoc`.
  */
 export function FlashCard({
   concept,

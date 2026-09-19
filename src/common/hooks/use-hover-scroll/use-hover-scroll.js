@@ -7,28 +7,12 @@ import {
 
 /**
  * Devuelve `ref` y eventos para aplicar un scroll vertical lento y
- * automático al hacer hover (o foco) sobre un elemento.
+ * automático al hacer hover (o foco) sobre un elemento, solo si el
+ * contenido desborda en vertical.
  *
- * El elemento referenciado debe ser un contenedor verticalmente
- * scrollable (`overflow-y: auto`) cuyo contenido envuelve; si es un
- * ítem flex necesita `min-height: 0` para poder encoger — ver las
- * reglas de `.flash-face h3` / `.flash-face p` en `src/App.css`. El
- * scroll solo se activa cuando el contenido es más alto que el
- * contenedor (`scrollHeight > clientHeight`); si el contenido cabe,
- * la tarjeta se queda estática.
- *
- * Comportamiento:
- * - Al entrar con el mouse (o foco): si hay desborde, se espera
- *   `HOVER_SCROLL_DELAY` ms y arranca un recorrido único de arriba
- *   a abajo a velocidad `HOVER_SCROLL_SPEED`, que se detiene al
- *   llegar al final (sin rebote; para releer, salir y volver a
- *   entrar).
- * - Al salir (mouse leave / blur): se detienen la pausa y el scroll,
- *   y la posición vuelve a 0.
- * - Un scroll manual del usuario (rueda, arrastre, touch) interrumpe
- *   el automático hasta que el cursor salga de la tarjeta.
- * - Se re-mide el desborde al cambiar el texto (editar tarjeta) y al
- *   redimensionar la ventana.
+ * La descripción completa del comportamiento (pausa, recorrido,
+ * interrupción manual, cuantización) vive en
+ * `docs/modules/ROOT/pages/flash-card.adoc`.
  *
  * @param {string} content - Texto de la cara; el hook se re-mide cuando
  *   cambia.

@@ -38,6 +38,29 @@ Dos modos de uso:
 | `npm run build` | Build de producción → `dist/` |
 | `npm run preview` | Sirve `dist/` para probar el build |
 | `npm run lint` | Lint con oxlint (reglas: `rules-of-hooks`, `only-export-components`) |
+| `npm run docs` | Genera el sitio de documentación (Antora) → `build/site` |
+
+### Sitio de documentación (AsciiDoc)
+
+La documentación de la aplicación se escribe en **AsciiDoc**
+(`docs/modules/ROOT/pages/*.adoc`, en inglés) y se publica como web
+estática con **Antora**. Justificación de dependencias (regla 4):
+ambos paquetes son **solo devDependencies** — no se cargan en la
+aplicación ni afectan al bundle.
+
+| Paquete | Versión | Uso |
+|---|---|---|
+| `@antora/cli` | 3.2.0 | CLI del generador |
+| `@antora/site-generator` | 3.2.0 | Generador del sitio |
+
+- `npm run docs` genera el sitio en `build/site` (gitignored); se
+  consulta con cualquier servidor estático (p. ej. `npx serve
+  build/site`).
+- Playbook: `antora-playbook.yml`; descriptor del componente:
+  `docs/antora.yml`; navegación: `docs/modules/ROOT/nav.adoc`.
+- Las explicaciones globales de comportamiento viven en estas
+  páginas; en el código solo quedan JSDoc de contrato y los «por
+  qué» locales.
 
 ### Convenciones
 
@@ -67,11 +90,14 @@ Dos modos de uso:
 concepts-app/
 ├── index.html
 ├── vite.config.js
+├── antora-playbook.yml   # Playbook del sitio de documentación
 ├── AGENTS.md              ← ESTE ARCHIVO
 ├── README.md
 ├── docs/                  # Documentación de referencia (en inglés)
 │   ├── ARCHITECTURE.md    # Organización de archivos y código
-│   └── GIT_CONVENTIONS.md # Ramas, commits y PRs
+│   ├── GIT_CONVENTIONS.md # Ramas, commits y PRs
+│   ├── antora.yml         # Descriptor del componente Antora
+│   └── modules/ROOT/      # Páginas .adoc del sitio (nav.adoc + pages/)
 ├── package.json
 ├── public/
 │   └── favicon.svg
@@ -306,6 +332,7 @@ localStorage (clave `concepts-app:v1`)
 | 2026-09-18 | **Modal**: el textarea de respuesta sube también en mobile (`min-height: 10rem` en vez de las 4 filas por defecto). |
 | 2026-09-18 | **Proceso**: se crea `GIT_CONVENTIONS.md` (una rama por cambio desde `develop`; conventional commits) y se referencia en la regla 7 de la sección 8. |
 | 2026-09-19 | **Arquitectura**: migración a la estructura por capas `pages/` / `common/` / `application/` (rama `internal/INT-001-structure-migration`, 3 fases, sin cambios de comportamiento); constantes centralizadas en `application/config/constants.js`; `App.jsx` queda como shell. Detalle en `docs/ARCHITECTURE.md`. |
+| 2026-09-19 | **Docs**: sitio de documentación AsciiDoc con Antora (`npm run docs` → `build/site`); páginas `.adoc` en `docs/modules/ROOT/pages` con el comportamiento extraído de los comentarios del código (Antora solo devDeps — regla 4). |
 
 ---
 

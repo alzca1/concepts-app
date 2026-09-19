@@ -1,0 +1,45 @@
+= Data model and persistence
+
+A card is a plain object:
+
+[source,js]
+----
+{
+  id:        "string",  // unique per card
+  front:     "string",  // question or concept (front face)
+  back:      "string",  // answer or explanation (back face)
+  tag:       "string",  // category label
+  createdAt: number     // timestamp (ms)
+}
+----
+
+== Invariants
+
+* The `localStorage` key is **`concepts-app:v1`**. A data-shape
+  change requires a new key (`v2`) plus a documented migration —
+  never mutate the meaning of `v1` in place.
+* `id` comes from `uid()` (`common/utils/uid`).
+* `createdAt` is preserved when editing a card.
+* On first load — or when the stored JSON is missing or corrupt —
+  the app seeds itself with 9 example cards.
+
+== Persistence layer
+
+`application/api/concepts-storage.js` is the only module touching
+`localStorage`:
+
+* `loadConcepts()` — reads and parses the stored array; any missing,
+  invalid or empty value (and any thrown error) falls back to the
+  seed data.
+* `saveConcepts(concepts)` — serializes the deck; if `localStorage`
+  is unavailable the app keeps working in memory.
+
+The store (`application/store/use-concepts/`) owns the React state
+and saves on every change through a `useEffect`. UI components never
+touch storage directly — they receive data and callbacks via props.
+
+== Shared constants
+
+`application/config/constants.js` centralises the storage key and
+the timing values used across the app (hover-scroll pause and speed,
+study actions delay).

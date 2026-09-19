@@ -1,0 +1,47 @@
+= Flash card
+
+The shared 3D card (`common/components/presentational/flash-card/`)
+is used by both modes: grid (190 px tall) and study (300 px tall).
+
+== Flip behavior
+
+* The flip animation takes 0.55 s with `cubic-bezier(0.4, 0, 0.2, 1)`.
+* Each face owns its rotation (`.flash-front { rotateY(0) }`,
+  `.flash-back { rotateY(180deg) }`) with `backface-visibility:
+  hidden` — without this both faces share the same plane and the
+  answer paints over the question.
+* The flip is **always controlled by the parent** (`flipped` +
+  `onFlip`); the card itself holds no flip state.
+* The *«Clic para revelar»* hint stays in the DOM when flipped and
+  is hidden with `opacity: 0`: removing it would collapse the face
+  height and make the question jump right before the animation.
+* The question/answer blocks are vertically centered with auto
+  margins, which also absorb the free space when the text is short.
+
+== Overflow: slow auto-scroll on hover/focus
+
+Question and answer wrap normally. If the text is taller than the
+fixed face height (`scrollHeight > clientHeight`):
+
+* A bottom fade gradient (`.flash-face--overflow::after`) hints that
+  there is more content.
+* On hover (or focus) the element starts a **slow vertical
+  auto-scroll** after a **750 ms pause** (`HOVER_SCROLL_DELAY`).
+  Leaving before the pause cancels it entirely.
+* The scroll is a **single top-to-bottom pass at 16 px/s**
+  (`HOVER_SCROLL_SPEED`) that **stops at the end** — no bounce. To
+  read again, leave and re-enter the hover/focus.
+* A **manual scroll** (wheel, drag, touch) interrupts the automatic
+  one until the pointer leaves the card; detection tolerates ±2 px
+  because browsers quantize scroll offsets to whole pixels. That is
+  also why the position accumulates in a `posRef` and is only ever
+  *written* to `scrollTop` — re-reading it each frame would truncate
+  the ~0.3 px/frame increment to 0 and the scroll would never move.
+* The overflow is re-measured when the text changes and on window
+  resize. Short content keeps the card static and compact.
+
+== Card actions
+
+The optional `actions` prop renders nodes (e.g. edit/delete buttons)
+over the *front face*: being inside `.flash-face`, they take part in
+the 3D rotation and flip along with the card.
