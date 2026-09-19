@@ -13,7 +13,7 @@ function initialStats(count: number): SessionStats {
 }
 
 /**
- * «Estudiar» page:
+ * Study page:
  * - the deck starts shuffled and shrinks as cards are marked
  *   "clear";
  * - "review again" sends the card to the end of the deck;
