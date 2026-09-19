@@ -6,14 +6,28 @@ import { useConceptModal } from "../../context/use-concept-modal";
 import { ConceptList } from "./components/concept-list";
 import { StatsBar } from "./components/stats-bar";
 
-export function HomePage() {
+import type { HomePageProps } from "./utils/interfaces";
+
+export function HomePage({ concepts, isLoading, error }: HomePageProps) {
   const { t } = useTranslation();
-  const { concepts, deleteConcept, resetToSeed } = useConcepts();
+  const { deleteConcept } = useConcepts();
   const { openModal } = useConceptModal();
+
+  if (isLoading) {
+    return <p className="empty-state">{t("home.loading")}</p>;
+  }
+
+  if (error) {
+    return (
+      <p className="empty-state" role="alert">
+        {t("home.loadError", { message: error.message })}
+      </p>
+    );
+  }
 
   return (
     <>
-      <StatsBar concepts={concepts} resetToSeed={resetToSeed} />
+      <StatsBar concepts={concepts} />
 
       <div className="add-row">
         <button
@@ -24,7 +38,11 @@ export function HomePage() {
         </button>
       </div>
 
-      <ConceptList concepts={concepts} deleteConcept={deleteConcept} onEdit={openModal} />
+      <ConceptList
+        concepts={concepts}
+        deleteConcept={deleteConcept}
+        onEdit={openModal}
+      />
     </>
   );
 }
