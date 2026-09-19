@@ -18,6 +18,14 @@
 - `develop` → `main` only when consolidating a stable version
   (merge --no-ff and, if applicable, a tag).
 
+### Hotfixes and keeping `main` and `develop` in sync
+
+- Urgent fixes branch off **from `main`** as `hotfix/HOT-XXX-slug`,
+  are merged into `main` with `--no-ff`, and are then synced back
+  into `develop` so both branches converge.
+- Whenever `main` gets ahead of `develop` (e.g. after a hotfix),
+  sync it into `develop` before starting new work.
+
 ---
 
 ## 2. Branch naming
@@ -35,6 +43,7 @@ Format: `<type>/<PREFIX-XXX-slug>`
   `add-git-conventions`).
 - One change = one branch; if a change grows into another scope,
   split it into several branches instead.
+- Keep the full branch name short (≤ 60 characters).
 
 | Type | Prefix | Use | Example |
 |---|---|---|---|
@@ -43,10 +52,17 @@ Format: `<type>/<PREFIX-XXX-slug>`
 | `improvement/` | `IMP` | Improvement of something that already exists (UX, performance, accessibility), not new functionality | `improvement/IMP-001-bigger-modal` |
 | `internal/` | `INT` | Internal changes with no visible effect: tooling, refactoring, dependencies | `internal/INT-001-rename-utils` |
 | `docs/` | `DOCS` | Documentation (AGENTS.md, README, guides) | `docs/DOCS-001-add-git-conventions` |
+| `hotfix/` | `HOT` | Urgent fix that goes straight into `main` (section 1) | `hotfix/HOT-001-crash-on-save` |
+| `revert/` | `REV` | Revert of a change already merged | `revert/REV-001-revert-hover-scroll` |
 
 ---
 
 ## 3. Commits: Conventional Commits
+
+**Golden rule — touch only what the task is about**: keep commits
+small and atomic, each one grouping changes of a single context.
+They are easier to read, review, revert and trace. Never commit
+secrets or credentials.
 
 Format:
 
@@ -126,4 +142,18 @@ docs(estudio): documentar el retardo de los botones de respuesta
 - Suggested body structure: *What* (what changes), *Why / Notes for
   reviewers* (why and decisions), *Verification* (how it was checked:
   lint, build, manual steps).
+- **Work in progress**: if the change is not ready for review, open
+  the PR as a **draft** and mark it as ready once it is.
+- **Pre-merge checklist**: lint and build green, diff reviewed,
+  every comment resolved, and the branch up to date with
+  `develop`.
+- **Who pushes, merges**: the author performs the merge once the
+  checklist is met.
 - `--no-ff` merge into `develop` and branch deletion after approval.
+
+### Automation (pending decision)
+
+The reference repository enforces part of this with tooling:
+`commitlint` for Conventional Commits and pre-commit hooks (secret
+scanning, import order). Adopting any of it here requires adding dev
+dependencies — decide first via AGENTS.md rule 4.
