@@ -154,6 +154,11 @@ Unique historical record — current behavior is documented in the
 8. **If a requirement conflicts with a data invariant**, do not
    solve it silently: note it in the decision log and ask for
    confirmation.
+9. **Git history management**: do not use `git commit --amend` or
+   interactive rebase to rewrite shared history unless the user
+   explicitly requests it. If a fix is needed, create a new commit
+   with a clear message (e.g. `fix(scope): correct X`). When in
+   doubt, ask before rewriting history.
 
 ---
 
