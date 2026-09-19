@@ -1,6 +1,7 @@
 import type { CSSProperties, KeyboardEvent } from "react";
 import { useTranslation } from "react-i18next";
 
+import { DEFAULT_TAG } from "../../../../application/config/constants";
 import { useHoverScroll } from "../../../hooks/use-hover-scroll";
 import { tagColor } from "../../../utils/tag-color";
 
@@ -53,7 +54,7 @@ export function FlashCard({
         flipped ? "flipped" : ""
       } ${size === "large" ? "flash-card--big" : ""}`}
       style={
-        { "--tag-color": tagColor(concept.tag || "General") } as CSSProperties
+        { "--tag-color": tagColor(concept.tag || DEFAULT_TAG) } as CSSProperties
       }
       role="button"
       tabIndex={0}
@@ -78,7 +79,7 @@ export function FlashCard({
           }`}
         >
           {actions}
-          <span className="card-tag">{concept.tag || "General"}</span>
+          <span className="card-tag">{concept.tag || DEFAULT_TAG}</span>
           <h3 ref={frontTextRef} onScroll={onFrontTextScroll}>
             {concept.front}
           </h3>

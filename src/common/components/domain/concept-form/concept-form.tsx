@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 
+import { DEFAULT_TAG } from "../../../../application/config/constants";
+
 import type { ConceptFormProps } from "./utils/interfaces";
 
 /**
@@ -25,7 +27,7 @@ export function ConceptForm({ concept, onClose, onSave }: ConceptFormProps) {
       setError(t("form.validationError"));
       return;
     }
-    onSave({ front: f, back: b, tag: tag.trim() || "General" });
+    onSave({ front: f, back: b, tag: tag.trim() || DEFAULT_TAG });
     onClose();
   }
 

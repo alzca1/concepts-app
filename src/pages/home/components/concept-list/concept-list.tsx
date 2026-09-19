@@ -1,6 +1,7 @@
 import { useState, type CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
 
+import { DEFAULT_TAG, EMPTY_STRING } from "../../../../application/config/constants";
 import { FlashCard } from "../../../../common/components/presentational/flash-card";
 import { tagColor } from "../../../../common/utils/tag-color";
 
@@ -17,13 +18,13 @@ export function ConceptList({ concepts, deleteConcept, onEdit }: ConceptListProp
   const [activeTag, setActiveTag] = useState("");
   const [flippedId, setFlippedId] = useState<string | null>(null);
 
-  const tags = Array.from(new Set(concepts.map((c) => c.tag || "General")));
+  const tags = Array.from(new Set(concepts.map((c) => c.tag || DEFAULT_TAG)));
 
   const query = search.trim().toLowerCase();
   const filtered = concepts.filter(
     (c) =>
-      (activeTag === "" || c.tag === activeTag) &&
-      (query === "" ||
+      (activeTag === EMPTY_STRING || c.tag === activeTag) &&
+      (query === EMPTY_STRING ||
         `${c.front} ${c.back} ${c.tag}`.toLowerCase().includes(query))
   );
 
@@ -42,9 +43,9 @@ export function ConceptList({ concepts, deleteConcept, onEdit }: ConceptListProp
           <div className="tag-row" aria-label={t("list.filterAria")}>
             <button
               type="button"
-              className={`chip ${activeTag === "" ? "active" : ""}`}
+              className={`chip ${activeTag === EMPTY_STRING ? "active" : ""}`}
               onClick={() => setActiveTag("")}
-              aria-pressed={activeTag === ""}
+              aria-pressed={activeTag === EMPTY_STRING}
             >
               {t("list.allTags")}
             </button>

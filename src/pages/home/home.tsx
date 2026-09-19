@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 
+import { NEW_CARD_SENTINEL } from "../../App";
 import type { Concept } from "../../application/api/types";
 import { ConceptList } from "./components/concept-list";
 import { StatsBar } from "./components/stats-bar";
@@ -26,7 +27,7 @@ export function HomePage({
       <StatsBar concepts={concepts} resetToSeed={resetToSeed} />
 
       <div className="add-row">
-        <button className="btn btn-primary" onClick={() => onEdit("nueva")}>
+        <button className="btn btn-primary" onClick={() => onEdit(NEW_CARD_SENTINEL)}>
           {t("home.addCard")}
         </button>
       </div>

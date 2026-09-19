@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { changeLocale, type Locale } from "./application/i18n";
+import { APP_LANGUAGES, changeLocale, type Locale } from "./application/i18n";
 import type { ConceptInput } from "./application/api/types";
 import { ConceptForm } from "./common/components/domain/concept-form";
 import { useConcepts } from "./application/store/use-concepts";
@@ -9,17 +9,29 @@ import { HomePage } from "./pages/home";
 import { StudyPage } from "./pages/study";
 import "./App.css";
 
-const MODES = [
-  { id: "cartas", labelKey: "mode.cards" },
-  { id: "estudiar", labelKey: "mode.study" },
-] as const;
+const MODE_IDS = {
+  CARDS: "cards",
+  STUDY: "study",
+} as const;
 
-type ModeId = (typeof MODES)[number]["id"];
+type ModeId = (typeof MODE_IDS)[keyof typeof MODE_IDS];
+
+const MODES: { id: ModeId; labelKey: string }[] = [
+  { id: MODE_IDS.CARDS, labelKey: "mode.cards" },
+  { id: MODE_IDS.STUDY, labelKey: "mode.study" },
+];
 
 const LANGUAGES: { id: Locale; label: string }[] = [
-  { id: "es", label: "ES" },
-  { id: "en", label: "EN" },
+  { id: APP_LANGUAGES.ES, label: "ES" },
+  { id: APP_LANGUAGES.EN, label: "EN" },
 ];
+
+/**
+ * Sentinel value stored in `editing` to mean "the modal is open to
+ * create a new card, not to edit an existing one". Exported so the
+ * Home page can request a new card from its "+ Add" button.
+ */
+export const NEW_CARD_SENTINEL = "new";
 
 /**
  * Application shell: header with the language switch and mode tabs,
@@ -35,8 +47,8 @@ export default function App() {
     resetToSeed,
   } = useConcepts();
 
-  const [mode, setMode] = useState<ModeId>("cartas");
-  const [editing, setEditing] = useState<string | null>(null); // null | "nueva" | id
+  const [mode, setMode] = useState<ModeId>(MODE_IDS.CARDS);
+  const [editing, setEditing] = useState<string | null>(null); // null | NEW_CARD_SENTINEL | id
 
   function handleDelete(id: string) {
     if (editing === id) setEditing(null);
@@ -44,7 +56,7 @@ export default function App() {
   }
 
   function handleSave(data: ConceptInput) {
-    if (editing === "nueva") addConcept(data);
+    if (editing === NEW_CARD_SENTINEL) addConcept(data);
     else if (editing !== null) updateConcept(editing, data);
   }
 
@@ -83,7 +95,7 @@ export default function App() {
                 aria-pressed={mode === m.id}
                 onClick={() => setMode(m.id)}
               >
-                {m.id === "cartas" ? "🗂️" : "🎯"} {t(m.labelKey)}
+                {m.id === MODE_IDS.CARDS ? "🗂️" : "🎯"} {t(m.labelKey)}
               </button>
             ))}
           </div>
@@ -91,7 +103,7 @@ export default function App() {
       </header>
 
       <main>
-        {mode === "cartas" ? (
+        {mode === MODE_IDS.CARDS ? (
           <HomePage
             concepts={concepts}
             deleteConcept={handleDelete}
@@ -99,7 +111,7 @@ export default function App() {
             resetToSeed={resetToSeed}
           />
         ) : (
-          <StudyPage concepts={concepts} onBack={() => setMode("cartas")} />
+          <StudyPage concepts={concepts} onBack={() => setMode(MODE_IDS.CARDS)} />
         )}
       </main>
 
@@ -107,7 +119,7 @@ export default function App() {
         <ConceptForm
           key={editing}
           concept={
-            editing === "nueva"
+            editing === NEW_CARD_SENTINEL
               ? null
               : concepts.find((c) => c.id === editing)
           }
