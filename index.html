@@ -4,7 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Tarjetas de memoria para recordar conceptos con React." />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <script>
+      (function () {
+        var target = sessionStorage.redirect;
+        delete sessionStorage.redirect;
+        if (target && target !== location.href) location.replace(target);
+      })();
+    </script>
     <title>Concepts — Tarjetas de memoria</title>
   </head>
   <body>
