@@ -40,30 +40,47 @@ props.
 
 ## 3. Current structure
 
+Migrated in `internal/INT-001-structure-migration` (September 2026):
+the layout matches the target in section 4, except the CSS files,
+which still live at `src/` root (open decision, see section 5).
+
 ```
 src/
 ├── main.jsx               # Entry point (createRoot) — do not modify
-├── App.jsx                # Shell: active mode (cards/study) + modal
+├── App.jsx                # Shell: mode tabs + active page + modal
 ├── App.css                # Application styles (by sections)
 ├── index.css              # Reset and base styles
-├── components/            # Every component, no layers
-│   ├── FlashCard.jsx
-│   ├── ConceptList.jsx
-│   ├── ConceptForm.jsx
-│   ├── StudyView.jsx
-│   └── StatsBar.jsx
-├── data/
-│   └── seed.js            # 9 sample cards
-├── hooks/
-│   ├── useConcepts.js     # State + localStorage persistence
-│   └── useHoverScroll.js  # Hover auto-scroll for overflowing text
-└── lib/
-    └── utils.js           # uid, shuffle, tagColor (mixed together)
+├── application/           # Infrastructure (no UI)
+│   ├── api/
+│   │   ├── concepts-storage.js   # localStorage read/write (try/catch)
+│   │   └── seed/seed-concepts.js # 9 sample cards
+│   ├── config/
+│   │   └── constants.js          # Storage key, delays and speeds
+│   └── store/
+│       └── use-concepts/         # Global card state
+├── common/                # Reusable, page-agnostic
+│   ├── components/
+│   │   ├── domain/
+│   │   │   └── concept-form/     # Create/edit card modal
+│   │   └── presentational/
+│   │       └── flash-card/       # 3D card (front/back)
+│   ├── hooks/
+│   │   └── use-hover-scroll/     # Slow auto-scroll on hover
+│   └── utils/
+│       ├── shuffle/
+│       ├── tag-color/
+│       └── uid/                  # One utility per folder
+└── pages/                 # One folder per view
+    ├── home/
+    │   ├── home.jsx       # Page: stats bar + new-card action + grid
+    │   ├── index.js
+    │   └── components/
+    │       ├── concept-list/  # Search, tag filters, card grid
+    │       └── stats-bar/     # Stats + restore to seed
+    └── study/
+        ├── study.jsx      # Page: study session + summary
+        └── index.js
 ```
-
-Issues: `components/` mixes pages, modals and reusable components;
-utilities coexist in a single `utils.js`; tests have no defined
-home; persistence is embedded inside the state hook.
 
 ---
 
@@ -78,15 +95,15 @@ src/
 ├── pages/                            # One folder per view/mode
 │   ├── home/
 │   │   ├── index.js                  # Page barrel
-│   │   ├── home.jsx                  # View: card grid + search + filters
+│   │   ├── home.jsx                  # Page: stats bar + new-card action + grid
 │   │   ├── components/               # Page-local components
 │   │   │   ├── concept-list/
 │   │   │   └── stats-bar/
 │   │   └── __tests__/
 │   └── study/
 │       ├── index.js
-│       ├── study.jsx                 # View: session + summary
-│       ├── components/study-view/
+│       ├── study.jsx                 # Page: session + summary
+│       ├── components/               # Page-local components (when needed)
 │       └── __tests__/
 ├── common/                           # Reusable, page-agnostic
 │   ├── components/
@@ -124,7 +141,10 @@ src/
 
 ## 5. Migration plan
 
-The reorganization happens in phases (one `internal/INT-XXX-*`
+> **Status: completed** — 2026-09-19, `internal/INT-001-structure-migration`,
+> one commit per phase, no behavior changes.
+
+The reorganization happened in phases (one `internal/INT-XXX-*`
 branch per phase), with no behavior changes:
 
 | Current | Target | Phase |
