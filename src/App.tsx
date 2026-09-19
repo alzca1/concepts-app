@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { changeLocale, type Locale } from "./application/i18n";
+import { APP_LANGUAGES, changeLocale, type Locale } from "./application/i18n";
 import type { ConceptInput } from "./application/api/types";
 import { ConceptForm } from "./common/components/domain/concept-form";
 import { useConcepts } from "./application/store/use-concepts";
@@ -22,8 +22,8 @@ const MODES: { id: ModeId; labelKey: string }[] = [
 ];
 
 const LANGUAGES: { id: Locale; label: string }[] = [
-  { id: "es", label: "ES" },
-  { id: "en", label: "EN" },
+  { id: APP_LANGUAGES.ES, label: "ES" },
+  { id: APP_LANGUAGES.EN, label: "EN" },
 ];
 
 /**

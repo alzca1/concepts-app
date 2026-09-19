@@ -5,8 +5,18 @@ import { LOCALE_STORAGE_KEY } from "../config/constants";
 import en from "./locales/en.json";
 import es from "./locales/es.json";
 
-/** Supported UI languages. */
-export type Locale = "en" | "es";
+/**
+ * Supported UI languages and their i18next locale codes.
+ * Single source of truth for both the values and the {@link Locale}
+ * type.
+ */
+export const APP_LANGUAGES = {
+  ES: "es",
+  EN: "en",
+} as const;
+
+/** Supported UI languages, derived from {@link APP_LANGUAGES}. */
+export type Locale = (typeof APP_LANGUAGES)[keyof typeof APP_LANGUAGES];
 
 /**
  * i18next setup (default instance shared with `useTranslation`).
@@ -16,9 +26,11 @@ export type Locale = "en" | "es";
 function loadInitialLocale(): Locale {
   try {
     const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
-    return stored === "en" || stored === "es" ? stored : "es";
+    return stored === APP_LANGUAGES.EN || stored === APP_LANGUAGES.ES
+      ? stored
+      : APP_LANGUAGES.ES;
   } catch {
-    return "es";
+    return APP_LANGUAGES.ES;
   }
 }
 
