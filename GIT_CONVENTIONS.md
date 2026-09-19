@@ -1,98 +1,98 @@
-# GIT_CONVENTIONS.md — Convenciones de Git
+# GIT_CONVENTIONS.md — Git Conventions
 
-> Flujo de ramas, nomenclatura y formato de commits del proyecto.
-> AGENTS.md (sección 8, regla 7) referencia este archivo: cualquier
-> agente o humano que haga cambios en el repo debe seguirlo.
-
----
-
-## 1. Flujo de ramas
-
-- **`main`** — rama estable: siempre en estado buildable y coherente
-  con la documentación.
-- **`develop`** — rama de integración: aquí confluyen los cambios
-  terminados.
-- **Una rama por cambio** (feature, bugfix…), creada **siempre desde
-  `develop`** y fusionada de vuelta a `develop` con
-  `git merge --no-ff` (conserva el histórico del cambio). Tras el
-  merge, la rama se elimina.
-- `develop` → `main` solo al querer consolidar una versión estable
-  (merge --no-ff y, si procede, tag).
+> Branch workflow, naming and commit format for this repository.
+> AGENTS.md (section 8, rule 7) references this file: any agent or
+> human making changes to the repo must follow it.
 
 ---
 
-## 2. Nomenclatura de ramas
+## 1. Branch workflow
 
-Formato: `<tipo>/<PREFIJO-XXX-slug>`
+- **`main`** — stable branch: always buildable and consistent with
+  the documentation.
+- **`develop`** — integration branch: finished changes land here.
+- **One branch per change** (feature, bugfix…), always created
+  **from `develop`** and merged back into `develop` with
+  `git merge --no-ff` (keeps the change's history). After the merge,
+  the branch is deleted.
+- `develop` → `main` only when consolidating a stable version
+  (merge --no-ff and, if applicable, a tag).
 
-- `PREFIJO` identifica el tipo de cambio (tabla siguiente).
-- `XXX` es un **número secuencial de 3 dígitos por tipo** (`001`,
-  `002`, …): debe ser **mayor que el último usado** de ese tipo y no
-  se reutilizan números aunque la rama se borre. Para saber cuál
-  toca, listar las ramas existentes (`git branch -a`) y buscar el
-  mayor del tipo.
-- `slug`: descripción del cambio en **2–3 palabras**, kebab-case,
-  sin acentos (se recomienda en inglés, p. ej.
+---
+
+## 2. Branch naming
+
+Format: `<type>/<PREFIX-XXX-slug>`
+
+- `PREFIX` identifies the type of change (table below).
+- `XXX` is a **3-digit sequential number per type** (`001`, `002`,
+  …): it must be **greater than the last used number** of that type,
+  and numbers are never reused even if the branch is deleted. To
+  find the next one, list existing branches (`git branch -a`) and
+  look for the highest number of that type.
+- `slug`: description of the change in **2–3 words**, kebab-case,
+  no accented characters (English recommended, e.g.
   `add-git-conventions`).
-- Un cambio = una rama; si el cambio crece hacia otro ámbito, mejor
-  dividir en varias ramas.
+- One change = one branch; if a change grows into another scope,
+  split it into several branches instead.
 
-| Tipo | Prefijo | Uso | Ejemplo |
+| Type | Prefix | Use | Example |
 |---|---|---|---|
-| `feature/` | `FEAT` | Funcionalidad nueva | `feature/FEAT-001-hover-scroll` |
-| `bugfix/` | `BUG` | Corrección de un comportamiento erróneo | `bugfix/BUG-001-scroll-frozen` |
-| `improvement/` | `IMP` | Mejora de algo existente (UX, rendimiento, accesibilidad) sin ser funcionalidad nueva | `improvement/IMP-001-bigger-modal` |
-| `internal/` | `INT` | Cambios internos sin efecto visible: tooling, refactor, dependencias | `internal/INT-001-rename-utils` |
-| `docs/` | `DOCS` | Documentación (AGENTS.md, README, guías) | `docs/DOCS-001-add-git-conventions` |
+| `feature/` | `FEAT` | New functionality | `feature/FEAT-001-hover-scroll` |
+| `bugfix/` | `BUG` | Fixing wrong behavior | `bugfix/BUG-001-scroll-frozen` |
+| `improvement/` | `IMP` | Improvement of something that already exists (UX, performance, accessibility), not new functionality | `improvement/IMP-001-bigger-modal` |
+| `internal/` | `INT` | Internal changes with no visible effect: tooling, refactoring, dependencies | `internal/INT-001-rename-utils` |
+| `docs/` | `DOCS` | Documentation (AGENTS.md, README, guides) | `docs/DOCS-001-add-git-conventions` |
 
 ---
 
 ## 3. Commits: Conventional Commits
 
-Formato:
+Format:
 
 ```
-<tipo>(<ámbito>): <descripción>
+<type>(<scope>): <description>
 
-[cuerpo opcional: el por qué, decisiones tomadas]
+[optional body: the why, decisions made]
 
-[footer opcional: requisitos de AGENTS.md]
+[optional footer: AGENTS.md requirements]
 ```
 
-### Tipos (estándar de Conventional Commits)
+### Types (standard Conventional Commits)
 
-| Tipo | Uso | Rama típica |
+| Type | Use | Typical branch |
 |---|---|---|
-| `feat` | Funcionalidad nueva | `feature/` |
-| `fix` | Corrección de bug | `bugfix/` |
-| `improvement`* | Mejora de una funcionalidad existente | `improvement/` |
-| `refactor` | Cambio de código sin cambio de comportamiento | `internal/` |
-| `docs` | Documentación | `docs/` |
-| `style` | Formato / estilos que no afectan al código (no CSS de UI) | `internal/` |
-| `perf` | Mejora de rendimiento | `improvement/` / `internal/` |
+| `feat` | New functionality | `feature/` |
+| `fix` | Bug fix | `bugfix/` |
+| `improvement`* | Improvement of an existing feature | `improvement/` |
+| `refactor` | Code change with no behavior change | `internal/` |
+| `docs` | Documentation | `docs/` |
+| `style` | Formatting / code style (not UI CSS) | `internal/` |
+| `perf` | Performance improvement | `improvement/` / `internal/` |
 | `test` | Tests | `internal/` |
-| `chore` | Tooling, build, dependencias | `internal/` |
+| `chore` | Tooling, build, dependencies | `internal/` |
 
-\* `improvement` no es un tipo estándar de la especificación, pero se
-adopta aquí por ser expresivo; si se prefiere rigor estricto con la
-spec, usar `feat` o `refactor` según el caso.
+\* `improvement` is not a standard type in the specification, but it
+is adopted here for being expressive; if strict spec compliance is
+preferred, use `feat` or `refactor` as appropriate.
 
-### Ámbito (opcional)
+### Scope (optional)
 
-En minúsculas, coherente con las secciones de la app:
-`home`, `estudio`, `tarjeta`, `modal`, `filtro`, `css`, `docs`, `deps`…
+Lowercase, consistent with the app sections:
+`home`, `study`, `card`, `modal`, `filter`, `css`, `docs`, `deps`…
 
-### Descripción, cuerpo y footer
+### Description, body and footer
 
-- Descripción en **español**, imperativa, minúsculas, **sin punto
-  final**; cuenta el *qué*. El *por qué* va en el cuerpo.
-- Si el commit cierra o toca un requisito de AGENTS.md (sección 5),
-  mencionarlo en el footer (p. ej. `Cierra R5.4`, `Refs R5.1`).
-- Las actualizaciones de `AGENTS.md` / `README.md` que exija el
-  cambio (regla 2 de AGENTS.md) viajan **en la misma rama**, en el
-  mismo commit o en uno `docs:` propio de la rama.
+- Description in **Spanish**, imperative, lowercase, **no trailing
+  period**; it states the *what*. The *why* goes in the body.
+- If the commit closes or touches a requirement from AGENTS.md
+  (section 5), mention it in the footer (e.g. `Cierra R5.4`,
+  `Refs R5.1`).
+- AGENTS.md / README.md updates required by the change (rule 2 of
+  AGENTS.md) travel **in the same branch**, either in the same
+  commit or in a dedicated `docs:` commit within the branch.
 
-### Ejemplos
+### Examples
 
 ```
 feat(home): chip «Todos» en el filtro por etiqueta
@@ -118,12 +118,12 @@ docs(estudio): documentar el retardo de los botones de respuesta
 
 ## 4. Pull Requests
 
-- Una PR por rama, con **`develop` como rama base**.
-- Título con el mismo formato que el commit principal:
-  `<tipo>(<ámbito>): <descripción>`.
-- **Título y cuerpo siempre en inglés**, igual que todo su contenido
-  (los commits y la UI de la app siguen en español).
-- Estructura sugerida del cuerpo: *What* (qué cambia), *Why / Notes
-  for reviewers* (por qué y decisiones), *Verification* (cómo se ha
-  comprobado: lint, build, pasos manuales).
-- Merge `--no-ff` a `develop` y borrado de la rama tras aprobarse.
+- One PR per branch, with **`develop` as the base branch**.
+- Title in the same format as the main commit:
+  `<type>(<scope>): <description>`.
+- **Title and body always in English**, as well as all their content
+  (commits and the app UI remain in Spanish).
+- Suggested body structure: *What* (what changes), *Why / Notes for
+  reviewers* (why and decisions), *Verification* (how it was checked:
+  lint, build, manual steps).
+- `--no-ff` merge into `develop` and branch deletion after approval.
