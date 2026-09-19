@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
-import { FlashCard } from "./FlashCard";
-import { shuffle } from "../lib/utils";
+import { FlashCard } from "../common/components/presentational/flash-card";
+import { shuffle } from "../common/utils/shuffle";
 
 /**
  * Retardo (ms) con el que aparecen los botones de respuesta una vez

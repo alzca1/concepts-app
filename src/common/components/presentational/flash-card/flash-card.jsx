@@ -1,5 +1,5 @@
-import { tagColor } from "../lib/utils";
-import { useHoverScroll } from "../hooks/useHoverScroll";
+import { useHoverScroll } from "../../../hooks/use-hover-scroll";
+import { tagColor } from "../../../utils/tag-color";
 
 /**
  * Tarjeta 3D que se voltea al hacer clic (o teclado: `Enter` / espacio).

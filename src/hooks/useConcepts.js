@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { seedConcepts } from "../data/seed";
-import { uid } from "../lib/utils";
+import { uid } from "../common/utils/uid";
 
 const STORAGE_KEY = "concepts-app:v1";
 
