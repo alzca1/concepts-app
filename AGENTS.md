@@ -1,261 +1,199 @@
-# AGENTS.md — concepts-app
+# AGENTS.md — Agent guide
 
-> **Documento vivo de requerimientos.** Este archivo es la fuente de verdad para
-> la intención del proyecto. Cualquier agente (o humano) que trabaje en el repo
-> debe leerlo antes de tocar código y **actualizarlo** cuando se agregue, cambie
-> o cierre un requerimiento.
-
----
-
-## 1. Visión
-
-Aplicación web de *flashcards* («tarjetas de memoria») para recordar conceptos
-tecnológicos y de programación. Construida con **React + Vite** (JavaScript,
-sin TypeScript), 100% client-side, sin backend ni API externa.
-
-Dos modos de uso:
-
-- **Mis tarjetas (Home)** — explorar, buscar, filtrar, editar y eliminar tarjetas.
-- **Modo estudio** — sesiones de repetición activa con pila barajada y resumen final.
+> **Essential information only.** This file holds what agents need
+> to operate in this repository and the content that does not exist
+> anywhere else in `docs/`. Detailed documentation lives in:
+>
+> - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — file and code
+>   organization, conventions, data flow.
+> - [`docs/GIT_CONVENTIONS.md`](docs/GIT_CONVENTIONS.md) — branches,
+>   commits, PRs and language policy.
+> - [`docs/CHANGELOG.md`](docs/CHANGELOG.md) — full change history.
+> - `docs/modules/ROOT/pages/*.adoc` — application behavior site
+>   (generate with `npm run docs`, browse with `npx serve build/site`).
+>
+> **Update this file whenever a requirement, decision or rule
+> changes.** All content in English; the application UI is Spanish
+> (product decision).
 
 ---
 
-## 2. Stack y convenciones de proyecto
+## 1. Vision
 
-| Herramienta | Versión (package.json) |
-|---|---|
-| React | ^19.2.8 |
-| React DOM | ^19.2.8 |
-| Vite | ^8.3.0 |
-| oxlint | ^1.81.0 |
-| Node / package type | ESM (`"type": "module"`) |
-
-### Comandos
-
-| Comando | Uso |
-|---|---|
-| `npm run dev` | Dev server en `http://localhost:5173` |
-| `npm run build` | Build de producción → `dist/` |
-| `npm run preview` | Sirve `dist/` para probar el build |
-| `npm run lint` | Lint con oxlint (reglas: `rules-of-hooks`, `only-export-components`) |
-
-### Convenciones
-
-- **JavaScript, no TypeScript.** Los `@types/react*` solo dan autocompletado.
-- **Sin dependencias runtime externas.** Todo el estado vive en React + `localStorage`.
-- **Estados globales con hooks custom** (`hooks/`), no context ni librerías externas.
-- **Una responsabilidad por componente.** Componentes de UI puramente presentativos;
-  la lógica de estado se inyecta por props (p. ej. `deleteConcept(concept.id)`).
-- **CSS global en `src/App.css`** (no CSS modules), con prefijos de sección (`h1`,
-  `.deck`, `.flash-card`, …). Variables de color por custom property
-  (`--chip-color`, `--tag-color`).
-- **Componentes solo exportan componentes** (oxlint: `react/only-export-components`,
-  `allowConstantExport: true`): no mezclar funciones de utilidad exportadas en
-  los mismos archivos que componentes (ver `lib/utils.js` vs `components/`).
-- **Accesibilidad**: controles con `role`, `aria-label`, y soporte teclado
-  (`Enter` / espacio) donde haya interacción.
-- **Idioma**: UI en español.
+Flashcards web app to memorize tech and programming concepts.
+React + Vite (TypeScript, strict mode), 100% client-side, no
+backend. Two modes: **My cards** (browse, search, filter, edit,
+delete) and **Study** (active-recall sessions with a shuffled deck
+and a final summary).
 
 ---
 
-## 3. Arquitectura (estructura del repo)
+## 2. Commands and dependency policy
 
-```
-concepts-app/
-├── index.html
-├── vite.config.js
-├── AGENTS.md            ← ESTE ARCHIVO
-├── README.md
-├── package.json
-├── public/
-│   └── favicon.svg
-└── src/
-    ├── main.jsx          # Punto de entrada (React 19 createRoot)
-    ├── App.jsx           # Modo (cartas / estudio), estado global, modal
-    ├── App.css           # Estilos de la aplicación (tarjeta 3D, grid, modal…)
-    ├── index.css         # Reset y estilos base (fondo oscuro, tipografía)
-    ├── components/
-    │   ├── FlashCard.jsx     # Tarjeta 3D reutilizable (front = pregunta, back = respuesta)
-    │   ├── ConceptList.jsx   # Home: búsqueda, filtros por etiqueta, parrilla
-    │   ├── ConceptForm.jsx   # Modal crear / editar tarjeta
-    │   ├── StudyView.jsx     # Sesión de estudio + resumen
-    │   └── StatsBar.jsx      # Estadísticas + restaurar a seed
-    ├── data/
-    │   └── seed.js           # 9 tarjetas de ejemplo (se carga solo si no hay nada guardado)
-    ├── hooks/
-    │   └── useConcepts.js    # Estado + persistencia en localStorage
-    └── lib/
-        └── utils.js          # uid, shuffle, tagColor
+```bash
+npm run dev        # dev server at http://localhost:5173
+npm run build      # typecheck (tsc --noEmit) + production build -> dist/
+npm run typecheck  # tsc --noEmit only
+npm run preview    # serve dist/
+npm run lint       # oxlint
+npm run docs       # Antora docs site -> build/site
 ```
 
-**Flujo de datos (una sola fuente de verdad):**
+**Dependency policy (no additions without justifying them here
+first):**
 
-```
-localStorage (clave `concepts-app:v1`)
-        ↑↓  JSON.stringify / parse
-   useConcepts()  (useState + useEffect de guardado)
-        ↓  props
-  App.jsx  ──►  ConceptList / StudyView / StatsBar
-                   ↓ props (concept, onEdit, deleteConcept…)
-            FlashCard (solo muestra, no muta)
-```
-
----
-
-## 4. Modelo de datos
-
-```js
-{
-  id:        "string",  // único por tarjeta
-  front:     "string",  // PREGUNTA o concepto (cara frontal)
-  back:      "string",  // RESPUESTA o explicación (cara trasera)
-  tag:       "string",  // categoría / etiqueta
-  createdAt: number     // timestamp (ms)
-}
-```
-
-**Invariantes (no cambiar sin migrar):**
-
-- La clave de `localStorage` es **`concepts-app:v1`**. Si se necesita una nueva
-  forma de datos, usar una nueva clave (`v2`) y migrar o conservar la antigua.
-- `id` se genera con `uid()` (`lib/utils.js`).
-- El campo `createdAt` se preserva al editar (no se sobreescribe).
-- En la primera carga, si no hay nada guardado (o está corrupto), se semilla
-  con `seedConcepts()` (9 tarjetas).
+- **Runtime**: React only, plus two justified exceptions —
+  `i18next` + `react-i18next` for ES/EN i18n (interpolation,
+  fallback and language reactivity would otherwise be hand-rolled), and
+  `react-router-dom` for client-side routing (URL-based navigation
+  enables deep links, browser history and future route extensibility).
+- **devDependencies**: `typescript` (strict; `tsc --noEmit` runs as
+  part of `npm run build`) and `@antora/cli` + `@antora/site-generator`
+  (docs site) — none of them loaded by the application bundle.
+- `@types/react*` ship editor types for React.
 
 ---
 
-## 5. Requerimientos funcionales
+## 3. Functional requirements registry
 
-### 5.1 Modo «Mis tarjetas» (Home)
+Status registry only — behavior details live in the linked pages.
+Commit footers reference these IDs (`Closes R5.x`).
 
-- [x] Parrilla de tarjetas **responsive** (CSS Grid, `minmax(250px, 1fr)`).
-- [x] Cada celda muestra una `FlashCard` con acciones **editar** (✎) y **eliminar** (✕).
-- [x] Confirmación con `window.confirm` antes de eliminar (texto con el título de la tarjeta).
-- [x] **Búsqueda** por texto: busca en `front`, `back` y `tag` (case-insensitive,
-      normaliza `trim`).
-- [x] **Filtro por etiqueta** (chips con color por `tagColor(tag)`); doble clic
-      en el chip activo lo desactiva.
-- [x] **Estado vacío**: mensaje distinto si hay filtros activos vs. parrilla realmente vacía.
+| ID | Requirement | Status | Details |
+|---|---|---|---|
+| R5.1 | Responsive card grid (CSS Grid, `minmax(250px, 1fr)`) | [x] | [home.adoc](docs/modules/ROOT/pages/home.adoc) |
+| R5.2 | Card actions (edit/delete) inside the front face: flip with the card, out of the tab order while flipped | [x] | home.adoc |
+| R5.3 | Only one visible answer at a time (grid-level `flippedId`) | [x] | home.adoc |
+| R5.4 | Delete confirmation naming the card | [x] | home.adoc |
+| R5.5 | Text search over question, answer and tag (case-insensitive, trimmed) | [x] | home.adoc |
+| R5.6 | Tag filter chips with a first «Todos»/«All» chip that clears the filter | [x] | home.adoc |
+| R5.7 | Distinct empty states (filters vs. empty deck) | [x] | home.adoc |
+| R5.8 | Stats bar (cards, tags) + restore-to-seed with confirmation | [x] | home.adoc |
+| R5.9 | Study session over a shuffled deck (Fisher–Yates) | [x] | [study-mode.adoc](docs/modules/ROOT/pages/study-mode.adoc) |
+| R5.10 | Study card flips on click/keyboard, page-controlled | [x] | study-mode.adoc |
+| R5.11 | Answer buttons appear 1500 ms after the flip (fade-in, cancelable, out of the tab order while waiting) | [x] | study-mode.adoc |
+| R5.12 | «Got it» clears the card; «Review again» requeues it at the end | [x] | study-mode.adoc |
+| R5.13 | Session ends when every card has been cleared at least once | [x] | study-mode.adoc |
+| R5.14 | Session summary: visits, repeats, mastery % + restart/back | [x] | study-mode.adoc |
+| R5.15 | Create/edit cards through a shared modal (same form, initial state per card) | [x] | — |
+| R5.16 | Modal wider/taller above mobile: `min(720px, 90vw)`, textarea `min-height` 14rem (10rem on mobile); `max-height` + internal scroll | [x] | — |
+| R5.17 | Form validation with a visible error when fields are missing | [x] | — |
+| R5.18 | Every change auto-persisted to `localStorage` | [x] | [data-model.adoc](docs/modules/ROOT/pages/data-model.adoc) |
+| R5.19 | 9 seed cards on first run (or when storage is corrupt) | [x] | data-model.adoc |
+| R5.20 | 3D card: flip by click/keyboard only, always parent-controlled | [x] | [flash-card.adoc](docs/modules/ROOT/pages/flash-card.adoc) |
+| R5.21 | No layout jumps on flip (hint stays in the DOM, question centered) | [x] | flash-card.adoc |
+| R5.22 | Slow vertical hover/focus auto-scroll for overflowing text (750 ms pause, single pass, stops at the end) + bottom fade hint | [x] | flash-card.adoc |
+| R5.23 | ES/EN UI switch in the header, persisted, reactive; seed content stays Spanish | [x] | [index.adoc](docs/modules/ROOT/pages/index.adoc) |
 
-### 5.2 Modo estudio
-
-- [x] Sesión con **pila barajada** (`shuffle` de Fisher–Yates en `lib/utils.js`).
-- [x] Tarjeta grande que se **voltea** (controlada por estado, no por hover).
-- [x] Botón «La tengo clara» → siguiente tarjeta (marcada como visitada).
-- [x] Botón «Volver a ver» → la tarjeta se reinserta **al final de la pila**
-      (no se cuenta como clara).
-- [x] La sesión termina cuando todas las tarjetas han sido al menos una vez «claras».
-- [x] **Resumen final**: visitas totales, repeticiones (volver a ver), y
-      porcentaje de dominio (claras / visitas totales).
-- [x] Acciones tras el resumen: repetir sesión / volver a las tarjetas.
-
-### 5.3 CRUD y persistencia
-
-- [x] **Crear** tarjeta vía modal (`ConceptForm`).
-- [x] **Editar** tarjeta vía modal reutilizado (puedo iniciar en edit desde cualquier tarjeta).
-- [x] **Eliminar** tarjeta (con confirmación).
-- [x] Validación del formulario (error visible si faltan campos; ver `ConceptForm`).
-- [x] Cada cambio se persiste **automáticamente** en `localStorage`
-      (efecto en `useConcepts`).
-- [x] **Restaurar a iniciales** (botón en `StatsBar`, confirma antes de borrar todo y sembrar).
-- [x] 9 **tarjetas de ejemplo** (`data/seed.js`) la primera vez.
-- [x] Estadísticas de `StatsBar`: total de tarjetas, número de etiquetas.
-
-### 5.4 Tarjeta 3D y UX
-
-- [x] Tarjeta **3D** con animación de volteo (0.55s, `cubic-bezier(0.4,0,0.2,1)`).
-- [x] Volteado **solo con clic** (o teclado: `Enter` / espacio) en la parrilla y
-      cualquier dispositivo; **sin volteo por hover**.
-- [x] En modo estudio, el volteo es **controlado** (botones / estado).
-- [x] **Mantener la pila 3D estable**: cada cara debe tener su rotación propia
-  (`.flash-front { transform: rotateY(0) }`, `.flash-back { transform: rotateY(180deg) }`);
-  sin esto ambas caras quedan en el mismo plano y la trasera (respuesta) pinta
-  por encima de la frontal. *(Corregido 2026-09-18.)*
-- [x] **Sin saltos de layout al voltear**: la pregunta debe mantenerse centrada y
-  el texto «Clic para revelar» no se elimina del DOM al voltear: se oculta con
-  `opacity: 0`, la cara frontal no pierde altura y el `h3` no se pega al borde
-  inferior al iniciar el giro (aplica a la parrilla y a la tarjeta grande de
-  estudio). *(Corregido 2026-09-18.)*
-- [x] **Accesibilidad**: `role="button"`, teclado, `aria-label` en controles.
-
-### 5.5 Requisitos abiertos / pendientes
-
-- [ ] (none yet) → registrar aquí nuevos requerimientos con estado.
+**Open requirements:** none yet — register new ones here with
+`[ ]` and an ID.
 
 ---
 
-## 6. Requerimientos no funcionales
+## 4. Non-functional requirements
 
-- [x] **Sin backend**: todo client-side; la única persistencia es `localStorage`.
-- [x] **Persistencia resiliente**: `try/catch` alrededor de `localStorage` (modo
-      de solo memoria si no está disponible) y de `JSON.parse` (falla → seed).
-- [x] **Accesibilidad básica**: roles ARIA, soporte teclado en la tarjeta,
-      contraste en tema oscuro.
-- [x] **Tema oscuro** global (fondo `#070818` aprox., tipografía variable).
-- [ ] **Rendimiento**: sin métricas explícitas aún. Si la parrilla supera ~200
-      tarjetas, considerar virtualización (ver backlog).
+- [x] No backend: client-side only, `localStorage` is the only
+  persistence.
+- [x] Resilient persistence: all storage access wrapped in
+  `try/catch` (in-memory fallback; corrupt JSON → seed).
+- [x] Basic accessibility: ARIA roles, keyboard support on the
+  card, dark-theme contrast.
+- [x] Global dark theme.
+- [ ] Performance: no metrics yet. If the grid exceeds ~200 cards,
+  consider virtualization (see backlog).
 
 ---
 
-## 7. Decisiones de diseño
+## 5. Design decision log
 
-| Fecha | Decisión | Motivo / efecto |
+Unique historical record — current behavior is documented in the
+`.adoc` pages.
+
+| Date | Decision | Rationale / effect |
 |---|---|---|
-| 2025-07-14 (v1 inicial) | Modo estudio: las «volver a ver» se reinsertan al final | La sesión termina cuando cada tarjeta se vio «clara» al menos una vez |
-| 2025-07-14 (v1 inicial) | Key de localStorage `concepts-app:v1` | Versión explícita para migrar formas de datos futuras |
-| 2025-07-14 (v1 inicial) | 9 tarjetas de seed | Demo inmediata sin que el usuario tenga que crear nada |
-| 2025-07-14 (v1 inicial) | CSS global (no módulos) | Un solo estilo por sección; prefijo `.flash-card` para el componente 3D |
-| 2026-09-18 | Rotación propia por cara en `.flash-face` | **Fix bug**: en Home se veía la respuesta en vez de la pregunta; las dos caras compartían plano 3D y la trasera pintaba encima. |
-| 2026-09-18 | Registro de requisitos en `AGENTS.md` | Fuente de verdad para agentes y humanos; actualizarse ante cada cambio |
-| 2026-09-18 | Volteo en la parrilla **solo por clic** (se elimina el hover) | El hover rotaba la tarjeta en Home; el requisito cambia a clic/teclado para revelar la respuesta. |
-| 2026-09-18 | Hint «Clic para revelar» permanece en el DOM al voltear (oculto con `opacity: 0` + transición) y pregunta centrada con `margin: auto` | **Fix bug**: al condicionar el hint con `{!isFlipped && …}`, la cara frontal perdía altura al girar y con `justify-content: space-between` la pregunta saltaba al borde inferior antes del flip |
+| 2025-07-14 (initial v1) | Study mode: «review again» cards requeue at the end | Session ends when every card has been cleared at least once |
+| 2025-07-14 (initial v1) | localStorage key `concepts-app:v1` | Explicit versioning to migrate future data shapes |
+| 2025-07-14 (initial v1) | 9 seed cards | Instant demo without user-created content |
+| 2025-07-14 (initial v1) | Global CSS (no modules) | One stylesheet organized by sections; `.flash-card` prefix for the 3D component |
+| 2026-09-18 | Per-face rotation in `.flash-face` | Bug fix: home showed the answer instead of the question — both faces shared a 3D plane |
+| 2026-09-18 | Requirements registry in `AGENTS.md` | Source of truth for agents and humans; update on every change |
+| 2026-09-18 | Grid flip **click-only** (hover removed) | Hover rotated cards on home; requirement changed to click/keyboard |
+| 2026-09-18 | Reveal hint stays in the DOM (hidden with `opacity: 0`) and the question is centered with `margin: auto` | Bug fix: conditionally removing the hint collapsed the face and the question jumped right before the flip |
+| 2026-09-18 | Slow hover auto-scroll introduced (horizontal first) | `nowrap` text + `overflow-x: auto`; ping-pong at 16 px/s |
+| 2026-09-18 | Auto-scroll becomes **vertical** | Content may be taller than the face (190/300 px): `overflow-y: auto` + `min-height: 0` + bottom fade hint |
+| 2026-09-18 | No bounce: single downward pass, stop at the end | To re-read, leave and re-enter the hover/focus |
+| 2026-09-18 | Flip always parent-controlled; grid keeps a single `flippedId` | Only one visible answer at a time; FlashCard's uncontrolled mode removed |
+| 2026-09-18 | Edit/delete icons move inside the front face (`actions` prop) | They flip with the card instead of floating fixed over the animation |
+| 2026-09-19 | Types/interfaces/enums live in `utils/types.ts` / `utils/interfaces.ts` / `utils/enums.ts` of each unit | One role per file inside the unit's `utils/`; improves discoverability; only inline a type when the unit is a single-file (e.g. `App.tsx`) and the type is local |
+| 2026-09-19 | React Router v7 introduced with URL-based navigation | `/` renders HomePage (My cards), `/study` renders StudyPage; header nav tabs replaced with `<NavLink>`; `ConceptModalContext` created to share modal state across routes |
 
 ---
 
-## 8. Reglas para agentes que trabajan en este repo
+## 6. Rules for agents
 
-1. **Lee este archivo y el README antes de escribir código.**
-2. **Mantén este archivo actualizado**: cada requisito nuevo → sección 5 (con
-   `[ ]`/`[x]`); cada decisión → sección 7; cada fecha relevante → sección 5/7
-   y, si es grande, el changelog (sección 9).
-3. **No rompas invariantes del modelo de datos** (sección 4): si cambias el
-   schema, cambia la clave a `v2` y documenta la migración aquí antes de tocar
-   `useConcepts`.
-4. **No añadas dependencias** sin justificarlas aquí primero (sección 2).
-5. **Respetá las convenciones** (sección 2): JS (no TS), estados en hooks, CSS
-   global por secciones, `aria` en controles interactivos.
-6. **Después de un cambio visible** ejecuta `npm run lint` y, si cambia la UI,
-   verifica el estado de la tarjeta 3D en los **dos** modos (parrilla por clic
-   y tarjeta grande controlada).
-7. **Git**: commits pequeños con mensaje en español que explique el *por qué*;
-   si se cierra un requisito de la sección 5, el commit debe mencionarlo
-   (p. ej. «cierra R5.5.1: …»).
-8. **Si un requisito entra en conflicto** con un invariantes (4), no lo resuelvas
-   en silencio: anótalo en la sección 7 y pide confirmación.
+1. **Read this file and the docs in `docs/` before writing code.**
+2. **Keep documentation updated**: new requirement → section 3
+   registry; new decision → section 5; change history →
+   `docs/CHANGELOG.md`; structural changes → `docs/ARCHITECTURE.md`.
+3. **Do not break the data model invariants** (see
+   [data-model.adoc](docs/modules/ROOT/pages/data-model.adoc)): a
+   schema change means a new `v2` key plus a documented migration,
+   before touching the store.
+4. **No new dependency** without justifying it in section 2 first.
+5. **Respect the conventions** in
+   [ARCHITECTURE.md](docs/ARCHITECTURE.md): TypeScript (strict),
+   state in hooks, global sectioned CSS, ARIA on interactive
+   controls, English comments.
+   TypeScript types, interfaces and enums live in the unit's
+   `utils/` folder — never inlined in the component file (see
+   ARCHITECTURE.md §6).
+6. **After a visible change** run `npm run lint` and, if the UI
+   changed, verify the 3D card in **both** modes (grid via click,
+   large study card).
+7. **Git**: one branch per change from `develop`, Conventional
+   Commits (English), PRs in English — see
+   [`docs/GIT_CONVENTIONS.md`](docs/GIT_CONVENTIONS.md). Closing a
+   requirement goes in the commit footer (e.g. `Closes R5.3`).
+8. **If a requirement conflicts with a data invariant**, do not
+   solve it silently: note it in the decision log and ask for
+   confirmation.
+9. **Git history management**: do not use `git commit --amend` or
+   interactive rebase to rewrite shared history unless the user
+   explicitly requests it. If a fix is needed, create a new commit
+   with a clear message (e.g. `fix(scope): correct X`). When in
+   doubt, ask before rewriting history.
+10. **No magic strings**: string literals used as domain values,
+    identifiers or sentinels (e.g. mode IDs, default values,
+    empty-string sentinels) must live in a named constant.
+    Extract to `application/config/constants.ts` when repeated **two
+    or more times**; one-off literals are acceptable. User-facing
+    UI strings that live in i18n JSON files are excluded from this
+    rule.
 
 ---
 
-## 9. Changelog (breve)
+## 7. Recent changes
 
-| Fecha | Cambio |
+Full history in [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
+
+| Date | Change |
 |---|---|
-| 2026-09-18 | **v1 del proyecto en git**: primer commit (`1a3abe7`). |
-| 2026-09-18 | **Fix UI**: tarjetas de Home mostraban la respuesta en vez de la pregunta. Faltaban las rotaciones 3D por cara (`.flash-front`/`.flash-back`). Ver sección 7. |
-| 2026-09-18 | Añadido `AGENTS.md` como fuente de verdad de requisitos. |
-| 2026-09-18 | **UX**: se elimina el volteo por hover en «Mis tarjetas»: ahora solo clic (o teclado) revela la respuesta. Se sincronizan README, JSDoc de `FlashCard` y AGENTS.md. |
-| 2026-09-18 | **Fix UX**: al voltear una tarjeta, la pregunta se pegaba al borde inferior (el hint «Clic para revelar» se eliminaba del DOM justo al girar). El hint ahora se oculta con opacidad y la pregunta se centra con márgenes auto, en parrilla y en modo estudio. |
+| 2026-09-19 | **Architecture**: full TypeScript migration (strict `tsconfig`, `tsc --noEmit` inside `npm run build`, typed data model). |
+| 2026-09-19 | **Feature**: ES/EN i18n with `i18next` + `react-i18next` (header switch, persisted locale) — first justified runtime dependency. |
+| 2026-09-19 | **Docs**: AsciiDoc documentation site with Antora (`npm run docs`); behavior extracted from code comments into `.adoc` pages. |
+| 2026-09-19 | **Architecture**: layered structure migration `pages/` / `common/` / `application/` (3 phases, no behavior changes). |
+| 2026-09-19 | **Docs**: AGENTS.md restructured as a lean English agent guide; full changelog moved to `docs/CHANGELOG.md`. |
+| 2026-09-19 | **Convention**: extract component/hook/page props and local types into `utils/{types,interfaces,enums}.ts`. | One file per kind (type alias vs. interface vs. enum); helpers private to the unit also live in the same `utils/`. |
 
 ---
 
-## 10. Backlog / ideas (sin orden)
+## 8. Backlog (unordered)
 
-- [ ] Probar con 1000+ tarjetas: medir rendimiento de la parrilla; decidir si
-      virtualizar.
-- [ ] Exportar/importar tarjetas (JSON).
-- [ ] Modo oscuro/light (si se añade, documentar aquí).
-- [ ] Persistencia de estadísticas de sesiones (actualmente solo la sesión
-      activa).
-- [ ] Soporte de sub-etiquetas o prioridad de repetición (SRS / Leitner).
-- [ ] Testes de la lógica de la pila de estudio (`StudyView` / `utils`) con
-      una herramienta de testing (requiere decisión de dependencia — regla 4).
+- [ ] Test with 1000+ cards: measure grid performance; decide on
+  virtualization.
+- [ ] Export/import cards (JSON).
+- [ ] Dark/light theme toggle.
+- [ ] Persist session statistics (currently per-session only).
+- [ ] Sub-tags or spaced-repetition priority (SRS / Leitner).
+- [ ] Tests for the study-deck logic and utils (requires a
+  dependency decision — rule 4).

@@ -1,0 +1,51 @@
+= Application overview
+
+Concepts is a 100% client-side *flashcards* SPA built with React +
+Vite (TypeScript). It helps you memorize tech and programming
+concepts with two modes:
+
+* *My cards (home)* — responsive card grid with search, tag filters,
+  inline card actions and session stats.
+* *Study mode* — a shuffled deck session with a final summary.
+
+There is no backend and there are no external runtime dependencies:
+the only persistence is the browser's `localStorage`.
+
+== Where things live
+
+[cols="1,2"]
+|===
+|Path |Content
+
+|`AGENTS.md` (root)
+|Source of truth for requirements and design decisions (Spanish).
+
+|`docs/ARCHITECTURE.md`
+|File and code organization: layers, conventions, migration plans.
+
+|`docs/GIT_CONVENTIONS.md`
+|Branch, commit and PR conventions.
+
+|`docs/modules/ROOT/pages/` (this site)
+|Application documentation: behavior of each mode and component.
+|===
+
+== Language
+
+The UI is available in **Spanish** (default) and **English**. The
+ES/EN switch sits in the header and the choice persists in
+`localStorage`. Translations are flat JSON files
+(`src/application/i18n/locales/{es,en}.json`) consumed through
+react-i18next. Card *content* (the seed deck) is data, not UI
+chrome, and stays in Spanish.
+
+== Building this site
+
+The site is generated with link:https://docs.antora.org[Antora]
+(devDependencies only — nothing ships with the app):
+
+[source,console]
+----
+npm run docs          # generates the static site into build/site
+npx serve build/site  # browse it at http://localhost:3000
+----
