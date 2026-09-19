@@ -10,8 +10,8 @@ import { StudyPage } from "./pages/study";
 import "./App.css";
 
 const MODE_IDS = {
-  CARDS: "cartas",
-  STUDY: "estudiar",
+  CARDS: "cards",
+  STUDY: "study",
 } as const;
 
 type ModeId = (typeof MODE_IDS)[keyof typeof MODE_IDS];
@@ -29,9 +29,9 @@ const LANGUAGES: { id: Locale; label: string }[] = [
 /**
  * Sentinel value stored in `editing` to mean "the modal is open to
  * create a new card, not to edit an existing one". Exported so the
- * Home page can request a new card from its "+ Nueva" button.
+ * Home page can request a new card from its "+ Add" button.
  */
-export const NEW_CARD_SENTINEL = "nueva";
+export const NEW_CARD_SENTINEL = "new";
 
 /**
  * Application shell: header with the language switch and mode tabs,
