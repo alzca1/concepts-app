@@ -1,6 +1,7 @@
 import { useState, type CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
 
+import { DEFAULT_TAG } from "../../../../application/config/constants";
 import { FlashCard } from "../../../../common/components/presentational/flash-card";
 import { tagColor } from "../../../../common/utils/tag-color";
 
@@ -17,7 +18,7 @@ export function ConceptList({ concepts, deleteConcept, onEdit }: ConceptListProp
   const [activeTag, setActiveTag] = useState("");
   const [flippedId, setFlippedId] = useState<string | null>(null);
 
-  const tags = Array.from(new Set(concepts.map((c) => c.tag || "General")));
+  const tags = Array.from(new Set(concepts.map((c) => c.tag || DEFAULT_TAG)));
 
   const query = search.trim().toLowerCase();
   const filtered = concepts.filter(
