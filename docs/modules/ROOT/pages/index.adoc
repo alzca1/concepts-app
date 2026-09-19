@@ -1,8 +1,8 @@
 = Application overview
 
 Concepts is a 100% client-side *flashcards* SPA built with React +
-Vite (JavaScript, no TypeScript). It helps you memorize tech and
-programming concepts with two modes:
+Vite (TypeScript). It helps you memorize tech and programming
+concepts with two modes:
 
 * *My cards (home)* — responsive card grid with search, tag filters,
   inline card actions and session stats.

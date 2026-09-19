@@ -4,16 +4,17 @@
  * unavailable or the JSON is corrupt, the app keeps working and
  * seeds the sample cards.
  */
-import { seedConcepts } from "./seed/seed-concepts";
 import { STORAGE_KEY } from "../config/constants";
+import { seedConcepts } from "./seed/seed-concepts";
+import type { Concept } from "./types";
 
 /** Loads the stored cards; falls back to the seed when invalid. */
-export function loadConcepts() {
+export function loadConcepts(): Concept[] {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    const parsed = stored ? JSON.parse(stored) : null;
+    const parsed: unknown = stored ? JSON.parse(stored) : null;
     return Array.isArray(parsed) && parsed.length > 0
-      ? parsed
+      ? (parsed as Concept[])
       : seedConcepts();
   } catch {
     return seedConcepts();
@@ -21,7 +22,7 @@ export function loadConcepts() {
 }
 
 /** Saves the cards; fails silently without localStorage. */
-export function saveConcepts(concepts) {
+export function saveConcepts(concepts: Concept[]): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(concepts));
   } catch {

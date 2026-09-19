@@ -9,8 +9,9 @@
 
 ## 1. Overview
 
-100% client-side flashcards SPA: React + Vite, JavaScript (no
-TypeScript), no backend and no external runtime dependencies.
+100% client-side flashcards SPA: React + Vite, TypeScript (strict
+mode, `tsc --noEmit` runs inside `npm run build`), no backend and no
+external runtime dependencies beyond i18n (see AGENTS.md).
 `localStorage` is the only persistence. Global state lives in custom
 hooks; components are presentational and receive behavior through
 props.
@@ -40,26 +41,30 @@ props.
 
 ## 3. Current structure
 
-Migrated in `internal/INT-001-structure-migration` (September 2026):
-the layout matches the target in section 4, except the CSS files,
-which still live at `src/` root (open decision, see section 5).
+Migrated to the layered layout in `internal/INT-001-structure-migration`
+and to TypeScript (strict) in `internal/INT-004-typescript-migration`
+(September 2026): the layout matches the target in section 4, except
+the CSS files, which still live at `src/` root (open decision, see
+section 5).
 
 ```
 src/
-├── main.jsx               # Entry point (createRoot) — do not modify
-├── App.jsx                # Shell: mode tabs + active page + modal
+├── main.tsx               # Entry point (createRoot) — do not modify
+├── App.tsx                # Shell: mode tabs + active page + modal
 ├── App.css                # Application styles (by sections)
 ├── index.css              # Reset and base styles
+├── vite-env.d.ts          # Vite client types (CSS/asset imports)
 ├── application/           # Infrastructure (no UI)
 │   ├── api/
-│   │   ├── concepts-storage.js   # localStorage read/write (try/catch)
-│   │   └── seed/seed-concepts.js # 9 sample cards
+│   │   ├── concepts-storage.ts   # localStorage read/write (try/catch)
+│   │   ├── seed/seed-concepts.ts # 9 sample cards
+│   │   └── types.ts              # Concept / ConceptInput
 │   ├── config/
-│   │   └── constants.js          # Storage key, delays and speeds
+│   │   └── constants.ts          # Storage key, delays and speeds
 │   ├── i18n/
-│   │   ├── i18n.js               # i18next init + changeLocale
+│   │   ├── i18n.ts               # i18next init + changeLocale
 │   │   ├── locales/              # es.json / en.json (flat keys)
-│   │   └── index.js
+│   │   └── index.ts
 │   └── store/
 │       └── use-concepts/         # Global card state
 ├── common/                # Reusable, page-agnostic
@@ -76,14 +81,14 @@ src/
 │       └── uid/                  # One utility per folder
 └── pages/                 # One folder per view
     ├── home/
-    │   ├── home.jsx       # Page: stats bar + new-card action + grid
-    │   ├── index.js
+    │   ├── home.tsx       # Page: stats bar + new-card action + grid
+    │   ├── index.ts
     │   └── components/
     │       ├── concept-list/  # Search, tag filters, card grid
     │       └── stats-bar/     # Stats + restore to seed
     └── study/
-        ├── study.jsx      # Page: study session + summary
-        └── index.js
+        ├── study.tsx      # Page: study session + summary
+        └── index.ts
 ```
 
 ---
@@ -94,25 +99,25 @@ Layered model (adapted from a production SPA):
 
 ```
 src/
-├── main.jsx                          # Entry point — do not modify
-├── App.jsx                           # Shell: active mode + root modal
+├── main.tsx                          # Entry point — do not modify
+├── App.tsx                           # Shell: active mode + root modal
 ├── pages/                            # One folder per view/mode
 │   ├── home/
-│   │   ├── index.js                  # Page barrel
-│   │   ├── home.jsx                  # Page: stats bar + new-card action + grid
+│   │   ├── index.ts                  # Page barrel
+│   │   ├── home.tsx                  # Page: stats bar + new-card action + grid
 │   │   ├── components/               # Page-local components
 │   │   │   ├── concept-list/
 │   │   │   └── stats-bar/
 │   │   └── __tests__/
 │   └── study/
-│       ├── index.js
-│       ├── study.jsx                 # Page: session + summary
+│       ├── index.ts
+│       ├── study.tsx                 # Page: session + summary
 │       ├── components/               # Page-local components (when needed)
 │       └── __tests__/
 ├── common/                           # Reusable, page-agnostic
 │   ├── components/
 │   │   ├── presentational/
-│   │   │   └── flash-card/           # flash-card.jsx + flash-card.css + __tests__/
+│   │   │   └── flash-card/           # flash-card.tsx + flash-card.css + __tests__/
 │   │   └── domain/
 │   │       └── concept-form/         # Create/edit card modal
 │   ├── hooks/
@@ -177,13 +182,13 @@ Migrate only once the stylesheet layout is stable.
 
 | Type | Convention | Example |
 |---|---|---|
-| Files and folders | kebab-case | `flash-card.jsx`, `use-hover-scroll/` |
+| Files and folders | kebab-case | `flash-card.tsx`, `use-hover-scroll/` |
 | Components | PascalCase | `FlashCard` |
 | Functions/variables | camelCase | `getButtonConfig` |
 | Event handlers | `handle` prefix | `handleClick` |
 | Custom hooks | `use` prefix | `useHoverScroll` |
 | CSS | BEM (block__element--modifier) | `.flash-card__tag` |
-| Tests | `{name}.test.jsx` in `__tests__/` | `flash-card.test.jsx` |
+| Tests | `{name}.test.tsx` in `__tests__/` | `flash-card.test.tsx` |
 
 ### Placement
 
@@ -192,13 +197,22 @@ Migrate only once the stylesheet layout is stable.
 - A unit's private utilities go in a `utils/` folder inside its own
   folder; if another unit needs them, promote them to
   `common/utils/`.
+- A unit's **TypeScript types, interfaces and enums live inside
+  that same `utils/`**, split by kind: `types.ts` for `type`
+  aliases, `interfaces.ts` for `interface` declarations,
+  `enums.ts` for `enum` declarations. Helpers private to the unit
+  (e.g. `format-fix-item.ts`) also live here. Mirror's spa-modexp's
+  convention — one role per file inside the unit's `utils/`. A
+  component, hook or page whose only artefact is a single `.tsx`/
+  `.ts` file in `src/` (e.g. `App.tsx`) may keep its local types
+  inline; the rule applies once the unit lives in its own folder.
 - Pure functions are named after their intent: verbs for actions
   (`shuffle`), `should-*` / `is-*` / `has-*` for predicates.
 
 ### Barrels
 
 Every page (and, when it helps, every shared component) exposes an
-`index.js` as its single entry point: external imports point to the
+`index.ts` as its single entry point: external imports point to the
 folder, not to an internal file.
 
 ### Import order
@@ -229,7 +243,7 @@ application/api  (concepts-storage)
         ↓
 application/store  (use-concepts: useState + save useEffect)
         ↓ props
-App.jsx  ──► pages/home  |  pages/study
+App.tsx  ──► pages/home  |  pages/study
                    ↓ props (concept, onEdit, deleteConcept…)
         common/components (render only, never mutate)
 ```
@@ -244,7 +258,7 @@ everything reaches them through props.
 New page/view:
 
 1. [ ] Create folder `src/pages/{name}/`
-2. [ ] Component `{name}.jsx` + `index.js` barrel
+2. [ ] Component `{name}.tsx` + `index.ts` barrel
 3. [ ] Styles (BEM) and empty/loading states if applicable
 4. [ ] Tests in `__tests__/`
 5. [ ] Register the requirement in AGENTS.md (section 5)
@@ -282,6 +296,6 @@ in AGENTS.md.
 
 | File | Reason |
 |---|---|
-| `src/main.jsx` | Application bootstrap |
-| `vite.config.js` | Stable build configuration |
+| `src/main.tsx` | Application bootstrap |
+| `vite.config.ts` | Stable build configuration |
 | `index.html` | Root template |

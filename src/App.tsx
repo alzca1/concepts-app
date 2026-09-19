@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { changeLocale } from "./application/i18n";
+import { changeLocale, type Locale } from "./application/i18n";
+import type { ConceptInput } from "./application/api/types";
 import { ConceptForm } from "./common/components/domain/concept-form";
 import { useConcepts } from "./application/store/use-concepts";
 import { HomePage } from "./pages/home";
@@ -11,9 +12,11 @@ import "./App.css";
 const MODES = [
   { id: "cartas", labelKey: "mode.cards" },
   { id: "estudiar", labelKey: "mode.study" },
-];
+] as const;
 
-const LANGUAGES = [
+type ModeId = (typeof MODES)[number]["id"];
+
+const LANGUAGES: { id: Locale; label: string }[] = [
   { id: "es", label: "ES" },
   { id: "en", label: "EN" },
 ];
@@ -32,17 +35,17 @@ export default function App() {
     resetToSeed,
   } = useConcepts();
 
-  const [mode, setMode] = useState("cartas");
-  const [editing, setEditing] = useState(null); // null | "nueva" | id
+  const [mode, setMode] = useState<ModeId>("cartas");
+  const [editing, setEditing] = useState<string | null>(null); // null | "nueva" | id
 
-  function handleDelete(id) {
+  function handleDelete(id: string) {
     if (editing === id) setEditing(null);
     deleteConcept(id);
   }
 
-  function handleSave(data) {
+  function handleSave(data: ConceptInput) {
     if (editing === "nueva") addConcept(data);
-    else updateConcept(editing, data);
+    else if (editing !== null) updateConcept(editing, data);
   }
 
   return (

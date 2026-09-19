@@ -27,26 +27,27 @@ npm run build   # genera dist/ para producción
 ```
 concepts-app/
 ├── index.html
-├── vite.config.js
+├── vite.config.ts
+├── tsconfig.json
 └── src/
-    ├── main.jsx              # Punto de entrada
-    ├── App.jsx               # Enrutado de modo (cartas / estudio) y estado global
-    ├── App.css               # Estilos de la aplicación
-    ├── index.css             # Reset y estilos base (fondo, tipografía)
-    ├── App.jsx
-    ├── components/
-    │   ├── FlashCard.jsx     # Tarjeta 3D reutilizable
-    │   ├── ConceptList.jsx   # Búsqueda, filtros y parrilla
-    │   ├── ConceptForm.jsx   # Modal de crear / editar
-    │   ├── StudyView.jsx     # Sesión de estudio y resumen
-    │   └── StatsBar.jsx      # Estadísticas + restaurar a iniciales
-    ├── data/
-    │   └── seed.js           # Tarjetas de ejemplo
-    ├── hooks/
-    │   ├── useConcepts.js    # Estado + persistencia en localStorage
-    │   └── useHoverScroll.js # Scroll vertical lento en hover (solo si el contenido desborda)
-    └── lib/
-        └── utils.js          # uid, shuffle, tagColor
+    ├── main.tsx                # Punto de entrada
+    ├── App.tsx                 # Shell: modos (cartas / estudio) y modal
+    ├── App.css                 # Estilos de la aplicación
+    ├── index.css               # Reset y estilos base
+    ├── application/            # Infraestructura (sin UI)
+    │   ├── api/                # Persistencia localStorage + seed + tipos
+    │   ├── config/constants.ts # Claves y retardos compartidos
+    │   ├── i18n/               # i18next: init + locales es/en
+    │   └── store/use-concepts/ # Estado global de tarjetas
+    ├── common/                 # Reutilizable, agnóstico de página
+    │   ├── components/
+    │   │   ├── domain/concept-form/       # Modal crear / editar
+    │   │   └── presentational/flash-card/ # Tarjeta 3D reutilizable
+    │   ├── hooks/use-hover-scroll/        # Auto-scroll lento en hover
+    │   └── utils/{uid,shuffle,tag-color}/ # Una utilidad por carpeta
+    └── pages/                  # Una carpeta por vista
+        ├── home/               # «Mis tarjetas»: home + concept-list + stats-bar
+        └── study/              # «Estudiar»: sesión + resumen
 ```
 
 ## Modelo de datos

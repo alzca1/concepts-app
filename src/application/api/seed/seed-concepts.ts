@@ -1,11 +1,12 @@
 import { uid } from "../../../common/utils/uid";
+import type { Concept, ConceptInput } from "../types";
 
 /**
  * Sample cards. Only used the first time there is nothing stored in
  * localStorage (or when pressing "Restore initial data").
  */
-export function seedConcepts() {
-  const base = [
+export function seedConcepts(): Concept[] {
+  const base: ConceptInput[] = [
     {
       tag: "JavaScript",
       front: "¿Qué es un cierre (closure)?",

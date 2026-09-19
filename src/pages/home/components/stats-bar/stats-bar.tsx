@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next";
 
-export function StatsBar({ concepts, resetToSeed }) {
+import type { StatsBarProps } from "./utils/interfaces";
+
+export function StatsBar({ concepts, resetToSeed }: StatsBarProps) {
   const { t } = useTranslation();
   const tags = new Set(concepts.map((c) => c.tag || "General"));
 

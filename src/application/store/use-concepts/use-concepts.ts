@@ -1,14 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { loadConcepts, saveConcepts } from "../../api/concepts-storage";
+import { seedConcepts } from "../../api/seed/seed-concepts";
+import type { Concept, ConceptInput } from "../../api/types";
 import { uid } from "../../../common/utils/uid";
+
+import type { UseConceptsResult } from "./utils/interfaces";
 
 /**
  * Hook with the cards + localStorage persistence.
  * Loads the sample cards the first time there is nothing saved.
  */
-export function useConcepts() {
-  const [concepts, setConcepts] = useState(() => loadConcepts());
+export function useConcepts(): UseConceptsResult {
+  const [concepts, setConcepts] = useState<Concept[]>(() => loadConcepts());
 
   // Persistence: whenever the cards change, they are saved.
   useEffect(() => {
@@ -16,7 +20,7 @@ export function useConcepts() {
   }, [concepts]);
 
   const addConcept = useCallback(
-    (data) =>
+    (data: ConceptInput) =>
       setConcepts((prev) => [
         ...prev,
         {
@@ -29,19 +33,17 @@ export function useConcepts() {
   );
 
   const updateConcept = useCallback(
-    (id, data) =>
+    (id: string, data: ConceptInput) =>
       setConcepts((prev) =>
         prev.map((c) =>
-          c.id === id
-            ? { ...c, ...data, createdAt: c.createdAt }
-            : c,
-        ),
+          c.id === id ? { ...c, ...data, createdAt: c.createdAt } : c
+        )
       ),
     []
   );
 
   const deleteConcept = useCallback(
-    (id) => setConcepts((prev) => prev.filter((c) => c.id !== id)),
+    (id: string) => setConcepts((prev) => prev.filter((c) => c.id !== id)),
     []
   );
 

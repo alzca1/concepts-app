@@ -1,19 +1,21 @@
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
 
 import { FlashCard } from "../../../../common/components/presentational/flash-card";
 import { tagColor } from "../../../../common/utils/tag-color";
+
+import type { ConceptListProps } from "./utils/interfaces";
 
 /**
  * "My cards" mode: search, tag filter and the card grid with
  * edit / delete actions. Only one card shows its answer at a time:
  * flipping one resets the previous one.
  */
-export function ConceptList({ concepts, deleteConcept, onEdit }) {
+export function ConceptList({ concepts, deleteConcept, onEdit }: ConceptListProps) {
   const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [activeTag, setActiveTag] = useState("");
-  const [flippedId, setFlippedId] = useState(null);
+  const [flippedId, setFlippedId] = useState<string | null>(null);
 
   const tags = Array.from(new Set(concepts.map((c) => c.tag || "General")));
 
@@ -51,7 +53,7 @@ export function ConceptList({ concepts, deleteConcept, onEdit }) {
                 key={tag}
                 type="button"
                 className={`chip ${activeTag === tag ? "active" : ""}`}
-                style={{ "--chip-color": tagColor(tag) }}
+                style={{ "--chip-color": tagColor(tag) } as CSSProperties}
                 onClick={() => setActiveTag(activeTag === tag ? "" : tag)}
                 aria-pressed={activeTag === tag}
               >

@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
+
+import type { ConceptFormProps } from "./utils/interfaces";
 
 /**
  * Modal to create or edit a card.
  * It is mounted/unmounted in App with its own `key`, so the initial
  * input state adapts by itself to the card being edited.
  */
-export function ConceptForm({ concept, onClose, onSave }) {
+export function ConceptForm({ concept, onClose, onSave }: ConceptFormProps) {
   const { t } = useTranslation();
   const isEdit = concept != null;
 
@@ -15,7 +17,7 @@ export function ConceptForm({ concept, onClose, onSave }) {
   const [tag, setTag] = useState(concept?.tag ?? "");
   const [error, setError] = useState("");
 
-  function handleSubmit(e) {
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = front.trim();
     const b = back.trim();
@@ -31,7 +33,7 @@ export function ConceptForm({ concept, onClose, onSave }) {
     <div
       className="modal-overlay"
       onClick={(e) => {
-        if (!e.target.closest(".modal")) onClose();
+        if (!(e.target as HTMLElement).closest(".modal")) onClose();
       }}
     >
       <form

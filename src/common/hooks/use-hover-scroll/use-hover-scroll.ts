@@ -5,6 +5,8 @@ import {
   HOVER_SCROLL_SPEED,
 } from "../../../application/config/constants";
 
+import type { HoverScrollResult } from "./utils/interfaces";
+
 /**
  * Returns `ref` and events to apply a slow automatic vertical
  * scroll on hover (or focus) of an element, only when the content
@@ -14,21 +16,19 @@ import {
  * interruption, quantization) lives in
  * `docs/modules/ROOT/pages/flash-card.adoc`.
  *
- * @param {string} content - Face text; the hook re-measures when it
- *   changes.
- * @param {number} speed - Pixels per second (defaults to
- *   `HOVER_SCROLL_SPEED`).
- * @param {number} delay - Pause in ms before starting (defaults to
+ * @param content - Face text; the hook re-measures when it changes.
+ * @param speed - Pixels per second (defaults to `HOVER_SCROLL_SPEED`).
+ * @param delay - Pause in ms before starting (defaults to
  *   `HOVER_SCROLL_DELAY`).
  */
-export function useHoverScroll(
-  content,
-  speed = HOVER_SCROLL_SPEED,
-  delay = HOVER_SCROLL_DELAY
-) {
-  const ref = useRef(null);
-  const rafRef = useRef(null);
-  const timerRef = useRef(null);
+export function useHoverScroll<T extends HTMLElement>(
+  content: string,
+  speed: number = HOVER_SCROLL_SPEED,
+  delay: number = HOVER_SCROLL_DELAY
+): HoverScrollResult<T> {
+  const ref = useRef<T>(null);
+  const rafRef = useRef<number | null>(null);
+  const timerRef = useRef<number | null>(null);
   const posRef = useRef(0);
   const lastTsRef = useRef(0);
   const expectedRef = useRef(0);
@@ -67,7 +67,7 @@ export function useHoverScroll(
     el.scrollTop = 0;
     expectedRef.current = 0;
 
-    const step = (ts) => {
+    const step = (ts: number) => {
       // Clamp the delta: if the tab was in the background, the time
       // jump must not visually jump the content.
       const dt = Math.min(ts - lastTsRef.current, 50) / 1000;
