@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Modal to create or edit a card.
@@ -6,6 +7,7 @@ import { useState } from "react";
  * input state adapts by itself to the card being edited.
  */
 export function ConceptForm({ concept, onClose, onSave }) {
+  const { t } = useTranslation();
   const isEdit = concept != null;
 
   const [front, setFront] = useState(concept?.front ?? "");
@@ -18,7 +20,7 @@ export function ConceptForm({ concept, onClose, onSave }) {
     const f = front.trim();
     const b = back.trim();
     if (!f || !b) {
-      setError("Completa la pregunta (front) y la respuesta (back).");
+      setError(t("form.validationError"));
       return;
     }
     onSave({ front: f, back: b, tag: tag.trim() || "General" });
@@ -38,12 +40,12 @@ export function ConceptForm({ concept, onClose, onSave }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal__head">
-          <h2>{isEdit ? "Editar tarjeta" : "Nueva tarjeta"}</h2>
+          <h2>{t(isEdit ? "form.editTitle" : "form.newTitle")}</h2>
           <button
             type="button"
             className="btn btn-ghost btn-icon"
             onClick={onClose}
-            aria-label="Cerrar"
+            aria-label={t("form.closeAria")}
           >
             ✕
           </button>
@@ -52,20 +54,20 @@ export function ConceptForm({ concept, onClose, onSave }) {
         {error && <p className="form-error">{error}</p>}
 
         <label className="field">
-          <span>Concepto / pregunta *</span>
+          <span>{t("form.frontLabel")}</span>
           <input
             value={front}
             onChange={(e) => {
               setFront(e.target.value);
               setError("");
             }}
-            placeholder="¿Qué es un closure?"
+            placeholder={t("form.frontPlaceholder")}
             autoFocus
           />
         </label>
 
         <label className="field">
-          <span>Respuesta / explicación *</span>
+          <span>{t("form.backLabel")}</span>
           <textarea
             value={back}
             rows={4}
@@ -73,25 +75,25 @@ export function ConceptForm({ concept, onClose, onSave }) {
               setBack(e.target.value);
               setError("");
             }}
-            placeholder="Explica el concepto…"
+            placeholder={t("form.backPlaceholder")}
           />
         </label>
 
         <label className="field">
-          <span>Etiqueta</span>
+          <span>{t("form.tagLabel")}</span>
           <input
             value={tag}
             onChange={(e) => setTag(e.target.value)}
-            placeholder="JavaScript, React, CSS…"
+            placeholder={t("form.tagPlaceholder")}
           />
         </label>
 
         <div className="form-actions">
           <button type="button" className="btn btn-ghost" onClick={onClose}>
-            Cancelar
+            {t("form.cancel")}
           </button>
           <button type="submit" className="btn btn-primary">
-            {isEdit ? "Guardar cambios" : "Crear tarjeta"}
+            {t(isEdit ? "form.saveEdit" : "form.saveNew")}
           </button>
         </div>
       </form>

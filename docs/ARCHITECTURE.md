@@ -56,6 +56,10 @@ src/
 │   │   └── seed/seed-concepts.js # 9 sample cards
 │   ├── config/
 │   │   └── constants.js          # Storage key, delays and speeds
+│   ├── i18n/
+│   │   ├── i18n.js               # i18next init + changeLocale
+│   │   ├── locales/              # es.json / en.json (flat keys)
+│   │   └── index.js
 │   └── store/
 │       └── use-concepts/         # Global card state
 ├── common/                # Reusable, page-agnostic

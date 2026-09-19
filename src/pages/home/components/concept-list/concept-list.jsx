@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { FlashCard } from "../../../../common/components/presentational/flash-card";
 import { tagColor } from "../../../../common/utils/tag-color";
@@ -9,6 +10,7 @@ import { tagColor } from "../../../../common/utils/tag-color";
  * flipping one resets the previous one.
  */
 export function ConceptList({ concepts, deleteConcept, onEdit }) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [activeTag, setActiveTag] = useState("");
   const [flippedId, setFlippedId] = useState(null);
@@ -29,20 +31,20 @@ export function ConceptList({ concepts, deleteConcept, onEdit }) {
         <input
           className="search"
           type="search"
-          placeholder="Buscar en preguntas, respuestas y etiquetas…"
-          aria-label="Buscar tarjetas"
+          placeholder={t("list.searchPlaceholder")}
+          aria-label={t("list.searchAria")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         {tags.length > 0 && (
-          <div className="tag-row" aria-label="Filtrar por etiqueta">
+          <div className="tag-row" aria-label={t("list.filterAria")}>
             <button
               type="button"
               className={`chip ${activeTag === "" ? "active" : ""}`}
               onClick={() => setActiveTag("")}
               aria-pressed={activeTag === ""}
             >
-              Todos
+              {t("list.allTags")}
             </button>
             {tags.map((tag) => (
               <button
@@ -64,11 +66,11 @@ export function ConceptList({ concepts, deleteConcept, onEdit }) {
       {filtered.length === 0 ? (
         <p className="empty-state">
           {search || activeTag
-            ? "No hay tarjetas que coincidan con el filtro. Prueba a ampliar la búsqueda."
-            : "Todavía no hay tarjetas. Crea la primera con «Nueva tarjeta»."}
+            ? t("list.emptyWithFilters")
+            : t("list.emptyNoCards")}
         </p>
       ) : (
-        <div className="deck" aria-label="Tarjetas">
+        <div className="deck" aria-label={t("list.gridAria")}>
           {filtered.map((concept) => (
             <div key={concept.id} className="card-cell">
               <FlashCard
@@ -81,18 +83,18 @@ export function ConceptList({ concepts, deleteConcept, onEdit }) {
                   <div className="cell-actions">
                     <button
                       type="button"
-                      title="Editar tarjeta"
+                      title={t("list.editTitle")}
                       onClick={() => onEdit(concept.id)}
                     >
                       ✎
                     </button>
                     <button
                       type="button"
-                      title="Eliminar tarjeta"
+                      title={t("list.deleteTitle")}
                       className="danger"
                       onClick={() =>
                         window.confirm(
-                          `¿Eliminar «${concept.front}»?`
+                          t("list.deleteConfirm", { front: concept.front })
                         ) && deleteConcept(concept.id)
                       }
                     >

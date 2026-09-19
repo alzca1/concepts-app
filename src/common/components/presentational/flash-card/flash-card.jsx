@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import { useHoverScroll } from "../../../hooks/use-hover-scroll";
 import { tagColor } from "../../../utils/tag-color";
 
@@ -17,6 +19,7 @@ export function FlashCard({
   size = "normal",
   actions = null,
 }) {
+  const { t } = useTranslation();
   const front = useHoverScroll(concept.front);
   const back = useHoverScroll(concept.back);
   const { ref: frontTextRef, onScroll: onFrontTextScroll } = front;
@@ -82,7 +85,7 @@ export function FlashCard({
             className={`flip-hint${flipped ? " flip-hint--hidden" : ""}`}
             aria-hidden={flipped}
           >
-            Clic para revelar ↩
+            {t("card.hint")}
           </span>
         </div>
         <div
@@ -90,7 +93,7 @@ export function FlashCard({
             back.scrollable ? " flash-face--overflow" : ""
           }`}
         >
-          <span className="card-tag">Respuesta</span>
+          <span className="card-tag">{t("card.backTag")}</span>
           <p ref={backTextRef} onScroll={onBackTextScroll}>
             {concept.back}
           </p>

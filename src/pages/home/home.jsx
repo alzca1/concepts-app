@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import { ConceptList } from "./components/concept-list";
 import { StatsBar } from "./components/stats-bar";
 
@@ -6,13 +8,15 @@ import { StatsBar } from "./components/stats-bar";
  * with search and filters.
  */
 export function HomePage({ concepts, deleteConcept, onEdit, resetToSeed }) {
+  const { t } = useTranslation();
+
   return (
     <>
       <StatsBar concepts={concepts} resetToSeed={resetToSeed} />
 
       <div className="add-row">
         <button className="btn btn-primary" onClick={() => onEdit("nueva")}>
-          ＋ Nueva tarjeta
+          {t("home.addCard")}
         </button>
       </div>
 
