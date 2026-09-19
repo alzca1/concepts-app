@@ -80,17 +80,12 @@ Format:
 |---|---|---|
 | `feat` | New functionality | `feature/` |
 | `fix` | Bug fix | `bugfix/` |
-| `improvement`* | Improvement of an existing feature | `improvement/` |
 | `refactor` | Code change with no behavior change | `internal/` |
 | `docs` | Documentation | `docs/` |
 | `style` | Formatting / code style (not UI CSS) | `internal/` |
 | `perf` | Performance improvement | `improvement/` / `internal/` |
 | `test` | Tests | `internal/` |
 | `chore` | Tooling, build, dependencies | `internal/` |
-
-\* `improvement` is not a standard type in the specification, but it
-is adopted here for being expressive; if strict spec compliance is
-preferred, use `feat` or `refactor` as appropriate.
 
 ### Scope (optional)
 
@@ -99,10 +94,10 @@ Lowercase, consistent with the app sections:
 
 ### Description, body and footer
 
-- Description in **Spanish**, imperative, lowercase, **no trailing
+- Description in **English**, imperative, lowercase, **no trailing
   period**; it states the *what*. The *why* goes in the body.
 - If the commit closes or touches a requirement from AGENTS.md
-  (section 5), mention it in the footer (e.g. `Cierra R5.4`,
+  (section 5), mention it in the footer (e.g. `Closes R5.4`,
   `Refs R5.1`).
 - AGENTS.md / README.md updates required by the change (rule 2 of
   AGENTS.md) travel **in the same branch**, either in the same
@@ -111,23 +106,23 @@ Lowercase, consistent with the app sections:
 ### Examples
 
 ```
-feat(home): chip «Todos» en el filtro por etiqueta
+feat(home): add «Todos» chip to the tag filter
 
-Permite ver todas las temáticas sin desactivar el filtro a base de
-clics. aria-pressed en todos los chips.
+Lets the user see every topic without extra clicks to clear the
+filter. aria-pressed on all chips.
 
-Cierra R5.1
+Closes R5.1
 
-fix(estudio): el auto-scroll no avanzaba por cuantización de scrollTop
+fix(study): hover auto-scroll froze due to scrollTop quantization
 
-Los navegadores truncaban el incremento subpíxel por frame (~0,3 px a
-16 px/s). La posición se acumula ahora en posRef.
+Browsers truncate the sub-pixel per-frame increment (~0.3 px at
+16 px/s). The position now accumulates in posRef.
 
-Cierra R5.4
+Closes R5.4
 
-internal: convenciones de Git (ramas + conventional commits)
+internal: Git conventions (numbered branches + conventional commits)
 
-docs(estudio): documentar el retardo de los botones de respuesta
+docs(study): document the answer buttons delay
 ```
 
 ---
@@ -138,7 +133,7 @@ docs(estudio): documentar el retardo de los botones de respuesta
 - Title in the same format as the main commit:
   `<type>(<scope>): <description>`.
 - **Title and body always in English**, as well as all their content
-  (commits and the app UI remain in Spanish).
+  (see section 5).
 - Suggested body structure: *What* (what changes), *Why / Notes for
   reviewers* (why and decisions), *Verification* (how it was checked:
   lint, build, manual steps).
@@ -157,3 +152,13 @@ The reference repository enforces part of this with tooling:
 `commitlint` for Conventional Commits and pre-commit hooks (secret
 scanning, import order). Adopting any of it here requires adding dev
 dependencies — decide first via AGENTS.md rule 4.
+
+---
+
+## 5. Language
+
+- Commits and pull requests: **English**.
+- Repository documentation (`README.md`, guides, every `.md` file):
+  **English** from now on. Existing Spanish documents are translated
+  in dedicated `docs/` branches (README.md translation is pending).
+- Application UI: **Spanish** (product decision, unchanged).
