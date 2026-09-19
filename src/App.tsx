@@ -1,132 +1,57 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import { APP_LANGUAGES, changeLocale, type Locale } from "./application/i18n";
 import type { ConceptInput } from "./application/api/types";
 import { ConceptForm } from "./common/components/domain/concept-form";
+import { ConceptModalProvider } from "./context/concept-modal";
+import { useConceptModal } from "./context/use-concept-modal";
 import { useConcepts } from "./application/store/use-concepts";
-import { HomePage } from "./pages/home";
-import { StudyPage } from "./pages/study";
+import { MainLayout } from "./layouts/main-layout";
+import { HomePage } from "./pages/home/home";
+import { StudyPage } from "./pages/study/study";
 import "./App.css";
 
-const MODE_IDS = {
-  CARDS: "cards",
-  STUDY: "study",
-} as const;
-
-type ModeId = (typeof MODE_IDS)[keyof typeof MODE_IDS];
-
-const MODES: { id: ModeId; labelKey: string }[] = [
-  { id: MODE_IDS.CARDS, labelKey: "mode.cards" },
-  { id: MODE_IDS.STUDY, labelKey: "mode.study" },
-];
-
-const LANGUAGES: { id: Locale; label: string }[] = [
-  { id: APP_LANGUAGES.ES, label: "ES" },
-  { id: APP_LANGUAGES.EN, label: "EN" },
-];
-
-/**
- * Sentinel value stored in `editing` to mean "the modal is open to
- * create a new card, not to edit an existing one". Exported so the
- * Home page can request a new card from its "+ Add" button.
- */
 export const NEW_CARD_SENTINEL = "new";
 
-/**
- * Application shell: header with the language switch and mode tabs,
- * the active page and the create/edit card modal.
- */
-export default function App() {
-  const { t, i18n } = useTranslation();
-  const {
-    concepts,
-    addConcept,
-    updateConcept,
-    deleteConcept,
-    resetToSeed,
-  } = useConcepts();
-
-  const [mode, setMode] = useState<ModeId>(MODE_IDS.CARDS);
-  const [editing, setEditing] = useState<string | null>(null); // null | NEW_CARD_SENTINEL | id
-
-  function handleDelete(id: string) {
-    if (editing === id) setEditing(null);
-    deleteConcept(id);
-  }
+function AppContent() {
+  const { concepts, addConcept, updateConcept } = useConcepts();
+  const { editingId, closeModal } = useConceptModal();
 
   function handleSave(data: ConceptInput) {
-    if (editing === NEW_CARD_SENTINEL) addConcept(data);
-    else if (editing !== null) updateConcept(editing, data);
+    if (editingId === NEW_CARD_SENTINEL) addConcept(data);
+    else if (editingId !== null) updateConcept(editingId, data);
   }
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <div>
-          <h1>Concepts</h1>
-          <p className="subtitle">{t("app.subtitle")}</p>
-        </div>
-        <div className="header-controls">
-          <div
-            className="lang-switch"
-            role="group"
-            aria-label={t("language.aria")}
-          >
-            {LANGUAGES.map((lang) => (
-              <button
-                key={lang.id}
-                type="button"
-                className={`lang-switch__option${
-                  i18n.language === lang.id ? " active" : ""
-                }`}
-                aria-pressed={i18n.language === lang.id}
-                onClick={() => changeLocale(lang.id)}
-              >
-                {lang.label}
-              </button>
-            ))}
-          </div>
-          <div className="mode-tabs" aria-label={t("mode.tabsAria")}>
-            {MODES.map((m) => (
-              <button
-                key={m.id}
-                className={`mode-tab ${mode === m.id ? "active" : ""}`}
-                aria-pressed={mode === m.id}
-                onClick={() => setMode(m.id)}
-              >
-                {m.id === MODE_IDS.CARDS ? "🗂️" : "🎯"} {t(m.labelKey)}
-              </button>
-            ))}
-          </div>
-        </div>
-      </header>
+    <>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/study" element={<StudyPage concepts={concepts} />} />
+      </Routes>
 
-      <main>
-        {mode === MODE_IDS.CARDS ? (
-          <HomePage
-            concepts={concepts}
-            deleteConcept={handleDelete}
-            onEdit={setEditing}
-            resetToSeed={resetToSeed}
-          />
-        ) : (
-          <StudyPage concepts={concepts} onBack={() => setMode(MODE_IDS.CARDS)} />
-        )}
-      </main>
-
-      {editing !== null && (
+      {editingId !== null && (
         <ConceptForm
-          key={editing}
+          key={editingId}
           concept={
-            editing === NEW_CARD_SENTINEL
+            editingId === NEW_CARD_SENTINEL
               ? null
-              : concepts.find((c) => c.id === editing)
+              : concepts.find((c) => c.id === editingId)
           }
-          onClose={() => setEditing(null)}
+          onClose={closeModal}
           onSave={handleSave}
         />
       )}
-    </div>
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <ConceptModalProvider>
+        <MainLayout>
+          <AppContent />
+        </MainLayout>
+      </ConceptModalProvider>
+    </BrowserRouter>
   );
 }
