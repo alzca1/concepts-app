@@ -159,6 +159,13 @@ Unique historical record — current behavior is documented in the
    explicitly requests it. If a fix is needed, create a new commit
    with a clear message (e.g. `fix(scope): correct X`). When in
    doubt, ask before rewriting history.
+10. **No magic strings**: string literals used as domain values,
+    identifiers or sentinels (e.g. mode IDs, default values,
+    empty-string sentinels) must live in a named constant.
+    Extract to `application/config/constants.ts` when repeated **two
+    or more times**; one-off literals are acceptable. User-facing
+    UI strings that live in i18n JSON files are excluded from this
+    rule.
 
 ---
 
