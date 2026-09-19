@@ -4,6 +4,7 @@
 .User guide
 * xref:home.adoc[My cards (home)]
 * xref:study-mode.adoc[Study mode]
+* xref:auth.adoc[Authentication]
 
 .Behavior deep dives
 * xref:flash-card.adoc[Flash card]

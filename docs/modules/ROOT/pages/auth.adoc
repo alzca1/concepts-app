@@ -1,0 +1,38 @@
+= Authentication
+
+Auth is delegated to Supabase. The frontend talks to
+`supabase.auth` through the singleton client in
+`application/api/supabase-client.ts`; the React tree wraps the app
+in an `AuthProvider` (`context/auth-provider.tsx`) that exposes the
+current session through `useAuth()`.
+
+== Pages
+
+* `/login` — email + password (`pages/auth/login.tsx`). On success
+  navigates back to the URL the user came from
+  (`location.state.from`) or `/`.
+* `/signup` — email + password (`pages/auth/signup.tsx`). The
+  default Supabase project has **Confirm email** on, so the user
+  receives a confirmation email and the session stays `null` until
+  they click the link. The page surfaces this state explicitly.
+
+== Route protection
+
+`<ProtectedRoute>` (`common/components/protected-route/`) wraps
+the `/` and `/study` routes in `App.tsx`. While the session is
+loading the component renders nothing; once loaded it redirects to
+`/login` (replace + `state.from`) when the user is null. After
+sign-in the original URL is restored.
+
+== Sign out
+
+The header (`layouts/main-layout.tsx`) shows the user's email and a
+**Sign out** button when the session is present. `signOut()` clears
+the Supabase session and `onAuthStateChange` flips the context to
+`null`, sending the user back to `/login` through the same guard.
+
+== Multi-user guarantee
+
+Even when several family members share a browser, their data does
+not cross over: the repository only ever reads or writes rows where
+`user_id = auth.uid()`, so each session sees its own deck.

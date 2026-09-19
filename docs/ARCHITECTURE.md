@@ -9,12 +9,19 @@
 
 ## 1. Overview
 
-100% client-side flashcards SPA: React + Vite, TypeScript (strict
-mode, `tsc --noEmit` runs inside `npm run build`), no backend and no
-external runtime dependencies beyond i18n (see AGENTS.md).
-`localStorage` is the only persistence. Global state lives in custom
-hooks; components are presentational and receive behavior through
-props.
+Static SPA (React + Vite, TypeScript strict mode, `tsc --noEmit`
+runs inside `npm run build`) backed by a managed Supabase project
+(Postgres + Auth + Row-Level Security). The frontend has three
+runtime dependencies — `i18next` + `react-i18next`, `react-router-dom`,
+and `@supabase/supabase-js` — each justified in AGENTS.md §2.
+The app is 100% client-side; all persistence lives in Supabase and
+is scoped to the signed-in user by the database policy.
+
+Global state lives in custom hooks (`useAuth`, `useConcepts`);
+components are presentational and receive behavior through props.
+Routes (`/`, `/study`, `/login`, `/signup`) are protected by
+`<ProtectedRoute>` which redirects unauthenticated users to
+`/login` while preserving the requested URL.
 
 ---
 
@@ -50,46 +57,66 @@ section 5).
 ```
 src/
 ├── main.tsx               # Entry point (createRoot) — do not modify
-├── App.tsx                # Shell: mode tabs + active page + modal
+├── App.tsx                # Shell: AuthProvider + routes + modal
 ├── App.css                # Application styles (by sections)
 ├── index.css              # Reset and base styles
 ├── vite-env.d.ts          # Vite client types (CSS/asset imports)
 ├── application/           # Infrastructure (no UI)
 │   ├── api/
-│   │   ├── concepts-storage.ts   # localStorage read/write (try/catch)
-│   │   ├── seed/seed-concepts.ts # 9 sample cards
-│   │   └── types.ts              # Concept / ConceptInput
+│   │   ├── supabase-client.ts     # createClient singleton
+│   │   ├── concepts-repository.ts # Typed CRUD over public.concepts
+│   │   ├── types.ts               # Concept / ConceptInput
+│   │   └── utils/interfaces.ts    # ConceptRow (DB shape)
 │   ├── config/
-│   │   └── constants.ts          # Storage key, delays and speeds
+│   │   └── constants.ts          # Locale key, delays and speeds
 │   ├── i18n/
 │   │   ├── i18n.ts               # i18next init + changeLocale
 │   │   ├── locales/              # es.json / en.json (flat keys)
 │   │   └── index.ts
 │   └── store/
-│       └── use-concepts/         # Global card state
+│       └── use-concepts/         # Async card state bound to the session
 ├── common/                # Reusable, page-agnostic
 │   ├── components/
 │   │   ├── domain/
 │   │   │   └── concept-form/     # Create/edit card modal
-│   │   └── presentational/
-│   │       └── flash-card/       # 3D card (front/back)
+│   │   ├── presentational/
+│   │   │   └── flash-card/       # 3D card (front/back)
+│   │   └── protected-route/      # <ProtectedRoute> route guard
 │   ├── hooks/
 │   │   └── use-hover-scroll/     # Slow auto-scroll on hover
 │   └── utils/
 │       ├── shuffle/
 │       ├── tag-color/
 │       └── uid/                  # One utility per folder
+├── context/
+│   ├── auth-context.ts           # AuthContext type
+│   ├── auth-provider.tsx         # Session tracker + sign-in/up/out
+│   ├── use-auth.ts               # Hook
+│   ├── concept-modal-context.ts
+│   ├── concept-modal.tsx
+│   ├── use-concept-modal.ts
+│   └── index.ts                  # Auth barrel
 └── pages/                 # One folder per view
     ├── home/
     │   ├── home.tsx       # Page: stats bar + new-card action + grid
     │   ├── index.ts
+    │   ├── utils/interfaces.ts   # HomePageProps
     │   └── components/
     │       ├── concept-list/  # Search, tag filters, card grid
-    │       └── stats-bar/     # Stats + restore to seed
-    └── study/
-        ├── study.tsx      # Page: study session + summary
-        └── index.ts
+    │       └── stats-bar/     # Cards + tags counts
+    ├── study/
+    │   ├── study.tsx      # Page: study session + summary
+    │   ├── index.ts
+    │   └── utils/interfaces.ts
+    └── auth/
+        ├── login.tsx
+        ├── signup.tsx
+        ├── index.ts
+        └── utils/interfaces.ts
 ```
+
+The `supabase/` folder at the repo root holds the database schema
+(`schema.sql`) and a short setup guide (`README.md`).
 
 ---
 
@@ -100,41 +127,59 @@ Layered model (adapted from a production SPA):
 ```
 src/
 ├── main.tsx                          # Entry point — do not modify
-├── App.tsx                           # Shell: active mode + root modal
-├── pages/                            # One folder per view/mode
-│   ├── home/
+├── App.tsx                           # Shell: AuthProvider + routes + modal
+├── pages/                            # One folder per view
+│   ├── home/                         # My cards
 │   │   ├── index.ts                  # Page barrel
-│   │   ├── home.tsx                  # Page: stats bar + new-card action + grid
-│   │   ├── components/               # Page-local components
-│   │   │   ├── concept-list/
-│   │   │   └── stats-bar/
-│   │   └── __tests__/
-│   └── study/
+│   │   ├── home.tsx
+│   │   ├── utils/                    # Page-local types
+│   │   └── components/
+│   │       ├── concept-list/
+│   │       └── stats-bar/
+│   ├── study/                        # Active-recall sessions
+│   │   ├── index.ts
+│   │   ├── study.tsx
+│   │   └── utils/
+│   └── auth/                         # Login + signup pages
 │       ├── index.ts
-│       ├── study.tsx                 # Page: session + summary
-│       ├── components/               # Page-local components (when needed)
-│       └── __tests__/
+│       ├── login.tsx
+│       ├── signup.tsx
+│       └── utils/
+├── context/                          # React contexts shared across pages
+│   ├── auth-context.ts               # AuthContext type
+│   ├── auth-provider.tsx             # Session tracker
+│   ├── use-auth.ts                   # Hook
+│   ├── concept-modal-context.ts
+│   ├── concept-modal.tsx
+│   ├── use-concept-modal.ts
+│   └── index.ts                      # Auth barrel
 ├── common/                           # Reusable, page-agnostic
 │   ├── components/
 │   │   ├── presentational/
-│   │   │   └── flash-card/           # flash-card.tsx + flash-card.css + __tests__/
-│   │   └── domain/
-│   │       └── concept-form/         # Create/edit card modal
+│   │   │   └── flash-card/           # 3D card
+│   │   ├── domain/
+│   │   │   └── concept-form/         # Create/edit card modal
+│   │   └── protected-route/          # Route guard
 │   ├── hooks/
-│   │   └── use-hover-scroll/         # use-hover-scroll.js + __tests__/
+│   │   └── use-hover-scroll/
 │   └── utils/
-│       ├── uid/                      # One utility per folder
+│       ├── uid/
 │       ├── shuffle/
 │       └── tag-color/
 └── application/                      # Application infrastructure
     ├── api/
-    │   ├── concepts-storage.js       # localStorage read/write (try/catch)
-    │   └── seed/                     # Seed data
+    │   ├── supabase-client.ts        # createClient singleton
+    │   ├── concepts-repository.ts    # Typed CRUD over public.concepts
+    │   ├── types.ts                  # Concept / ConceptInput
+    │   └── utils/interfaces.ts       # ConceptRow
     ├── store/
-    │   └── use-concepts/             # Global state + __tests__/
+    │   └── use-concepts/             # Async state bound to session
     ├── config/
-    │   └── constants.js              # STORAGE_KEY, delays, speeds…
-    └── assets/styles/                # index.css and global styles
+    │   └── constants.ts              # LOCALE_STORAGE_KEY, delays, speeds…
+    └── i18n/
+        ├── i18n.ts
+        ├── locales/                  # es.json / en.json
+        └── index.ts
 ```
 
 ### Ownership rules

@@ -32,7 +32,13 @@ responsive card grid (`minmax(250px, 1fr)`).
 
 == Stats bar
 
-Shows the number of cards and distinct tags, plus a *Restore
-initial data* action that asks for confirmation before wiping saved
-data and reseeding the 9 example cards (see
-xref:data-model.adoc[data model]).
+Shows the number of cards and the number of distinct tags. New
+users start with an empty deck — see R6.4.
+
+== Loading and error states
+
+`useConcepts` fetches the cards from Supabase on mount and whenever
+the session changes. While the request is in flight the page shows
+the `home.loading` message; if the request fails, `home.loadError`
+includes the underlying error message and is announced with
+`role="alert"`.
