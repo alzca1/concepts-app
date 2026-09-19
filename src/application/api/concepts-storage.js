@@ -1,13 +1,13 @@
 /**
- * Persistencia de tarjetas en localStorage (clave versionada).
- * Todo acceso va envuelto en try/catch: si localStorage no está
- * disponible o el JSON está corrupto, la app sigue funcionando y
- * siembra las tarjetas de ejemplo.
+ * Card persistence in localStorage (versioned key).
+ * Every access is wrapped in try/catch: if localStorage is
+ * unavailable or the JSON is corrupt, the app keeps working and
+ * seeds the sample cards.
  */
 import { seedConcepts } from "./seed/seed-concepts";
 import { STORAGE_KEY } from "../config/constants";
 
-/** Carga las tarjetas guardadas; si no hay datos válidos, siembra. */
+/** Loads the stored cards; falls back to the seed when invalid. */
 export function loadConcepts() {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -20,11 +20,11 @@ export function loadConcepts() {
   }
 }
 
-/** Guarda las tarjetas; falla en silencio sin localStorage. */
+/** Saves the cards; fails silently without localStorage. */
 export function saveConcepts(concepts) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(concepts));
   } catch {
-    // localStorage no disponible: seguimos funcionando en memoria.
+    // localStorage unavailable: keep working in memory.
   }
 }

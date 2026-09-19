@@ -12,8 +12,8 @@ const MODES = [
 ];
 
 /**
- * Shell de la aplicación: cabecera con cambio de modo, página activa
- * y modal de crear/editar tarjeta.
+ * Application shell: header with mode tabs, active page and the
+ * create/edit card modal.
  */
 export default function App() {
   const {

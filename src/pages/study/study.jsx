@@ -9,10 +9,11 @@ function initialStats(count) {
 }
 
 /**
- * Página «Estudiar»:
- * - la pila empieza barajada y se reduce al marcar "la tengo clara";
- * - "volver a ver" devuelve la tarjeta al final de la pila;
- * - cuando la pila se vacía se muestra un resumen de la sesión.
+ * «Estudiar» page:
+ * - the deck starts shuffled and shrinks as cards are marked
+ *   "clear";
+ * - "review again" sends the card to the end of the deck;
+ * - when the deck is empty, the session summary is shown.
  */
 export function StudyPage({ concepts, onBack }) {
   const [queue, setQueue] = useState(() => shuffle(concepts));
@@ -37,8 +38,8 @@ export function StudyPage({ concepts, onBack }) {
     setShowActions(false);
   };
 
-  // Limpiar el temporizador pendiente al desmontar (p. ej. al salir
-  // del modo estudio antes de que venza el retardo).
+  // Cancel the pending timer on unmount (e.g. when leaving study
+  // mode before the delay elapses).
   useEffect(() => hideActions, []);
 
   function restart() {
@@ -57,8 +58,8 @@ export function StudyPage({ concepts, onBack }) {
 
   function handleCardFlip() {
     if (flipped) {
-      // Volver a la pregunta: los botones se ocultan y se cancela su
-      // arranque pendiente.
+      // Back to the question: the buttons are hidden and their
+      // pending start is cancelled.
       setFlipped(false);
       hideActions();
     } else {
@@ -70,7 +71,7 @@ export function StudyPage({ concepts, onBack }) {
     }
   }
 
-  // Sin tarjetas para estudiar
+  // No cards to study
   if (stats.initial === 0) {
     return (
       <div className="empty-state">
@@ -84,7 +85,7 @@ export function StudyPage({ concepts, onBack }) {
     );
   }
 
-  // Sesión completada
+  // Session completed
   if (queue.length === 0) {
     return (
       <section className="summary">

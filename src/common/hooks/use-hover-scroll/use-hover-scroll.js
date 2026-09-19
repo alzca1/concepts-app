@@ -6,19 +6,19 @@ import {
 } from "../../../application/config/constants";
 
 /**
- * Devuelve `ref` y eventos para aplicar un scroll vertical lento y
- * automático al hacer hover (o foco) sobre un elemento, solo si el
- * contenido desborda en vertical.
+ * Returns `ref` and events to apply a slow automatic vertical
+ * scroll on hover (or focus) of an element, only when the content
+ * overflows vertically.
  *
- * La descripción completa del comportamiento (pausa, recorrido,
- * interrupción manual, cuantización) vive en
+ * The full behavior description (pause, single pass, manual
+ * interruption, quantization) lives in
  * `docs/modules/ROOT/pages/flash-card.adoc`.
  *
- * @param {string} content - Texto de la cara; el hook se re-mide cuando
- *   cambia.
- * @param {number} speed - Píxeles por segundo (por defecto
+ * @param {string} content - Face text; the hook re-measures when it
+ *   changes.
+ * @param {number} speed - Pixels per second (defaults to
  *   `HOVER_SCROLL_SPEED`).
- * @param {number} delay - Pausa en ms antes de arrancar (por defecto
+ * @param {number} delay - Pause in ms before starting (defaults to
  *   `HOVER_SCROLL_DELAY`).
  */
 export function useHoverScroll(
@@ -68,27 +68,27 @@ export function useHoverScroll(
     expectedRef.current = 0;
 
     const step = (ts) => {
-      // Clamp del delta: si la pestaña estaba en segundo plano, el
-      // salto de tiempo no debe dar un salto visual del contenido.
+      // Clamp the delta: if the tab was in the background, the time
+      // jump must not visually jump the content.
       const dt = Math.min(ts - lastTsRef.current, 50) / 1000;
       lastTsRef.current = ts;
 
       const maxNow = el.scrollHeight - el.clientHeight;
       if (maxNow <= 0) {
-        // El contenido ya cabe (p. ej. resize): se detiene todo.
+        // Content fits again (e.g. after a resize): stop everything.
         stop();
         posRef.current = 0;
         el.scrollTop = 0;
         return;
       }
 
-      // Recorrido único hacia abajo, sin rebote: al llegar al final
-      // el scroll se detiene. La posición se acumula en `posRef` y
-      // NO se relee de `scrollTop`: el navegador cuantiza el scroll
-      // (píxeles enteros, o medios en HiDPI), así que el incremento
-      // por frame (~0,3 px a 16 px/s) se truncaría a 0 y el scroll
-      // nunca avanzaría. La tolerancia de `onScroll` (±2 px) absorbe
-      // esa cuantización.
+      // Single downward pass, no bounce: the scroll stops at the
+      // end. The position accumulates in `posRef` and is NOT re-read
+      // from `scrollTop`: the browser quantizes scroll offsets
+      // (whole pixels, or halves on HiDPI), so the per-frame
+      // increment (~0.3 px at 16 px/s) would truncate to 0 and the
+      // scroll would never advance. The `onScroll` tolerance (±2 px)
+      // absorbs that quantization.
       let pos = posRef.current + speedRef.current * dt;
       const reachedEnd = pos >= maxNow;
       if (reachedEnd) pos = maxNow;
@@ -123,13 +123,12 @@ export function useHoverScroll(
   const onScroll = () => {
     const el = ref.current;
     if (el == null || rafRef.current == null) return;
-    // Si la posición difiere de la esperada, el scroll no fue el
-    // automático: lo hizo el usuario. Se deja de mover solo.
+    // If the position differs from the expected one, the scroll was
+    // not ours: the user scrolled. Stop moving on our own.
     if (Math.abs(el.scrollTop - expectedRef.current) > 2) stop();
   };
 
-  // Medir al montar, al cambiar el contenido y al redimensionar la
-  // ventana.
+  // Measure on mount, on content change and on window resize.
   useEffect(
     () => {
       setScrollable(measure());
@@ -140,7 +139,7 @@ export function useHoverScroll(
     [content]
   );
 
-  // Detener la pausa y el loop al desmontar.
+  // Cancel the pause and the loop on unmount.
   useEffect(
     () => {
       return () => {

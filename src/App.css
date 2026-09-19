@@ -1,4 +1,4 @@
-/* ===== Aplicación ===== */
+/* ===== Application ===== */
 .app {
   max-width: 960px;
   margin: 0 auto;
@@ -33,7 +33,7 @@ h1 {
   margin-top: 2px;
 }
 
-/* --- Modo tabs --- */
+/* --- Mode tabs --- */
 .mode-tabs {
   display: inline-flex;
   gap: 5px;
@@ -66,7 +66,7 @@ h1 {
   box-shadow: 0 4px 16px rgba(99, 102, 241, 0.45);
 }
 
-/* --- Barra de estadísticas --- */
+/* --- Stats bar --- */
 .stats-bar {
   display: flex;
   align-items: center;
@@ -98,7 +98,7 @@ h1 {
   flex: 1;
 }
 
-/* --- Botones --- */
+/* --- Buttons --- */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -172,7 +172,7 @@ h1 {
   font-size: 0.9rem;
 }
 
-/* --- Fila de añadir --- */
+/* --- Add row --- */
 .add-row {
   display: flex;
   align-items: center;
@@ -180,7 +180,7 @@ h1 {
   margin-bottom: 1.25rem;
 }
 
-/* --- Controles de la parrilla --- */
+/* --- Deck controls --- */
 .deck-controls {
   display: flex;
   flex-direction: column;
@@ -246,7 +246,7 @@ h1 {
   background: var(--chip-color, #94a3b8);
 }
 
-/* --- Parrilla de tarjetas --- */
+/* --- Card grid --- */
 .deck {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -268,9 +268,9 @@ h1 {
   z-index: 2;
 }
 
-/* Los iconos viven dentro de la cara frontal (prop `actions` de
- * `FlashCard`) y voltean con la tarjeta; con la cara de espaldas,
- * `visibility: hidden` los saca también del orden de tabulación. */
+/* The icons live inside the front face (`actions` prop of
+ * `FlashCard`) and flip with the card; while the card faces away,
+ * `visibility: hidden` also takes them out of the tab order. */
 .flash-card.flipped .cell-actions {
   visibility: hidden;
 }
@@ -301,7 +301,7 @@ h1 {
   background: rgba(239, 68, 68, 0.5);
 }
 
-/* --- Tarjeta 3D --- */
+/* --- 3D card --- */
 .flash-card {
   --tag-color: #a78bfa;
   width: 100%;
@@ -309,9 +309,9 @@ h1 {
   cursor: pointer;
 }
 
-/* Las caras son absolutas; el contenedor necesita altura para que
- * no desborden por debajo y pinten sobre los elementos posteriores
- * (ej. los botones de «Estudiar»). */
+/* The faces are absolute; the container needs a height so they do
+ * not overflow below and paint over later elements (e.g. the
+ * «Estudiar» action buttons). */
 .flash-card-inner {
   position: relative;
   min-height: 190px;
@@ -355,15 +355,15 @@ h1 {
   display: inline-block;
 }
 
-/* El texto de las caras envuelve: si la pregunta o la respuesta son
- * más altas que la tarjeta, el elemento se vuelve scrollable y, al
- * hacer hover (o foco) sobre la tarjeta, un scroll vertical muy lento
- * (16 px/s, recorrido único que se detiene al final — ver
- * `hooks/useHoverScroll.js`) permite leer el desborde. Si el contenido
- * cabe, la tarjeta se mantiene estática y su altura pequeña (190/300
- * px) se conserva.
- * `min-height: 0` es imprescindible: sin él el ítem flex no encoge
- * bajo su contenido dentro de la cara y nunca se vuelve scrollable. */
+/* Face text wraps: if the question or the answer is taller than the
+ * card, the element becomes scrollable and, on hover (or focus), a
+ * very slow vertical auto-scroll (16 px/s, single pass that stops at
+ * the end — see `common/hooks/use-hover-scroll`) makes the overflow
+ * readable. When the content fits, the card stays static and keeps
+ * its small height (190/300 px).
+ * `min-height: 0` is essential: without it the flex item does not
+ * shrink below its content inside the face and never becomes
+ * scrollable. */
 .flash-face h3 {
   font-size: 1.02rem;
   font-weight: 600;
@@ -376,9 +376,9 @@ h1 {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   box-sizing: border-box;
-  /* Los márgenes auto absorben el espacio libre (también con
-    `justify-content: space-between`), por lo que el texto queda
-    centrado verticalmente. */
+  /* Auto margins absorb the free space (also with
+    `justify-content: space-between`), so the text stays vertically
+    centered. */
   margin-top: auto;
   margin-bottom: auto;
 }
@@ -398,17 +398,17 @@ h1 {
   margin-bottom: auto;
 }
 
-/* Oculta la barra de desplazamiento: el movimiento lo controla el
- * scroll automático por hover/foco, no una barra arrastrable. */
+/* Hides the scrollbar: movement is driven by the hover/focus
+ * auto-scroll, not a draggable bar. */
 .flash-face h3::-webkit-scrollbar,
 .flash-face p::-webkit-scrollbar {
   display: none;
 }
 
-/* Pista visual de desborde: cuando el contenido de la cara es más
- * alto que la tarjeta, `FlashCard` añade `flash-face--overflow` (a
- * partir del estado `scrollable` de `useHoverScroll`) y un degradado
- * inferior indica que hay más texto por leer. */
+/* Overflow hint: when the face content is taller than the card,
+ * `FlashCard` adds `flash-face--overflow` (from the `scrollable`
+ * state of `useHoverScroll`) and a bottom gradient indicates there
+ * is more text to read. */
 .flash-face--overflow::after {
   content: "";
   position: absolute;
@@ -420,9 +420,9 @@ h1 {
   pointer-events: none;
 }
 
-/* El hint se oculta con opacidad (no se retira del DOM): sigue ocupando
- * su espacio, así la cara frontal no pierde altura y la pregunta se
- * mantiene en su posición al iniciar el giro. */
+/* The hint is hidden with opacity (not removed from the DOM): it
+ * keeps occupying its space, so the front face does not lose height
+ * and the question stays in place when the flip starts. */
 .flip-hint {
   font-size: 0.72rem;
   font-style: italic;
@@ -434,9 +434,9 @@ h1 {
   opacity: 0;
 }
 
-/* Cada cara se apila en 3D: la trasera va pre-rotada 180°.
- * Sin esto ambas caras quedan en el mismo plano y la
- * trasera (respuesta) pinta por encima de la frontal.
+/* Each face stacks in 3D: the back one is pre-rotated 180°.
+ * Without this both faces share the same plane and the back face
+ * (answer) paints over the front one.
  */
 .flash-face.flash-front {
   transform: rotateY(0deg);
@@ -446,7 +446,7 @@ h1 {
   transform: rotateY(180deg);
 }
 
-/* Tarjeta grande (modo estudio) */
+/* Big card (study mode) */
 .flash-card--big .flash-face {
   min-height: 300px;
   padding: 2rem 2.1rem;
@@ -465,7 +465,7 @@ h1 {
   font-size: 1.05rem;
 }
 
-/* --- Estado vacío --- */
+/* --- Empty state --- */
 .empty-state {
   padding: 2.5rem 1rem;
   text-align: center;
@@ -475,7 +475,7 @@ h1 {
   background: rgba(255, 255, 255, 0.03);
 }
 
-/* --- Modo estudio --- */
+/* --- Study mode --- */
 .study {
   text-align: center;
 }
@@ -517,20 +517,20 @@ h1 {
   justify-content: center;
   flex-wrap: wrap;
   margin-top: 1.75rem;
-  /* Los botones aparecen con retardo tras voltear la tarjeta (ver
-   * `StudyView`): el contenedor reserva su espacio desde el volteo y
-   * los botones hacen fade-in al volverse visibles. */
+  /* The buttons appear with a delay after the card is flipped (see
+   * `StudyPage`): the container reserves its space from the flip and
+   * the buttons fade in when they become visible. */
   transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .study-actions--waiting {
   opacity: 0;
-  /* visibility (a diferencia de opacity sola) también saca los
-   * botones del orden de tabulación mientras son invisibles. */
+  /* visibility (unlike opacity alone) also takes the buttons out of
+   * the tab order while they are invisible. */
   visibility: hidden;
 }
 
-/* --- Resumen --- */
+/* --- Summary --- */
 .summary {
   padding: 2rem 0;
 }
@@ -654,9 +654,9 @@ h1 {
   resize: vertical;
 }
 
-/* El textarea de respuesta arranca más alto que las 4 filas por
- * defecto: en mobile ya deja ver más texto, y a partir de 641px el
- * bloque responsive lo sube aún más (14rem). */
+/* The answer textarea starts taller than the default 4 rows: on
+ * mobile it already shows more text, and from 641px on the
+ * responsive block raises it further (14rem). */
 .field textarea {
   min-height: 10rem;
 }
@@ -681,9 +681,9 @@ h1 {
   margin-top: 0.25rem;
 }
 
-/* Por encima de mobile el modal es más ancho y el textarea de
- * respuesta más alto: los textos largos se ven mejor al crearlos o
- * editarlos. En mobile se conservan las medidas compactas. */
+/* Above mobile the modal is wider and the answer textarea taller:
+ * long texts read better while creating or editing them. Mobile
+ * keeps the compact sizes. */
 @media (min-width: 641px) {
   .modal {
     width: min(720px, 90vw);
