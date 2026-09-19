@@ -113,3 +113,17 @@ internal: convenciones de Git (ramas + conventional commits)
 
 docs(estudio): documentar el retardo de los botones de respuesta
 ```
+
+---
+
+## 4. Pull Requests
+
+- Una PR por rama, con **`develop` como rama base**.
+- Título con el mismo formato que el commit principal:
+  `<tipo>(<ámbito>): <descripción>`.
+- **Título y cuerpo siempre en inglés**, igual que todo su contenido
+  (los commits y la UI de la app siguen en español).
+- Estructura sugerida del cuerpo: *What* (qué cambia), *Why / Notes
+  for reviewers* (por qué y decisiones), *Verification* (cómo se ha
+  comprobado: lint, build, pasos manuales).
+- Merge `--no-ff` a `develop` y borrado de la rama tras aprobarse.
