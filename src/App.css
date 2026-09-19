@@ -268,6 +268,13 @@ h1 {
   z-index: 2;
 }
 
+/* Los iconos viven dentro de la cara frontal (prop `actions` de
+ * `FlashCard`) y voltean con la tarjeta; con la cara de espaldas,
+ * `visibility: hidden` los saca también del orden de tabulación. */
+.flash-card.flipped .cell-actions {
+  visibility: hidden;
+}
+
 .card-cell:hover .cell-actions,
 .card-cell:focus-within .cell-actions {
   opacity: 1;
@@ -348,14 +355,30 @@ h1 {
   display: inline-block;
 }
 
-/* La pregunta se centra entre la etiqueta y el hint: los márgenes auto
- * absorben el espacio libre (también con `justify-content: space-between`),
- * por lo que no importa si hay poco o mucho texto. */
+/* El texto de las caras envuelve: si la pregunta o la respuesta son
+ * más altas que la tarjeta, el elemento se vuelve scrollable y, al
+ * hacer hover (o foco) sobre la tarjeta, un scroll vertical muy lento
+ * (16 px/s, recorrido único que se detiene al final — ver
+ * `hooks/useHoverScroll.js`) permite leer el desborde. Si el contenido
+ * cabe, la tarjeta se mantiene estática y su altura pequeña (190/300
+ * px) se conserva.
+ * `min-height: 0` es imprescindible: sin él el ítem flex no encoge
+ * bajo su contenido dentro de la cara y nunca se vuelve scrollable. */
 .flash-face h3 {
   font-size: 1.02rem;
   font-weight: 600;
   line-height: 1.45;
   overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-height: 0;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  box-sizing: border-box;
+  /* Los márgenes auto absorben el espacio libre (también con
+    `justify-content: space-between`), por lo que el texto queda
+    centrado verticalmente. */
   margin-top: auto;
   margin-bottom: auto;
 }
@@ -363,6 +386,38 @@ h1 {
 .flash-face p {
   font-size: 0.92rem;
   line-height: 1.55;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-height: 0;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  box-sizing: border-box;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+/* Oculta la barra de desplazamiento: el movimiento lo controla el
+ * scroll automático por hover/foco, no una barra arrastrable. */
+.flash-face h3::-webkit-scrollbar,
+.flash-face p::-webkit-scrollbar {
+  display: none;
+}
+
+/* Pista visual de desborde: cuando el contenido de la cara es más
+ * alto que la tarjeta, `FlashCard` añade `flash-face--overflow` (a
+ * partir del estado `scrollable` de `useHoverScroll`) y un degradado
+ * inferior indica que hay más texto por leer. */
+.flash-face--overflow::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2.5rem;
+  background: linear-gradient(transparent, #101530);
+  border-radius: inherit;
+  pointer-events: none;
 }
 
 /* El hint se oculta con opacidad (no se retira del DOM): sigue ocupando
@@ -462,6 +517,17 @@ h1 {
   justify-content: center;
   flex-wrap: wrap;
   margin-top: 1.75rem;
+  /* Los botones aparecen con retardo tras voltear la tarjeta (ver
+   * `StudyView`): el contenedor reserva su espacio desde el volteo y
+   * los botones hacen fade-in al volverse visibles. */
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.study-actions--waiting {
+  opacity: 0;
+  /* visibility (a diferencia de opacity sola) también saca los
+   * botones del orden de tabulación mientras son invisibles. */
+  visibility: hidden;
 }
 
 /* --- Resumen --- */
@@ -542,6 +608,9 @@ h1 {
 
 .modal {
   width: min(520px, 100%);
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
   border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: #1d1b3f;
@@ -585,6 +654,13 @@ h1 {
   resize: vertical;
 }
 
+/* El textarea de respuesta arranca más alto que las 4 filas por
+ * defecto: en mobile ya deja ver más texto, y a partir de 641px el
+ * bloque responsive lo sube aún más (14rem). */
+.field textarea {
+  min-height: 10rem;
+}
+
 .field input:focus,
 .field textarea:focus {
   outline: none;
@@ -603,6 +679,19 @@ h1 {
   justify-content: flex-end;
   gap: 0.6rem;
   margin-top: 0.25rem;
+}
+
+/* Por encima de mobile el modal es más ancho y el textarea de
+ * respuesta más alto: los textos largos se ven mejor al crearlos o
+ * editarlos. En mobile se conservan las medidas compactas. */
+@media (min-width: 641px) {
+  .modal {
+    width: min(720px, 90vw);
+  }
+
+  .field textarea {
+    min-height: 14rem;
+  }
 }
 
 /* --- Responsive --- */
