@@ -9,12 +9,17 @@ import { HomePage } from "./pages/home";
 import { StudyPage } from "./pages/study";
 import "./App.css";
 
-const MODES = [
-  { id: "cartas", labelKey: "mode.cards" },
-  { id: "estudiar", labelKey: "mode.study" },
-] as const;
+const MODE_IDS = {
+  CARDS: "cartas",
+  STUDY: "estudiar",
+} as const;
 
-type ModeId = (typeof MODES)[number]["id"];
+type ModeId = (typeof MODE_IDS)[keyof typeof MODE_IDS];
+
+const MODES: { id: ModeId; labelKey: string }[] = [
+  { id: MODE_IDS.CARDS, labelKey: "mode.cards" },
+  { id: MODE_IDS.STUDY, labelKey: "mode.study" },
+];
 
 const LANGUAGES: { id: Locale; label: string }[] = [
   { id: "es", label: "ES" },
@@ -42,7 +47,7 @@ export default function App() {
     resetToSeed,
   } = useConcepts();
 
-  const [mode, setMode] = useState<ModeId>("cartas");
+  const [mode, setMode] = useState<ModeId>(MODE_IDS.CARDS);
   const [editing, setEditing] = useState<string | null>(null); // null | NEW_CARD_SENTINEL | id
 
   function handleDelete(id: string) {
@@ -90,7 +95,7 @@ export default function App() {
                 aria-pressed={mode === m.id}
                 onClick={() => setMode(m.id)}
               >
-                {m.id === "cartas" ? "🗂️" : "🎯"} {t(m.labelKey)}
+                {m.id === MODE_IDS.CARDS ? "🗂️" : "🎯"} {t(m.labelKey)}
               </button>
             ))}
           </div>
@@ -98,7 +103,7 @@ export default function App() {
       </header>
 
       <main>
-        {mode === "cartas" ? (
+        {mode === MODE_IDS.CARDS ? (
           <HomePage
             concepts={concepts}
             deleteConcept={handleDelete}
@@ -106,7 +111,7 @@ export default function App() {
             resetToSeed={resetToSeed}
           />
         ) : (
-          <StudyPage concepts={concepts} onBack={() => setMode("cartas")} />
+          <StudyPage concepts={concepts} onBack={() => setMode(MODE_IDS.CARDS)} />
         )}
       </main>
 
