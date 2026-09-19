@@ -5,11 +5,13 @@ import { tagColor } from "../lib/utils";
 
 /**
  * Modo "Mis tarjetas": búsqueda, filtro por etiqueta y parrilla de tarjetas
- * con acciones de editar / eliminar.
+ * con acciones de editar / eliminar. Solo una tarjeta muestra su respuesta
+ * a la vez: voltear una reinicia la anterior.
  */
 export function ConceptList({ concepts, deleteConcept, onEdit }) {
   const [search, setSearch] = useState("");
   const [activeTag, setActiveTag] = useState("");
+  const [flippedId, setFlippedId] = useState(null);
 
   const tags = Array.from(new Set(concepts.map((c) => c.tag || "General")));
 
@@ -34,6 +36,14 @@ export function ConceptList({ concepts, deleteConcept, onEdit }) {
         />
         {tags.length > 0 && (
           <div className="tag-row" aria-label="Filtrar por etiqueta">
+            <button
+              type="button"
+              className={`chip ${activeTag === "" ? "active" : ""}`}
+              onClick={() => setActiveTag("")}
+              aria-pressed={activeTag === ""}
+            >
+              Todos
+            </button>
             {tags.map((tag) => (
               <button
                 key={tag}
@@ -41,6 +51,7 @@ export function ConceptList({ concepts, deleteConcept, onEdit }) {
                 className={`chip ${activeTag === tag ? "active" : ""}`}
                 style={{ "--chip-color": tagColor(tag) }}
                 onClick={() => setActiveTag(activeTag === tag ? "" : tag)}
+                aria-pressed={activeTag === tag}
               >
                 <span className="dot" />
                 {tag}
@@ -60,28 +71,36 @@ export function ConceptList({ concepts, deleteConcept, onEdit }) {
         <div className="deck" aria-label="Tarjetas">
           {filtered.map((concept) => (
             <div key={concept.id} className="card-cell">
-              <FlashCard concept={concept} />
-              <div className="cell-actions">
-                <button
-                  type="button"
-                  title="Editar tarjeta"
-                  onClick={() => onEdit(concept.id)}
-                >
-                  ✎
-                </button>
-                <button
-                  type="button"
-                  title="Eliminar tarjeta"
-                  className="danger"
-                  onClick={() =>
-                    window.confirm(
-                      `¿Eliminar «${concept.front}»?`
-                    ) && deleteConcept(concept.id)
-                  }
-                >
-                  ✕
-                </button>
-              </div>
+              <FlashCard
+                concept={concept}
+                flipped={flippedId === concept.id}
+                onFlip={() =>
+                  setFlippedId(flippedId === concept.id ? null : concept.id)
+                }
+                actions={
+                  <div className="cell-actions">
+                    <button
+                      type="button"
+                      title="Editar tarjeta"
+                      onClick={() => onEdit(concept.id)}
+                    >
+                      ✎
+                    </button>
+                    <button
+                      type="button"
+                      title="Eliminar tarjeta"
+                      className="danger"
+                      onClick={() =>
+                        window.confirm(
+                          `¿Eliminar «${concept.front}»?`
+                        ) && deleteConcept(concept.id)
+                      }
+                    >
+                      ✕
+                    </button>
+                  </div>
+                }
+              />
             </div>
           ))}
         </div>

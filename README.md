@@ -43,7 +43,8 @@ concepts-app/
     ├── data/
     │   └── seed.js           # Tarjetas de ejemplo
     ├── hooks/
-    │   └── useConcepts.js    # Estado + persistencia en localStorage
+    │   ├── useConcepts.js    # Estado + persistencia en localStorage
+    │   └── useHoverScroll.js # Scroll vertical lento en hover (solo si el contenido desborda)
     └── lib/
         └── utils.js          # uid, shuffle, tagColor
 ```

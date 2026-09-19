@@ -1,7 +1,14 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { FlashCard } from "./FlashCard";
 import { shuffle } from "../lib/utils";
+
+/**
+ * Retardo (ms) con el que aparecen los botones de respuesta una vez
+ * volteada la tarjeta: da tiempo a leer la respuesta antes de decidir
+ * si se tiene clara o se quiere volver a verla.
+ */
+const STUDY_ACTIONS_DELAY = 1500;
 
 function initialStats(count) {
   return { initial: count, known: 0, repeated: 0 };
@@ -17,22 +24,56 @@ export function StudyView({ concepts, onBack }) {
   const [queue, setQueue] = useState(() => shuffle(concepts));
   const [stats, setStats] = useState(() => initialStats(concepts.length));
   const [flipped, setFlipped] = useState(false);
+  const [showActions, setShowActions] = useState(false);
+  const actionsTimerRef = useRef(null);
 
   const current = queue[0];
   const mastered = stats.initial - queue.length;
   const visited = stats.known + stats.repeated;
   const pct = stats.initial ? Math.round((mastered / stats.initial) * 100) : 0;
 
+  const cancelActionsTimer = () => {
+    if (actionsTimerRef.current == null) return;
+    clearTimeout(actionsTimerRef.current);
+    actionsTimerRef.current = null;
+  };
+
+  const hideActions = () => {
+    cancelActionsTimer();
+    setShowActions(false);
+  };
+
+  // Limpiar el temporizador pendiente al desmontar (p. ej. al salir
+  // del modo estudio antes de que venza el retardo).
+  useEffect(() => hideActions, []);
+
   function restart() {
     setQueue(shuffle(concepts));
     setStats(initialStats(concepts.length));
     setFlipped(false);
+    hideActions();
   }
 
   function answer(isKnown) {
     setStats((s) => (isKnown ? { ...s, known: s.known + 1 } : { ...s, repeated: s.repeated + 1 }));
     setQueue((q) => (isKnown ? q.slice(1) : [...q.slice(1), q[0]]));
     setFlipped(false);
+    hideActions();
+  }
+
+  function handleCardFlip() {
+    if (flipped) {
+      // Volver a la pregunta: los botones se ocultan y se cancela su
+      // arranque pendiente.
+      setFlipped(false);
+      hideActions();
+    } else {
+      setFlipped(true);
+      actionsTimerRef.current = setTimeout(
+        () => setShowActions(true),
+        STUDY_ACTIONS_DELAY
+      );
+    }
   }
 
   // Sin tarjetas para estudiar
@@ -105,14 +146,18 @@ export function StudyView({ concepts, onBack }) {
         <FlashCard
           concept={current}
           size="large"
-          controlled
           flipped={flipped}
-          onFlip={() => setFlipped((v) => !v)}
+          onFlip={handleCardFlip}
         />
       </div>
 
       {flipped && (
-        <div className="study-actions" aria-label="Responder tarjeta actual">
+        <div
+          className={`study-actions${
+            showActions ? "" : " study-actions--waiting"
+          }`}
+          aria-label="Responder tarjeta actual"
+        >
           <button className="btn btn-success" onClick={() => answer(true)}>
             👍 La tengo clara
           </button>

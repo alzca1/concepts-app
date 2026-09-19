@@ -65,6 +65,7 @@ concepts-app/
 ├── index.html
 ├── vite.config.js
 ├── AGENTS.md            ← ESTE ARCHIVO
+├── GIT_CONVENTIONS.md   ← convenciones de Git (ramas + commits)
 ├── README.md
 ├── package.json
 ├── public/
@@ -130,18 +131,34 @@ localStorage (clave `concepts-app:v1`)
 ### 5.1 Modo «Mis tarjetas» (Home)
 
 - [x] Parrilla de tarjetas **responsive** (CSS Grid, `minmax(250px, 1fr)`).
-- [x] Cada celda muestra una `FlashCard` con acciones **editar** (✎) y **eliminar** (✕).
+- [x] Cada celda muestra una `FlashCard` con acciones **editar** (✎) y
+      **eliminar** (✕). Los iconos viven en la cara frontal (prop `actions`
+      de `FlashCard`), de modo que **voltean junto con la tarjeta**; con la
+      cara de espaldas quedan ocultos y fuera del tab
+      (`.flash-card.flipped .cell-actions { visibility: hidden }`).
+      *(Voltear con la tarjeta desde 2026-09-18; antes flotaban fijos.)*
+- [x] **Solo una respuesta visible a la vez**: voltear una tarjeta reinicia la
+      anterior; el estado de volteo vive en `ConceptList` como `flippedId`.
+      *(Añadido 2026-09-18.)*
 - [x] Confirmación con `window.confirm` antes de eliminar (texto con el título de la tarjeta).
 - [x] **Búsqueda** por texto: busca en `front`, `back` y `tag` (case-insensitive,
       normaliza `trim`).
-- [x] **Filtro por etiqueta** (chips con color por `tagColor(tag)`); doble clic
-      en el chip activo lo desactiva.
+- [x] **Filtro por etiqueta** (chips con color por `tagColor(tag)`); el chip
+      **«Todos»**, primero de la fila, limpia el filtro y muestra todas las
+      tarjetas (activo cuando no hay etiqueta seleccionada); clic en el chip
+      activo lo desactiva. *(Chip «Todos» añadido 2026-09-18.)*
 - [x] **Estado vacío**: mensaje distinto si hay filtros activos vs. parrilla realmente vacía.
 
 ### 5.2 Modo estudio
 
 - [x] Sesión con **pila barajada** (`shuffle` de Fisher–Yates en `lib/utils.js`).
 - [x] Tarjeta grande que se **voltea** (controlada por estado, no por hover).
+- [x] Los **botones de respuesta** («La tengo clara» / «Volver a ver»)
+      aparecen con un **retardo de 1500 ms** tras voltear la tarjeta
+      (`STUDY_ACTIONS_DELAY` en `StudyView`), con fade-in y reservando su
+      espacio (`.study-actions--waiting`, fuera del tab mientras esperan);
+      al volver a la pregunta, avanzar o reiniciar, se ocultan y se cancela
+      el arranque pendiente. *(Añadido 2026-09-18.)*
 - [x] Botón «La tengo clara» → siguiente tarjeta (marcada como visitada).
 - [x] Botón «Volver a ver» → la tarjeta se reinserta **al final de la pila**
       (no se cuenta como clara).
@@ -154,6 +171,7 @@ localStorage (clave `concepts-app:v1`)
 
 - [x] **Crear** tarjeta vía modal (`ConceptForm`).
 - [x] **Editar** tarjeta vía modal reutilizado (puedo iniciar en edit desde cualquier tarjeta).
+- [x] **Modal más ancho y alto por encima de mobile** (≥641px): `width: min(720px, 90vw)` y textarea de respuesta con `min-height: 14rem`, para ver mejor los textos largos; en mobile el textarea también arranca más alto que el mínimo (`min-height: 10rem`). El modal nunca excede el alto del viewport (`max-height` + scroll interno). *(Añadido 2026-09-18; altura mobile ampliada el mismo día.)*
 - [x] **Eliminar** tarjeta (con confirmación).
 - [x] Validación del formulario (error visible si faltan campos; ver `ConceptForm`).
 - [x] Cada cambio se persiste **automáticamente** en `localStorage`
@@ -167,7 +185,10 @@ localStorage (clave `concepts-app:v1`)
 - [x] Tarjeta **3D** con animación de volteo (0.55s, `cubic-bezier(0.4,0,0.2,1)`).
 - [x] Volteado **solo con clic** (o teclado: `Enter` / espacio) en la parrilla y
       cualquier dispositivo; **sin volteo por hover**.
-- [x] En modo estudio, el volteo es **controlado** (botones / estado).
+- [x] El volteo es **controlado por el padre** en todos los modos (la parrilla
+      mantiene un único `flippedId`; el estudio controla su tarjeta grande).
+      El antiguo modo no controlado de `FlashCard` se eliminó al quedar sin
+      uso. *(Desde 2026-09-18.)*
 - [x] **Mantener la pila 3D estable**: cada cara debe tener su rotación propia
   (`.flash-front { transform: rotateY(0) }`, `.flash-back { transform: rotateY(180deg) }`);
   sin esto ambas caras quedan en el mismo plano y la trasera (respuesta) pinta
@@ -178,8 +199,19 @@ localStorage (clave `concepts-app:v1`)
   inferior al iniciar el giro (aplica a la parrilla y a la tarjeta grande de
   estudio). *(Corregido 2026-09-18.)*
 - [x] **Accesibilidad**: `role="button"`, teclado, `aria-label` en controles.
+- [x] **Scroll lento en hover para contenido más alto que la tarjeta**: la
+      pregunta y la respuesta envuelven. Si el contenido es más alto que la
+      cara (`scrollHeight > clientHeight`), al hacer hover (o foco) sobre la
+      tarjeta se activa —tras una pausa de **750 ms** (cancelable si el
+      cursor sale antes)— un scroll vertical muy lento (recorrido único
+      de arriba abajo, 16 px/s, que **se detiene al llegar al final** —
+      `hooks/useHoverScroll.js`) para poder leerlo; si el contenido
+      cabe, la
+      tarjeta se mantiene estática y su altura pequeña (190/300 px) se
+      conserva. Un degradado inferior (`.flash-face--overflow`) indica el
+      desborde. *(Vertical desde 2026-09-18; antes horizontal.)*
 
-### 5.5 Requisitos abiertos / pendientes
+### 5.5 Requisitos abiertos / pendiente
 
 - [ ] (none yet) → registrar aquí nuevos requerimientos con estado.
 
@@ -210,6 +242,10 @@ localStorage (clave `concepts-app:v1`)
 | 2026-09-18 | Registro de requisitos en `AGENTS.md` | Fuente de verdad para agentes y humanos; actualizarse ante cada cambio |
 | 2026-09-18 | Volteo en la parrilla **solo por clic** (se elimina el hover) | El hover rotaba la tarjeta en Home; el requisito cambia a clic/teclado para revelar la respuesta. |
 | 2026-09-18 | Hint «Clic para revelar» permanece en el DOM al voltear (oculto con `opacity: 0` + transición) y pregunta centrada con `margin: auto` | **Fix bug**: al condicionar el hint con `{!isFlipped && …}`, la cara frontal perdía altura al girar y con `justify-content: space-between` la pregunta saltaba al borde inferior antes del flip |
+| 2026-09-18 | Scroll horizontal automático lento al hacer hover/foco, solo si el contenido es más ancho que la tarjeta | El texto de cada cara no envuelve (`white-space: nowrap` + `overflow-x: auto` con barra oculta). El hook `useHoverScroll` mide `scrollWidth > clientWidth` y, solo con desborde, arranca un scroll ping-pong a 16 px/s; se detiene al salir del hover/foco (posición → 0) y se interrumpe si el usuario hace un scroll manual. Se re-mide al editar la tarjeta y al redimensionar.
+| 2026-09-18 | El auto-scroll por hover pasa a **vertical**: el texto de las caras envuelve y el desborde es de altura | A petición del usuario: el contenido puede ser más alto que la cara (190/300 px). `overflow-y: auto` + **`min-height: 0`** en `.flash-face h3/p` (sin `min-height: 0` el ítem flex no encoge y nunca scrollea) + `overscroll-behavior: contain`. `.flash-face--overflow::after` añade un degradado inferior como pista visual (consume el estado `scrollable` del hook, antes sin uso). |
+| 2026-09-18 | El auto-scroll elimina el rebote: recorrido único de arriba abajo, con parada al llegar al final | A petición del usuario: al terminar el scroll descendente se detiene (antes hacía ping-pong de vuelta arriba). Para releer, basta salir del hover/foco y volver a entrar: rearranca desde arriba tras la pausa. |
+| 2026-09-18 | Volteo siempre controlado por el padre; la parrilla mantiene un único `flippedId` | A petición del usuario: al voltear una tarjeta se reinicia la anterior, de modo que solo se ve una respuesta a la vez. El modo no controlado de `FlashCard` (estado local de volteo) queda sin uso y se elimina. |
 
 ---
 
@@ -228,9 +264,11 @@ localStorage (clave `concepts-app:v1`)
 6. **Después de un cambio visible** ejecuta `npm run lint` y, si cambia la UI,
    verifica el estado de la tarjeta 3D en los **dos** modos (parrilla por clic
    y tarjeta grande controlada).
-7. **Git**: commits pequeños con mensaje en español que explique el *por qué*;
-   si se cierra un requisito de la sección 5, el commit debe mencionarlo
-   (p. ej. «cierra R5.5.1: …»).
+7. **Git**: una rama por cambio desde `develop` y commits con formato
+   Conventional Commits, según `GIT_CONVENTIONS.md`. Los commits son
+   pequeños y con descripción en español que explique el *por qué*;
+   si se cierra un requisito de la sección 5, el commit debe
+   mencionarlo en el footer (p. ej. `Cierra R5.4`).
 8. **Si un requisito entra en conflicto** con un invariantes (4), no lo resuelvas
    en silencio: anótalo en la sección 7 y pide confirmación.
 
@@ -245,6 +283,18 @@ localStorage (clave `concepts-app:v1`)
 | 2026-09-18 | Añadido `AGENTS.md` como fuente de verdad de requisitos. |
 | 2026-09-18 | **UX**: se elimina el volteo por hover en «Mis tarjetas»: ahora solo clic (o teclado) revela la respuesta. Se sincronizan README, JSDoc de `FlashCard` y AGENTS.md. |
 | 2026-09-18 | **Fix UX**: al voltear una tarjeta, la pregunta se pegaba al borde inferior (el hint «Clic para revelar» se eliminaba del DOM justo al girar). El hint ahora se oculta con opacidad y la pregunta se centra con márgenes auto, en parrilla y en modo estudio. |
+| 2026-09-18 | **UX**: si una pregunta o respuesta es más ancha que la tarjeta, un scroll horizontal muy lento (ping-pong, 16 px/s) se activa al hacer hover/foco sobre la tarjeta; solo cuando hay desborde real, la tarjeta se mantiene estática y con su altura pequeña. Se crea `hooks/useHoverScroll.js`. |
+| 2026-09-18 | **UX**: el auto-scroll por hover pasa de horizontal a vertical (texto que envuelve, desborde de altura, `min-height: 0` en los ítems flex); nuevo degradado inferior (`.flash-face--overflow`) en caras con desborde. |
+| 2026-09-18 | **Fix**: el auto-scroll no avanzaba — `scrollTop` se cuantiza a píxeles enteros, así que releer la posición del DOM cada frame truncaba a 0 el incremento (~0,3 px/frame a 16 px/s). La posición ahora se acumula en `posRef` (patrón de animación) y solo se escribe en el DOM; `onScroll` tolera ±2 px por la cuantización. |
+| 2026-09-18 | **UX**: el auto-scroll por hover arranca tras una pausa de 750 ms (`HOVER_SCROLL_DELAY`), cancelable saliendo del hover/foco antes de que venza; también se limpia al desmontar. |
+| 2026-09-18 | **UX**: el auto-scroll deja de hacer ping-pong (rebote al final): recorrido único hacia abajo que se detiene al llegar al final; para releer, salir del hover/foco y volver a entrar. |
+| 2026-09-18 | **Home**: chip «Todos» en el filtro por etiqueta que limpia el filtro y muestra tarjetas de todas las temáticas; `aria-pressed` en todos los chips. |
+| 2026-09-18 | **Home**: al voltear una tarjeta se reinicia la anterior — solo una respuesta visible a la vez. `FlashCard` pasa a volteo siempre controlado (se elimina el modo no controlado, ya sin uso). |
+| 2026-09-18 | **Estudiar**: los botones de respuesta aparecen con retardo de 1500 ms tras voltear la tarjeta (fade-in sin salto de layout, temporizador cancelable). |
+| 2026-09-18 | **Home**: los iconos de editar/eliminar pasan a vivir dentro de la cara frontal (nueva prop `actions` de `FlashCard`) y voltean con la tarjeta; ocultos fuera del tab con la cara de espaldas. |
+| 2026-09-18 | **Modal**: más ancho (720px) y con textarea más alto (14rem) por encima de mobile, para textos largos; `max-height` + scroll interno como cota en ventanas bajas. |
+| 2026-09-18 | **Modal**: el textarea de respuesta sube también en mobile (`min-height: 10rem` en vez de las 4 filas por defecto). |
+| 2026-09-18 | **Proceso**: se crea `GIT_CONVENTIONS.md` (una rama por cambio desde `develop`; conventional commits) y se referencia en la regla 7 de la sección 8. |
 
 ---
 
