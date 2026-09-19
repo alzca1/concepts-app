@@ -22,6 +22,13 @@ const LANGUAGES: { id: Locale; label: string }[] = [
 ];
 
 /**
+ * Sentinel value stored in `editing` to mean "the modal is open to
+ * create a new card, not to edit an existing one". Exported so the
+ * Home page can request a new card from its "+ Nueva" button.
+ */
+export const NEW_CARD_SENTINEL = "nueva";
+
+/**
  * Application shell: header with the language switch and mode tabs,
  * the active page and the create/edit card modal.
  */
@@ -36,7 +43,7 @@ export default function App() {
   } = useConcepts();
 
   const [mode, setMode] = useState<ModeId>("cartas");
-  const [editing, setEditing] = useState<string | null>(null); // null | "nueva" | id
+  const [editing, setEditing] = useState<string | null>(null); // null | NEW_CARD_SENTINEL | id
 
   function handleDelete(id: string) {
     if (editing === id) setEditing(null);
@@ -44,7 +51,7 @@ export default function App() {
   }
 
   function handleSave(data: ConceptInput) {
-    if (editing === "nueva") addConcept(data);
+    if (editing === NEW_CARD_SENTINEL) addConcept(data);
     else if (editing !== null) updateConcept(editing, data);
   }
 
@@ -107,7 +114,7 @@ export default function App() {
         <ConceptForm
           key={editing}
           concept={
-            editing === "nueva"
+            editing === NEW_CARD_SENTINEL
               ? null
               : concepts.find((c) => c.id === editing)
           }
