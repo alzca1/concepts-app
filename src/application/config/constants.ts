@@ -5,6 +5,9 @@
 /** Tag assigned to cards that the user creates without specifying one. */
 export const DEFAULT_TAG = "General";
 
+/** Empty string sentinel for "no value" (e.g. clear search or filter). */
+export const EMPTY_STRING = "";
+
 /** Versioned localStorage key for the v1 data model. */
 export const STORAGE_KEY = "concepts-app:v1";
 
