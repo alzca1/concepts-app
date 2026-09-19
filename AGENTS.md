@@ -26,6 +26,8 @@ Dos modos de uso:
 |---|---|
 | React | ^19.2.8 |
 | React DOM | ^19.2.8 |
+| i18next | ^26.4.2 | i18n (runtime, ver regla 4) |
+| react-i18next | ^17.0.14 | binding React de i18n |
 | Vite | ^8.3.0 |
 | oxlint | ^1.81.0 |
 | Node / package type | ESM (`"type": "module"`) |
@@ -65,7 +67,11 @@ aplicación ni afectan al bundle.
 ### Convenciones
 
 - **JavaScript, no TypeScript.** Los `@types/react*` solo dan autocompletado.
-- **Sin dependencias runtime externas.** Todo el estado vive en React + `localStorage`.
+- **Dependencias runtime mínimas.** El estado vive en React +
+  `localStorage`; única excepción (regla 4): `i18next` +
+  `react-i18next` para la internacionalización ES/EN — sin ellas
+  habría que reimplementar interpolación, fallback y reactividad del
+  idioma.
 - **Estados globales con hooks custom** (`hooks/`), no context ni librerías externas.
 - **Una responsabilidad por componente.** Componentes de UI puramente presentativos;
   la lógica de estado se inyecta por props (p. ej. `deleteConcept(concept.id)`).
@@ -111,6 +117,7 @@ concepts-app/
     │   │   ├── concepts-storage.js    # Persistencia localStorage (try/catch)
     │   │   └── seed/seed-concepts.js  # 9 tarjetas de ejemplo
     │   ├── config/constants.js        # Clave de storage y retardos compartidos
+    │   ├── i18n/                      # i18next: init, changeLocale + locales es/en
     │   └── store/use-concepts/        # Estado global de tarjetas
     ├── common/            # Reutilizable, agnóstico de página
     │   ├── components/
@@ -251,6 +258,20 @@ localStorage (clave `concepts-app:v1`)
 
 - [ ] (none yet) → registrar aquí nuevos requerimientos con estado.
 
+### 5.6 Internacionalización (i18n)
+
+- [x] UI disponible en **español** (por defecto) e **inglés**, con
+      selector ES/EN en la cabecera (`aria-pressed`).
+- [x] Idioma persistido en `localStorage` (clave
+      `concepts-app:locale`, fuera del modelo de datos v1) y cambio
+      reactivo sin recarga.
+- [x] Textos en `application/i18n/locales/{es,en}.json` — claves
+      planas con interpolación `{{param}}`, replicando el patrón del
+      repo de referencia; consumo vía `useTranslation` de
+      react-i18next. *(Añadido 2026-09-19.)*
+- [x] El contenido de las tarjetas (seed) permanece en español: es
+      dato, no chrome de UI.
+
 ---
 
 ## 6. Requerimientos no funcionales
@@ -333,6 +354,7 @@ localStorage (clave `concepts-app:v1`)
 | 2026-09-18 | **Proceso**: se crea `GIT_CONVENTIONS.md` (una rama por cambio desde `develop`; conventional commits) y se referencia en la regla 7 de la sección 8. |
 | 2026-09-19 | **Arquitectura**: migración a la estructura por capas `pages/` / `common/` / `application/` (rama `internal/INT-001-structure-migration`, 3 fases, sin cambios de comportamiento); constantes centralizadas en `application/config/constants.js`; `App.jsx` queda como shell. Detalle en `docs/ARCHITECTURE.md`. |
 | 2026-09-19 | **Docs**: sitio de documentación AsciiDoc con Antora (`npm run docs` → `build/site`); páginas `.adoc` en `docs/modules/ROOT/pages` con el comportamiento extraído de los comentarios del código (Antora solo devDeps — regla 4). |
+| 2026-09-19 | **Feature**: i18n ES/EN con `i18next` + `react-i18next` (selector en cabecera, idioma persistido en `concepts-app:locale`); textos en `application/i18n/locales/*.json`. Excepción justificada a «sin dependencias runtime» (regla 4). |
 
 ---
 

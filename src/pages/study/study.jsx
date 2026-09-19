@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { STUDY_ACTIONS_DELAY } from "../../application/config/constants";
 import { FlashCard } from "../../common/components/presentational/flash-card";
@@ -16,6 +17,7 @@ function initialStats(count) {
  * - when the deck is empty, the session summary is shown.
  */
 export function StudyPage({ concepts, onBack }) {
+  const { t } = useTranslation();
   const [queue, setQueue] = useState(() => shuffle(concepts));
   const [stats, setStats] = useState(() => initialStats(concepts.length));
   const [flipped, setFlipped] = useState(false);
@@ -75,10 +77,10 @@ export function StudyPage({ concepts, onBack }) {
   if (stats.initial === 0) {
     return (
       <div className="empty-state">
-        <p>No hay tarjetas para estudiar. Vuelve al modo «Mis tarjetas» y añade algunas.</p>
+        <p>{t("study.empty")}</p>
         <div className="study-actions">
           <button className="btn btn-primary" onClick={onBack}>
-            Volver a tarjetas
+            {t("study.back")}
           </button>
         </div>
       </div>
@@ -90,36 +92,32 @@ export function StudyPage({ concepts, onBack }) {
     return (
       <section className="summary">
         <div className="summary__emoji">🎉</div>
-        <h2 className="summary__title">¡Sesión completada!</h2>
+        <h2 className="summary__title">{t("study.summaryTitle")}</h2>
         <div className="summary__pct">{pct}%</div>
-        <p className="summary__sub">
-          de tus tarjetas dominadas (revisadas y marcadas como claras)
-        </p>
+        <p className="summary__sub">{t("study.summarySub")}</p>
         <div className="summary-stats">
           <div className="summary-stat">
             <span>{visited}</span>
-            <em>visitas</em>
+            <em>{t("study.summaryVisits")}</em>
           </div>
           <div className="summary-stat">
             <span>{stats.repeated}</span>
-            <em>repeticiones</em>
+            <em>{t("study.summaryRepetitions")}</em>
           </div>
           <div className="summary-stat">
             <span>{mastered}</span>
-            <em>de {stats.initial}</em>
+            <em>{t("study.summaryOf", { initial: stats.initial })}</em>
           </div>
         </div>
         {stats.repeated === 0 && (
-          <p className="summary__sub">
-            ¡Sin repeticiones: todo fue a la primera!
-          </p>
+          <p className="summary__sub">{t("study.summaryNoRepeats")}</p>
         )}
         <div className="summary-actions">
           <button className="btn btn-primary" onClick={restart}>
-            Estudiar de nuevo
+            {t("study.restart")}
           </button>
           <button className="btn btn-ghost" onClick={onBack}>
-            Volver a tarjetas
+            {t("study.back")}
           </button>
         </div>
       </section>
@@ -130,7 +128,10 @@ export function StudyPage({ concepts, onBack }) {
     <section className="study">
       <div className="study-progress">
         <span className="study-progress__label">
-          {mastered} de {stats.initial} dominadas
+          {t("study.progressLabel", {
+            mastered,
+            initial: stats.initial,
+          })}
         </span>
         <div className="progress" aria-hidden="true">
           <div className="progress__fill" style={{ width: `${pct}%` }} />
@@ -151,13 +152,13 @@ export function StudyPage({ concepts, onBack }) {
           className={`study-actions${
             showActions ? "" : " study-actions--waiting"
           }`}
-          aria-label="Responder tarjeta actual"
+          aria-label={t("study.actionsAria")}
         >
           <button className="btn btn-success" onClick={() => answer(true)}>
-            👍 La tengo clara
+            {t("study.known")}
           </button>
           <button className="btn btn-warning" onClick={() => answer(false)}>
-            🔄 Volver a ver
+            {t("study.review")}
           </button>
         </div>
       )}

@@ -30,6 +30,15 @@ the only persistence is the browser's `localStorage`.
 |Application documentation: behavior of each mode and component.
 |===
 
+== Language
+
+The UI is available in **Spanish** (default) and **English**. The
+ES/EN switch sits in the header and the choice persists in
+`localStorage`. Translations are flat JSON files
+(`src/application/i18n/locales/{es,en}.json`) consumed through
+react-i18next. Card *content* (the seed deck) is data, not UI
+chrome, and stays in Spanish.
+
 == Building this site
 
 The site is generated with link:https://docs.antora.org[Antora]
