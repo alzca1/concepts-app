@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import type { Concept } from "../../application/api/types";
 import { STUDY_ACTIONS_DELAY } from "../../application/config/constants";
 import { FlashCard } from "../../common/components/presentational/flash-card";
 import { shuffle } from "../../common/utils/shuffle";
 
-function initialStats(count) {
+import type { SessionStats, StudyPageProps } from "./utils/interfaces";
+
+function initialStats(count: number): SessionStats {
   return { initial: count, known: 0, repeated: 0 };
 }
 
@@ -16,15 +19,18 @@ function initialStats(count) {
  * - "review again" sends the card to the end of the deck;
  * - when the deck is empty, the session summary is shown.
  */
-export function StudyPage({ concepts, onBack }) {
+export function StudyPage({ concepts, onBack }: StudyPageProps) {
   const { t } = useTranslation();
-  const [queue, setQueue] = useState(() => shuffle(concepts));
-  const [stats, setStats] = useState(() => initialStats(concepts.length));
+  const [queue, setQueue] = useState<Concept[]>(() => shuffle(concepts));
+  const [stats, setStats] = useState<SessionStats>(() =>
+    initialStats(concepts.length)
+  );
   const [flipped, setFlipped] = useState(false);
   const [showActions, setShowActions] = useState(false);
-  const actionsTimerRef = useRef(null);
+  const actionsTimerRef = useRef<number | null>(null);
 
-  const current = queue[0];
+  // Safe: the early returns above guarantee a non-empty queue.
+  const current = queue[0]!;
   const mastered = stats.initial - queue.length;
   const visited = stats.known + stats.repeated;
   const pct = stats.initial ? Math.round((mastered / stats.initial) * 100) : 0;
@@ -51,7 +57,7 @@ export function StudyPage({ concepts, onBack }) {
     hideActions();
   }
 
-  function answer(isKnown) {
+  function answer(isKnown: boolean) {
     setStats((s) => (isKnown ? { ...s, known: s.known + 1 } : { ...s, repeated: s.repeated + 1 }));
     setQueue((q) => (isKnown ? q.slice(1) : [...q.slice(1), q[0]]));
     setFlipped(false);
@@ -140,7 +146,7 @@ export function StudyPage({ concepts, onBack }) {
 
       <div className="study-card-wrap">
         <FlashCard
-          concept={current}
+          concept={current!}
           size="large"
           flipped={flipped}
           onFlip={handleCardFlip}

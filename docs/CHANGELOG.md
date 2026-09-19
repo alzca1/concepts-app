@@ -5,6 +5,7 @@ first); the last few are mirrored in [`AGENTS.md`](../AGENTS.md).
 
 | Date | Change |
 |---|---|
+| 2026-09-19 | **Architecture**: full TypeScript migration (`internal/INT-004-typescript-migration`) — strict `tsconfig.json`, `tsc --noEmit` wired into `npm run build` (+ new `npm run typecheck`), all sources renamed to `.ts`/`.tsx`, typed data model (`Concept`/`ConceptInput`). Also: component/hook props and local interfaces live in the unit's `utils/{types,interfaces,enums}.ts` (mirrors spa-modexp); the `App.tsx` `MODES` array drives its own `ModeId` via `as const` instead of a duplicated union. |
 | 2026-09-19 | **Docs**: AGENTS.md restructured as a lean English agent guide (requirements registry + unique content only); full changelog moved to `docs/CHANGELOG.md`. |
 | 2026-09-19 | **Feature**: ES/EN i18n with `i18next` + `react-i18next` (header switch, persisted locale in `concepts-app:locale`); UI strings in `application/i18n/locales/*.json`. First justified exception to the "no runtime dependencies" rule. |
 | 2026-09-19 | **Docs**: AsciiDoc documentation site with Antora (`npm run docs` → `build/site`); `.adoc` pages in `docs/modules/ROOT/pages` carrying the behavior extracted from code comments (Antora as devDependencies only — rule 4). |

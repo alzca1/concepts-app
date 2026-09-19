@@ -10,9 +10,9 @@ const TAG_COLORS = [
   "#f472b6",
   "#f87171",
   "#60a5fa",
-];
+] as const;
 
-export function tagColor(tag) {
+export function tagColor(tag: string): string {
   if (!tag) return "#94a3b8";
   let hash = 0;
   for (let i = 0; i < tag.length; i += 1) {

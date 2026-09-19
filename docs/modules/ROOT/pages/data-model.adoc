@@ -25,7 +25,7 @@ A card is a plain object:
 
 == Persistence layer
 
-`application/api/concepts-storage.js` is the only module touching
+`application/api/concepts-storage.ts` is the only module touching
 `localStorage`:
 
 * `loadConcepts()` — reads and parses the stored array; any missing,
@@ -40,6 +40,6 @@ touch storage directly — they receive data and callbacks via props.
 
 == Shared constants
 
-`application/config/constants.js` centralises the storage key and
+`application/config/constants.ts` centralises the storage key and
 the timing values used across the app (hover-scroll pause and speed,
 study actions delay).

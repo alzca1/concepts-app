@@ -21,7 +21,7 @@
 ## 1. Vision
 
 Flashcards web app to memorize tech and programming concepts.
-React + Vite (JavaScript, no TypeScript), 100% client-side, no
+React + Vite (TypeScript, strict mode), 100% client-side, no
 backend. Two modes: **My cards** (browse, search, filter, edit,
 delete) and **Study** (active-recall sessions with a shuffled deck
 and a final summary).
@@ -31,11 +31,12 @@ and a final summary).
 ## 2. Commands and dependency policy
 
 ```bash
-npm run dev      # dev server at http://localhost:5173
-npm run build    # production build -> dist/
-npm run preview  # serve dist/
-npm run lint     # oxlint
-npm run docs     # Antora docs site -> build/site
+npm run dev        # dev server at http://localhost:5173
+npm run build      # typecheck (tsc --noEmit) + production build -> dist/
+npm run typecheck  # tsc --noEmit only
+npm run preview    # serve dist/
+npm run lint       # oxlint
+npm run docs       # Antora docs site -> build/site
 ```
 
 **Dependency policy (no additions without justifying them here
@@ -44,10 +45,10 @@ first):**
 - **Runtime**: React only, plus the single justified exception —
   `i18next` + `react-i18next` for ES/EN i18n (interpolation,
   fallback and language reactivity would otherwise be hand-rolled).
-- **devDependencies**: `@antora/cli` + `@antora/site-generator`
-  (docs site) — never loaded by the application, no bundle impact.
-- `@types/react*` provide editor autocomplete only (the codebase is
-  JavaScript, not TypeScript — deliberate).
+- **devDependencies**: `typescript` (strict; `tsc --noEmit` runs as
+  part of `npm run build`) and `@antora/cli` + `@antora/site-generator`
+  (docs site) — none of them loaded by the application bundle.
+- `@types/react*` ship editor types for React.
 
 ---
 
@@ -121,6 +122,7 @@ Unique historical record — current behavior is documented in the
 | 2026-09-18 | No bounce: single downward pass, stop at the end | To re-read, leave and re-enter the hover/focus |
 | 2026-09-18 | Flip always parent-controlled; grid keeps a single `flippedId` | Only one visible answer at a time; FlashCard's uncontrolled mode removed |
 | 2026-09-18 | Edit/delete icons move inside the front face (`actions` prop) | They flip with the card instead of floating fixed over the animation |
+| 2026-09-19 | Types/interfaces/enums live in `utils/types.ts` / `utils/interfaces.ts` / `utils/enums.ts` of each unit | Mirrors the spa-modexp convention: one role per file inside the unit's `utils/`; improves discoverability; only inline a type when the unit is a single-file (e.g. `App.tsx`) and the type is local |
 
 ---
 
@@ -136,9 +138,12 @@ Unique historical record — current behavior is documented in the
    before touching the store.
 4. **No new dependency** without justifying it in section 2 first.
 5. **Respect the conventions** in
-   [ARCHITECTURE.md](docs/ARCHITECTURE.md): JavaScript (no TS),
+   [ARCHITECTURE.md](docs/ARCHITECTURE.md): TypeScript (strict),
    state in hooks, global sectioned CSS, ARIA on interactive
    controls, English comments.
+   TypeScript types, interfaces and enums live in the unit's
+   `utils/` folder — never inlined in the component file (see
+   ARCHITECTURE.md §6).
 6. **After a visible change** run `npm run lint` and, if the UI
    changed, verify the 3D card in **both** modes (grid via click,
    large study card).
@@ -158,10 +163,12 @@ Full history in [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
 
 | Date | Change |
 |---|---|
+| 2026-09-19 | **Architecture**: full TypeScript migration (strict `tsconfig`, `tsc --noEmit` inside `npm run build`, typed data model). |
 | 2026-09-19 | **Feature**: ES/EN i18n with `i18next` + `react-i18next` (header switch, persisted locale) — first justified runtime dependency. |
 | 2026-09-19 | **Docs**: AsciiDoc documentation site with Antora (`npm run docs`); behavior extracted from code comments into `.adoc` pages. |
 | 2026-09-19 | **Architecture**: layered structure migration `pages/` / `common/` / `application/` (3 phases, no behavior changes). |
 | 2026-09-19 | **Docs**: AGENTS.md restructured as a lean English agent guide; full changelog moved to `docs/CHANGELOG.md`. |
+| 2026-09-19 | **Convention**: extract component/hook/page props and local types into `utils/{types,interfaces,enums}.ts`. | Mirrors spa-modexp; one file per kind (type alias vs. interface vs. enum); helpers private to the unit also live in the same `utils/`. |
 
 ---
 

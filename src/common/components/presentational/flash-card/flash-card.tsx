@@ -1,7 +1,10 @@
+import type { CSSProperties, KeyboardEvent } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useHoverScroll } from "../../../hooks/use-hover-scroll";
 import { tagColor } from "../../../utils/tag-color";
+
+import type { FlashCardProps } from "./utils/interfaces";
 
 /**
  * 3D card that flips on click (or keyboard: `Enter` / space).
@@ -18,10 +21,10 @@ export function FlashCard({
   onFlip,
   size = "normal",
   actions = null,
-}) {
+}: FlashCardProps) {
   const { t } = useTranslation();
-  const front = useHoverScroll(concept.front);
-  const back = useHoverScroll(concept.back);
+  const front = useHoverScroll<HTMLHeadingElement>(concept.front);
+  const back = useHoverScroll<HTMLParagraphElement>(concept.back);
   const { ref: frontTextRef, onScroll: onFrontTextScroll } = front;
   const { ref: backTextRef, onScroll: onBackTextScroll } = back;
 
@@ -37,7 +40,7 @@ export function FlashCard({
 
   const handleClick = () => onFlip?.();
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       handleClick();
@@ -49,7 +52,9 @@ export function FlashCard({
       className={`flash-card ${
         flipped ? "flipped" : ""
       } ${size === "large" ? "flash-card--big" : ""}`}
-      style={{ "--tag-color": tagColor(concept.tag || "General") }}
+      style={
+        { "--tag-color": tagColor(concept.tag || "General") } as CSSProperties
+      }
       role="button"
       tabIndex={0}
       aria-label={concept.front}
