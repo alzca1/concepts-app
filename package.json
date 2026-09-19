@@ -1,23 +1,31 @@
 {
   "name": "concepts-app",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "docs": "antora generate antora-playbook.yml"
   },
   "dependencies": {
+    "i18next": "^26.4.2",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "react-i18next": "^17.0.14",
+    "react-router-dom": "^7.6.1"
   },
   "devDependencies": {
+    "@antora/cli": "^3.2.0",
+    "@antora/site-generator": "^3.2.0",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
     "oxlint": "^1.81.0",
+    "typescript": "^7.0.2",
     "vite": "^8.3.0"
   }
 }

@@ -1,0 +1,38 @@
+= My cards (home)
+
+The home page shows the whole deck: stats bar, new-card action and a
+responsive card grid (`minmax(250px, 1fr)`).
+
+== Card grid
+
+* Cards flip **only by click** (or keyboard: `Enter` / space); there
+  is no hover flip.
+* Flipping is **controlled by the grid**: a single `flippedId` lives
+  in `ConceptList`, so flipping a card resets the previous one and
+  *only one answer is visible at a time*.
+* Edit (✎) and delete (✕) icons live **inside the front face**
+  (`actions` prop of `FlashCard`), so they rotate together with the
+  card; while the card faces away they are `visibility: hidden` and
+  out of the tab order.
+* Deleting asks for confirmation (`window.confirm`) and mentions the
+  card title.
+* The fixed face heights (190 px grid, 300 px study) are preserved
+  even with long content — see xref:flash-card.adoc[flash card].
+
+== Search and filters
+
+* **Search** matches `front`, `back` and `tag`, case-insensitive and
+  `trim`-normalized.
+* **Tag filter chips** get a stable color per tag (`tagColor`); the
+  first chip, «Todos», clears the filter and is active whenever no
+  tag is selected. Clicking the active chip also clears it. All
+  chips expose `aria-pressed`.
+* **Empty state**: distinct messages for "no results with active
+  filters" vs. "deck is actually empty".
+
+== Stats bar
+
+Shows the number of cards and distinct tags, plus a *Restore
+initial data* action that asks for confirmation before wiping saved
+data and reseeding the 9 example cards (see
+xref:data-model.adoc[data model]).
