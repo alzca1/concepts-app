@@ -1,4 +1,4 @@
-import { uid } from "../common/utils/uid";
+import { uid } from "../../../common/utils/uid";
 
 /**
  * Tarjetas de ejemplo. Se usan solo la primera vez que no hay nada

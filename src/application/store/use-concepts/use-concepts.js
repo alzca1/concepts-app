@@ -1,32 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { seedConcepts } from "../data/seed";
-import { uid } from "../common/utils/uid";
-
-const STORAGE_KEY = "concepts-app:v1";
+import { loadConcepts, saveConcepts } from "../../api/concepts-storage";
+import { uid } from "../../../common/utils/uid";
 
 /**
  * Hook con las tarjetas + persistencia en localStorage.
  * Carga las tarjetas de ejemplo la primera vez que no hay nada guardado.
  */
 export function useConcepts() {
-  const [concepts, setConcepts] = useState(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      const parsed = stored ? JSON.parse(stored) : null;
-      return Array.isArray(parsed) && parsed.length > 0 ? parsed : seedConcepts();
-    } catch {
-      return seedConcepts();
-    }
-  });
+  const [concepts, setConcepts] = useState(() => loadConcepts());
 
   // Persistencia: cada vez que cambian las tarjetas se guardan.
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(concepts));
-    } catch {
-      // localStorage no disponible: seguimos funcionando en memoria.
-    }
+    saveConcepts(concepts);
   }, [concepts]);
 
   const addConcept = useCallback(

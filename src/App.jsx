@@ -1,10 +1,10 @@
 import { useState } from "react";
 
-import { ConceptForm } from "./components/ConceptForm";
+import { ConceptForm } from "./common/components/domain/concept-form";
+import { useConcepts } from "./application/store/use-concepts";
 import { ConceptList } from "./components/ConceptList";
 import { StatsBar } from "./components/StatsBar";
 import { StudyView } from "./components/StudyView";
-import { useConcepts } from "./hooks/useConcepts";
 import "./App.css";
 
 const MODES = [
