@@ -8,5 +8,4 @@ export interface SessionStats {
 
 export interface StudyPageProps {
   concepts: Concept[];
-  onBack: () => void;
 }

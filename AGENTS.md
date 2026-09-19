@@ -42,9 +42,11 @@ npm run docs       # Antora docs site -> build/site
 **Dependency policy (no additions without justifying them here
 first):**
 
-- **Runtime**: React only, plus the single justified exception —
+- **Runtime**: React only, plus two justified exceptions —
   `i18next` + `react-i18next` for ES/EN i18n (interpolation,
-  fallback and language reactivity would otherwise be hand-rolled).
+  fallback and language reactivity would otherwise be hand-rolled), and
+  `react-router-dom` for client-side routing (URL-based navigation
+  enables deep links, browser history and future route extensibility).
 - **devDependencies**: `typescript` (strict; `tsc --noEmit` runs as
   part of `npm run build`) and `@antora/cli` + `@antora/site-generator`
   (docs site) — none of them loaded by the application bundle.
@@ -123,6 +125,7 @@ Unique historical record — current behavior is documented in the
 | 2026-09-18 | Flip always parent-controlled; grid keeps a single `flippedId` | Only one visible answer at a time; FlashCard's uncontrolled mode removed |
 | 2026-09-18 | Edit/delete icons move inside the front face (`actions` prop) | They flip with the card instead of floating fixed over the animation |
 | 2026-09-19 | Types/interfaces/enums live in `utils/types.ts` / `utils/interfaces.ts` / `utils/enums.ts` of each unit | One role per file inside the unit's `utils/`; improves discoverability; only inline a type when the unit is a single-file (e.g. `App.tsx`) and the type is local |
+| 2026-09-19 | React Router v7 introduced with URL-based navigation | `/` renders HomePage (My cards), `/study` renders StudyPage; header nav tabs replaced with `<NavLink>`; `ConceptModalContext` created to share modal state across routes |
 
 ---
 

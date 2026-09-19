@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import type { Concept } from "../../application/api/types";
@@ -19,8 +20,9 @@ function initialStats(count: number): SessionStats {
  * - "review again" sends the card to the end of the deck;
  * - when the deck is empty, the session summary is shown.
  */
-export function StudyPage({ concepts, onBack }: StudyPageProps) {
+export function StudyPage({ concepts }: StudyPageProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [queue, setQueue] = useState<Concept[]>(() => shuffle(concepts));
   const [stats, setStats] = useState<SessionStats>(() =>
     initialStats(concepts.length)
@@ -85,7 +87,7 @@ export function StudyPage({ concepts, onBack }: StudyPageProps) {
       <div className="empty-state">
         <p>{t("study.empty")}</p>
         <div className="study-actions">
-          <button className="btn btn-primary" onClick={onBack}>
+          <button className="btn btn-primary" onClick={() => navigate("/")}>
             {t("study.back")}
           </button>
         </div>
@@ -122,7 +124,7 @@ export function StudyPage({ concepts, onBack }: StudyPageProps) {
           <button className="btn btn-primary" onClick={restart}>
             {t("study.restart")}
           </button>
-          <button className="btn btn-ghost" onClick={onBack}>
+          <button className="btn btn-ghost" onClick={() => navigate("/")}>
             {t("study.back")}
           </button>
         </div>

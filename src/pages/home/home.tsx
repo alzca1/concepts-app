@@ -1,42 +1,30 @@
 import { useTranslation } from "react-i18next";
 
 import { NEW_CARD_SENTINEL } from "../../App";
-import type { Concept } from "../../application/api/types";
+import { useConcepts } from "../../application/store/use-concepts";
+import { useConceptModal } from "../../context/use-concept-modal";
 import { ConceptList } from "./components/concept-list";
 import { StatsBar } from "./components/stats-bar";
 
-/**
- * «My cards» page: stats bar, new-card action and the card grid
- * with search and filters.
- */
-export function HomePage({
-  concepts,
-  deleteConcept,
-  onEdit,
-  resetToSeed,
-}: {
-  concepts: Concept[];
-  deleteConcept: (id: string) => void;
-  onEdit: (id: string) => void;
-  resetToSeed: () => void;
-}) {
+export function HomePage() {
   const { t } = useTranslation();
+  const { concepts, deleteConcept, resetToSeed } = useConcepts();
+  const { openModal } = useConceptModal();
 
   return (
     <>
       <StatsBar concepts={concepts} resetToSeed={resetToSeed} />
 
       <div className="add-row">
-        <button className="btn btn-primary" onClick={() => onEdit(NEW_CARD_SENTINEL)}>
+        <button
+          className="btn btn-primary"
+          onClick={() => openModal(NEW_CARD_SENTINEL)}
+        >
           {t("home.addCard")}
         </button>
       </div>
 
-      <ConceptList
-        concepts={concepts}
-        deleteConcept={deleteConcept}
-        onEdit={onEdit}
-      />
+      <ConceptList concepts={concepts} deleteConcept={deleteConcept} onEdit={openModal} />
     </>
   );
 }
