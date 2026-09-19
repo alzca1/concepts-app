@@ -265,9 +265,10 @@ and `AGENTS.md` stay at the root.
 | Document | Content |
 |---|---|
 | `README.md` (root) | What it is, how to run it, quick structure |
-| `AGENTS.md` (root) | Source of truth for requirements and decisions |
+| `AGENTS.md` (root) | Lean agent guide: requirements registry, decision log, agent rules |
 | `docs/ARCHITECTURE.md` (this file) | File and code organization |
 | `docs/GIT_CONVENTIONS.md` | Branches, commits and PRs |
+| `docs/CHANGELOG.md` | Full change history |
 | `docs/modules/ROOT/pages/*.adoc` | Application documentation site (AsciiDoc, generated with `npm run docs`) |
 
 When adding a new document: create it in `docs/` (repo meta) or as

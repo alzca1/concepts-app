@@ -1,371 +1,177 @@
-# AGENTS.md — concepts-app
+# AGENTS.md — Agent guide
 
-> **Documento vivo de requerimientos.** Este archivo es la fuente de verdad para
-> la intención del proyecto. Cualquier agente (o humano) que trabaje en el repo
-> debe leerlo antes de tocar código y **actualizarlo** cuando se agregue, cambie
-> o cierre un requerimiento.
-
----
-
-## 1. Visión
-
-Aplicación web de *flashcards* («tarjetas de memoria») para recordar conceptos
-tecnológicos y de programación. Construida con **React + Vite** (JavaScript,
-sin TypeScript), 100% client-side, sin backend ni API externa.
-
-Dos modos de uso:
-
-- **Mis tarjetas (Home)** — explorar, buscar, filtrar, editar y eliminar tarjetas.
-- **Modo estudio** — sesiones de repetición activa con pila barajada y resumen final.
+> **Essential information only.** This file holds what agents need
+> to operate in this repository and the content that does not exist
+> anywhere else in `docs/`. Detailed documentation lives in:
+>
+> - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — file and code
+>   organization, conventions, data flow.
+> - [`docs/GIT_CONVENTIONS.md`](docs/GIT_CONVENTIONS.md) — branches,
+>   commits, PRs and language policy.
+> - [`docs/CHANGELOG.md`](docs/CHANGELOG.md) — full change history.
+> - `docs/modules/ROOT/pages/*.adoc` — application behavior site
+>   (generate with `npm run docs`, browse with `npx serve build/site`).
+>
+> **Update this file whenever a requirement, decision or rule
+> changes.** All content in English; the application UI is Spanish
+> (product decision).
 
 ---
 
-## 2. Stack y convenciones de proyecto
+## 1. Vision
 
-| Herramienta | Versión (package.json) |
-|---|---|
-| React | ^19.2.8 |
-| React DOM | ^19.2.8 |
-| i18next | ^26.4.2 | i18n (runtime, ver regla 4) |
-| react-i18next | ^17.0.14 | binding React de i18n |
-| Vite | ^8.3.0 |
-| oxlint | ^1.81.0 |
-| Node / package type | ESM (`"type": "module"`) |
+Flashcards web app to memorize tech and programming concepts.
+React + Vite (JavaScript, no TypeScript), 100% client-side, no
+backend. Two modes: **My cards** (browse, search, filter, edit,
+delete) and **Study** (active-recall sessions with a shuffled deck
+and a final summary).
 
-### Comandos
+---
 
-| Comando | Uso |
-|---|---|
-| `npm run dev` | Dev server en `http://localhost:5173` |
-| `npm run build` | Build de producción → `dist/` |
-| `npm run preview` | Sirve `dist/` para probar el build |
-| `npm run lint` | Lint con oxlint (reglas: `rules-of-hooks`, `only-export-components`) |
-| `npm run docs` | Genera el sitio de documentación (Antora) → `build/site` |
+## 2. Commands and dependency policy
 
-### Sitio de documentación (AsciiDoc)
+```bash
+npm run dev      # dev server at http://localhost:5173
+npm run build    # production build -> dist/
+npm run preview  # serve dist/
+npm run lint     # oxlint
+npm run docs     # Antora docs site -> build/site
+```
 
-La documentación de la aplicación se escribe en **AsciiDoc**
-(`docs/modules/ROOT/pages/*.adoc`, en inglés) y se publica como web
-estática con **Antora**. Justificación de dependencias (regla 4):
-ambos paquetes son **solo devDependencies** — no se cargan en la
-aplicación ni afectan al bundle.
+**Dependency policy (no additions without justifying them here
+first):**
 
-| Paquete | Versión | Uso |
+- **Runtime**: React only, plus the single justified exception —
+  `i18next` + `react-i18next` for ES/EN i18n (interpolation,
+  fallback and language reactivity would otherwise be hand-rolled).
+- **devDependencies**: `@antora/cli` + `@antora/site-generator`
+  (docs site) — never loaded by the application, no bundle impact.
+- `@types/react*` provide editor autocomplete only (the codebase is
+  JavaScript, not TypeScript — deliberate).
+
+---
+
+## 3. Functional requirements registry
+
+Status registry only — behavior details live in the linked pages.
+Commit footers reference these IDs (`Closes R5.x`).
+
+| ID | Requirement | Status | Details |
+|---|---|---|---|
+| R5.1 | Responsive card grid (CSS Grid, `minmax(250px, 1fr)`) | [x] | [home.adoc](docs/modules/ROOT/pages/home.adoc) |
+| R5.2 | Card actions (edit/delete) inside the front face: flip with the card, out of the tab order while flipped | [x] | home.adoc |
+| R5.3 | Only one visible answer at a time (grid-level `flippedId`) | [x] | home.adoc |
+| R5.4 | Delete confirmation naming the card | [x] | home.adoc |
+| R5.5 | Text search over question, answer and tag (case-insensitive, trimmed) | [x] | home.adoc |
+| R5.6 | Tag filter chips with a first «Todos»/«All» chip that clears the filter | [x] | home.adoc |
+| R5.7 | Distinct empty states (filters vs. empty deck) | [x] | home.adoc |
+| R5.8 | Stats bar (cards, tags) + restore-to-seed with confirmation | [x] | home.adoc |
+| R5.9 | Study session over a shuffled deck (Fisher–Yates) | [x] | [study-mode.adoc](docs/modules/ROOT/pages/study-mode.adoc) |
+| R5.10 | Study card flips on click/keyboard, page-controlled | [x] | study-mode.adoc |
+| R5.11 | Answer buttons appear 1500 ms after the flip (fade-in, cancelable, out of the tab order while waiting) | [x] | study-mode.adoc |
+| R5.12 | «Got it» clears the card; «Review again» requeues it at the end | [x] | study-mode.adoc |
+| R5.13 | Session ends when every card has been cleared at least once | [x] | study-mode.adoc |
+| R5.14 | Session summary: visits, repeats, mastery % + restart/back | [x] | study-mode.adoc |
+| R5.15 | Create/edit cards through a shared modal (same form, initial state per card) | [x] | — |
+| R5.16 | Modal wider/taller above mobile: `min(720px, 90vw)`, textarea `min-height` 14rem (10rem on mobile); `max-height` + internal scroll | [x] | — |
+| R5.17 | Form validation with a visible error when fields are missing | [x] | — |
+| R5.18 | Every change auto-persisted to `localStorage` | [x] | [data-model.adoc](docs/modules/ROOT/pages/data-model.adoc) |
+| R5.19 | 9 seed cards on first run (or when storage is corrupt) | [x] | data-model.adoc |
+| R5.20 | 3D card: flip by click/keyboard only, always parent-controlled | [x] | [flash-card.adoc](docs/modules/ROOT/pages/flash-card.adoc) |
+| R5.21 | No layout jumps on flip (hint stays in the DOM, question centered) | [x] | flash-card.adoc |
+| R5.22 | Slow vertical hover/focus auto-scroll for overflowing text (750 ms pause, single pass, stops at the end) + bottom fade hint | [x] | flash-card.adoc |
+| R5.23 | ES/EN UI switch in the header, persisted, reactive; seed content stays Spanish | [x] | [index.adoc](docs/modules/ROOT/pages/index.adoc) |
+
+**Open requirements:** none yet — register new ones here with
+`[ ]` and an ID.
+
+---
+
+## 4. Non-functional requirements
+
+- [x] No backend: client-side only, `localStorage` is the only
+  persistence.
+- [x] Resilient persistence: all storage access wrapped in
+  `try/catch` (in-memory fallback; corrupt JSON → seed).
+- [x] Basic accessibility: ARIA roles, keyboard support on the
+  card, dark-theme contrast.
+- [x] Global dark theme.
+- [ ] Performance: no metrics yet. If the grid exceeds ~200 cards,
+  consider virtualization (see backlog).
+
+---
+
+## 5. Design decision log
+
+Unique historical record — current behavior is documented in the
+`.adoc` pages.
+
+| Date | Decision | Rationale / effect |
 |---|---|---|
-| `@antora/cli` | 3.2.0 | CLI del generador |
-| `@antora/site-generator` | 3.2.0 | Generador del sitio |
-
-- `npm run docs` genera el sitio en `build/site` (gitignored); se
-  consulta con cualquier servidor estático (p. ej. `npx serve
-  build/site`).
-- Playbook: `antora-playbook.yml`; descriptor del componente:
-  `docs/antora.yml`; navegación: `docs/modules/ROOT/nav.adoc`.
-- Las explicaciones globales de comportamiento viven en estas
-  páginas; en el código solo quedan JSDoc de contrato y los «por
-  qué» locales.
-
-### Convenciones
-
-- **JavaScript, no TypeScript.** Los `@types/react*` solo dan autocompletado.
-- **Dependencias runtime mínimas.** El estado vive en React +
-  `localStorage`; única excepción (regla 4): `i18next` +
-  `react-i18next` para la internacionalización ES/EN — sin ellas
-  habría que reimplementar interpolación, fallback y reactividad del
-  idioma.
-- **Estados globales con hooks custom** (`hooks/`), no context ni librerías externas.
-- **Una responsabilidad por componente.** Componentes de UI puramente presentativos;
-  la lógica de estado se inyecta por props (p. ej. `deleteConcept(concept.id)`).
-- **CSS global en `src/App.css`** (no CSS modules), con prefijos de sección (`h1`,
-  `.deck`, `.flash-card`, …). Variables de color por custom property
-  (`--chip-color`, `--tag-color`).
-- **Componentes solo exportan componentes** (oxlint: `react/only-export-components`,
-  `allowConstantExport: true`): no mezclar funciones de utilidad exportadas en
-  los mismos archivos que componentes (ver `lib/utils.js` vs `components/`).
-- **Accesibilidad**: controles con `role`, `aria-label`, y soporte teclado
-  (`Enter` / espacio) donde haya interacción.
-- **Idioma**: UI en español.
+| 2025-07-14 (initial v1) | Study mode: «review again» cards requeue at the end | Session ends when every card has been cleared at least once |
+| 2025-07-14 (initial v1) | localStorage key `concepts-app:v1` | Explicit versioning to migrate future data shapes |
+| 2025-07-14 (initial v1) | 9 seed cards | Instant demo without user-created content |
+| 2025-07-14 (initial v1) | Global CSS (no modules) | One stylesheet organized by sections; `.flash-card` prefix for the 3D component |
+| 2026-09-18 | Per-face rotation in `.flash-face` | Bug fix: home showed the answer instead of the question — both faces shared a 3D plane |
+| 2026-09-18 | Requirements registry in `AGENTS.md` | Source of truth for agents and humans; update on every change |
+| 2026-09-18 | Grid flip **click-only** (hover removed) | Hover rotated cards on home; requirement changed to click/keyboard |
+| 2026-09-18 | Reveal hint stays in the DOM (hidden with `opacity: 0`) and the question is centered with `margin: auto` | Bug fix: conditionally removing the hint collapsed the face and the question jumped right before the flip |
+| 2026-09-18 | Slow hover auto-scroll introduced (horizontal first) | `nowrap` text + `overflow-x: auto`; ping-pong at 16 px/s |
+| 2026-09-18 | Auto-scroll becomes **vertical** | Content may be taller than the face (190/300 px): `overflow-y: auto` + `min-height: 0` + bottom fade hint |
+| 2026-09-18 | No bounce: single downward pass, stop at the end | To re-read, leave and re-enter the hover/focus |
+| 2026-09-18 | Flip always parent-controlled; grid keeps a single `flippedId` | Only one visible answer at a time; FlashCard's uncontrolled mode removed |
+| 2026-09-18 | Edit/delete icons move inside the front face (`actions` prop) | They flip with the card instead of floating fixed over the animation |
 
 ---
 
-## 3. Arquitectura (estructura del repo)
+## 6. Rules for agents
 
-> Detalle completo de capas, convenciones y migración en
-> `docs/ARCHITECTURE.md`.
-
-```
-concepts-app/
-├── index.html
-├── vite.config.js
-├── antora-playbook.yml   # Playbook del sitio de documentación
-├── AGENTS.md              ← ESTE ARCHIVO
-├── README.md
-├── docs/                  # Documentación de referencia (en inglés)
-│   ├── ARCHITECTURE.md    # Organización de archivos y código
-│   ├── GIT_CONVENTIONS.md # Ramas, commits y PRs
-│   ├── antora.yml         # Descriptor del componente Antora
-│   └── modules/ROOT/      # Páginas .adoc del sitio (nav.adoc + pages/)
-├── package.json
-├── public/
-│   └── favicon.svg
-└── src/
-    ├── main.jsx           # Punto de entrada (React 19 createRoot)
-    ├── App.jsx            # Shell: cambio de modo, página activa y modal
-    ├── App.css            # Estilos de la aplicación (tarjeta 3D, grid, modal…)
-    ├── index.css          # Reset y estilos base (fondo oscuro, tipografía)
-    ├── application/       # Infraestructura (sin UI)
-    │   ├── api/
-    │   │   ├── concepts-storage.js    # Persistencia localStorage (try/catch)
-    │   │   └── seed/seed-concepts.js  # 9 tarjetas de ejemplo
-    │   ├── config/constants.js        # Clave de storage y retardos compartidos
-    │   ├── i18n/                      # i18next: init, changeLocale + locales es/en
-    │   └── store/use-concepts/        # Estado global de tarjetas
-    ├── common/            # Reutilizable, agnóstico de página
-    │   ├── components/
-    │   │   ├── domain/concept-form/        # Modal crear / editar tarjeta
-    │   │   └── presentational/flash-card/  # Tarjeta 3D (front/back)
-    │   ├── hooks/use-hover-scroll/         # Auto-scroll lento en hover
-    │   └── utils/{uid,shuffle,tag-color}/  # Una utilidad por carpeta
-    └── pages/             # Una carpeta por vista
-        ├── home/          # «Mis tarjetas»: home.jsx + components/{concept-list,stats-bar}
-        └── study/         # «Estudiar»: study.jsx (sesión + resumen)
-```
-
-**Flujo de datos (una sola fuente de verdad):**
-
-```
-localStorage (clave `concepts-app:v1`)
-        ↑↓  JSON.stringify / parse
-  application/api  (concepts-storage)
-        ↓
-  application/store  (use-concepts: useState + useEffect de guardado)
-        ↓  props
-  App.jsx  ──►  pages/home  |  pages/study
-                     ↓ props (concept, onEdit, deleteConcept…)
-          common/components (solo muestran, no mutan)
-```
+1. **Read this file and the docs in `docs/` before writing code.**
+2. **Keep documentation updated**: new requirement → section 3
+   registry; new decision → section 5; change history →
+   `docs/CHANGELOG.md`; structural changes → `docs/ARCHITECTURE.md`.
+3. **Do not break the data model invariants** (see
+   [data-model.adoc](docs/modules/ROOT/pages/data-model.adoc)): a
+   schema change means a new `v2` key plus a documented migration,
+   before touching the store.
+4. **No new dependency** without justifying it in section 2 first.
+5. **Respect the conventions** in
+   [ARCHITECTURE.md](docs/ARCHITECTURE.md): JavaScript (no TS),
+   state in hooks, global sectioned CSS, ARIA on interactive
+   controls, English comments.
+6. **After a visible change** run `npm run lint` and, if the UI
+   changed, verify the 3D card in **both** modes (grid via click,
+   large study card).
+7. **Git**: one branch per change from `develop`, Conventional
+   Commits (English), PRs in English — see
+   [`docs/GIT_CONVENTIONS.md`](docs/GIT_CONVENTIONS.md). Closing a
+   requirement goes in the commit footer (e.g. `Closes R5.3`).
+8. **If a requirement conflicts with a data invariant**, do not
+   solve it silently: note it in the decision log and ask for
+   confirmation.
 
 ---
 
-## 4. Modelo de datos
+## 7. Recent changes
 
-```js
-{
-  id:        "string",  // único por tarjeta
-  front:     "string",  // PREGUNTA o concepto (cara frontal)
-  back:      "string",  // RESPUESTA o explicación (cara trasera)
-  tag:       "string",  // categoría / etiqueta
-  createdAt: number     // timestamp (ms)
-}
-```
+Full history in [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
 
-**Invariantes (no cambiar sin migrar):**
-
-- La clave de `localStorage` es **`concepts-app:v1`**. Si se necesita una nueva
-  forma de datos, usar una nueva clave (`v2`) y migrar o conservar la antigua.
-- `id` se genera con `uid()` (`common/utils/uid`).
-- El campo `createdAt` se preserva al editar (no se sobreescribe).
-- En la primera carga, si no hay nada guardado (o está corrupto), se semilla
-  con `seedConcepts()` (9 tarjetas).
-
----
-
-## 5. Requerimientos funcionales
-
-### 5.1 Modo «Mis tarjetas» (Home)
-
-- [x] Parrilla de tarjetas **responsive** (CSS Grid, `minmax(250px, 1fr)`).
-- [x] Cada celda muestra una `FlashCard` con acciones **editar** (✎) y
-      **eliminar** (✕). Los iconos viven en la cara frontal (prop `actions`
-      de `FlashCard`), de modo que **voltean junto con la tarjeta**; con la
-      cara de espaldas quedan ocultos y fuera del tab
-      (`.flash-card.flipped .cell-actions { visibility: hidden }`).
-      *(Voltear con la tarjeta desde 2026-09-18; antes flotaban fijos.)*
-- [x] **Solo una respuesta visible a la vez**: voltear una tarjeta reinicia la
-      anterior; el estado de volteo vive en `ConceptList` como `flippedId`.
-      *(Añadido 2026-09-18.)*
-- [x] Confirmación con `window.confirm` antes de eliminar (texto con el título de la tarjeta).
-- [x] **Búsqueda** por texto: busca en `front`, `back` y `tag` (case-insensitive,
-      normaliza `trim`).
-- [x] **Filtro por etiqueta** (chips con color por `tagColor(tag)`); el chip
-      **«Todos»**, primero de la fila, limpia el filtro y muestra todas las
-      tarjetas (activo cuando no hay etiqueta seleccionada); clic en el chip
-      activo lo desactiva. *(Chip «Todos» añadido 2026-09-18.)*
-- [x] **Estado vacío**: mensaje distinto si hay filtros activos vs. parrilla realmente vacía.
-
-### 5.2 Modo estudio
-
-- [x] Sesión con **pila barajada** (`shuffle` de Fisher–Yates en `lib/utils.js`).
-- [x] Tarjeta grande que se **voltea** (controlada por estado, no por hover).
-- [x] Los **botones de respuesta** («La tengo clara» / «Volver a ver»)
-      aparecen con un **retardo de 1500 ms** tras voltear la tarjeta
-      (`STUDY_ACTIONS_DELAY` en `StudyView`), con fade-in y reservando su
-      espacio (`.study-actions--waiting`, fuera del tab mientras esperan);
-      al volver a la pregunta, avanzar o reiniciar, se ocultan y se cancela
-      el arranque pendiente. *(Añadido 2026-09-18.)*
-- [x] Botón «La tengo clara» → siguiente tarjeta (marcada como visitada).
-- [x] Botón «Volver a ver» → la tarjeta se reinserta **al final de la pila**
-      (no se cuenta como clara).
-- [x] La sesión termina cuando todas las tarjetas han sido al menos una vez «claras».
-- [x] **Resumen final**: visitas totales, repeticiones (volver a ver), y
-      porcentaje de dominio (claras / visitas totales).
-- [x] Acciones tras el resumen: repetir sesión / volver a las tarjetas.
-
-### 5.3 CRUD y persistencia
-
-- [x] **Crear** tarjeta vía modal (`ConceptForm`).
-- [x] **Editar** tarjeta vía modal reutilizado (puedo iniciar en edit desde cualquier tarjeta).
-- [x] **Modal más ancho y alto por encima de mobile** (≥641px): `width: min(720px, 90vw)` y textarea de respuesta con `min-height: 14rem`, para ver mejor los textos largos; en mobile el textarea también arranca más alto que el mínimo (`min-height: 10rem`). El modal nunca excede el alto del viewport (`max-height` + scroll interno). *(Añadido 2026-09-18; altura mobile ampliada el mismo día.)*
-- [x] **Eliminar** tarjeta (con confirmación).
-- [x] Validación del formulario (error visible si faltan campos; ver `ConceptForm`).
-- [x] Cada cambio se persiste **automáticamente** en `localStorage`
-      (efecto en `useConcepts`).
-- [x] **Restaurar a iniciales** (botón en `StatsBar`, confirma antes de borrar todo y sembrar).
-- [x] 9 **tarjetas de ejemplo** (`data/seed.js`) la primera vez.
-- [x] Estadísticas de `StatsBar`: total de tarjetas, número de etiquetas.
-
-### 5.4 Tarjeta 3D y UX
-
-- [x] Tarjeta **3D** con animación de volteo (0.55s, `cubic-bezier(0.4,0,0.2,1)`).
-- [x] Volteado **solo con clic** (o teclado: `Enter` / espacio) en la parrilla y
-      cualquier dispositivo; **sin volteo por hover**.
-- [x] El volteo es **controlado por el padre** en todos los modos (la parrilla
-      mantiene un único `flippedId`; el estudio controla su tarjeta grande).
-      El antiguo modo no controlado de `FlashCard` se eliminó al quedar sin
-      uso. *(Desde 2026-09-18.)*
-- [x] **Mantener la pila 3D estable**: cada cara debe tener su rotación propia
-  (`.flash-front { transform: rotateY(0) }`, `.flash-back { transform: rotateY(180deg) }`);
-  sin esto ambas caras quedan en el mismo plano y la trasera (respuesta) pinta
-  por encima de la frontal. *(Corregido 2026-09-18.)*
-- [x] **Sin saltos de layout al voltear**: la pregunta debe mantenerse centrada y
-  el texto «Clic para revelar» no se elimina del DOM al voltear: se oculta con
-  `opacity: 0`, la cara frontal no pierde altura y el `h3` no se pega al borde
-  inferior al iniciar el giro (aplica a la parrilla y a la tarjeta grande de
-  estudio). *(Corregido 2026-09-18.)*
-- [x] **Accesibilidad**: `role="button"`, teclado, `aria-label` en controles.
-- [x] **Scroll lento en hover para contenido más alto que la tarjeta**: la
-      pregunta y la respuesta envuelven. Si el contenido es más alto que la
-      cara (`scrollHeight > clientHeight`), al hacer hover (o foco) sobre la
-      tarjeta se activa —tras una pausa de **750 ms** (cancelable si el
-      cursor sale antes)— un scroll vertical muy lento (recorrido único
-      de arriba abajo, 16 px/s, que **se detiene al llegar al final** —
-      `hooks/useHoverScroll.js`) para poder leerlo; si el contenido
-      cabe, la
-      tarjeta se mantiene estática y su altura pequeña (190/300 px) se
-      conserva. Un degradado inferior (`.flash-face--overflow`) indica el
-      desborde. *(Vertical desde 2026-09-18; antes horizontal.)*
-
-### 5.5 Requisitos abiertos / pendiente
-
-- [ ] (none yet) → registrar aquí nuevos requerimientos con estado.
-
-### 5.6 Internacionalización (i18n)
-
-- [x] UI disponible en **español** (por defecto) e **inglés**, con
-      selector ES/EN en la cabecera (`aria-pressed`).
-- [x] Idioma persistido en `localStorage` (clave
-      `concepts-app:locale`, fuera del modelo de datos v1) y cambio
-      reactivo sin recarga.
-- [x] Textos en `application/i18n/locales/{es,en}.json` — claves
-      planas con interpolación `{{param}}`, replicando el patrón del
-      repo de referencia; consumo vía `useTranslation` de
-      react-i18next. *(Añadido 2026-09-19.)*
-- [x] El contenido de las tarjetas (seed) permanece en español: es
-      dato, no chrome de UI.
-
----
-
-## 6. Requerimientos no funcionales
-
-- [x] **Sin backend**: todo client-side; la única persistencia es `localStorage`.
-- [x] **Persistencia resiliente**: `try/catch` alrededor de `localStorage` (modo
-      de solo memoria si no está disponible) y de `JSON.parse` (falla → seed).
-- [x] **Accesibilidad básica**: roles ARIA, soporte teclado en la tarjeta,
-      contraste en tema oscuro.
-- [x] **Tema oscuro** global (fondo `#070818` aprox., tipografía variable).
-- [ ] **Rendimiento**: sin métricas explícitas aún. Si la parrilla supera ~200
-      tarjetas, considerar virtualización (ver backlog).
-
----
-
-## 7. Decisiones de diseño
-
-| Fecha | Decisión | Motivo / efecto |
-|---|---|---|
-| 2025-07-14 (v1 inicial) | Modo estudio: las «volver a ver» se reinsertan al final | La sesión termina cuando cada tarjeta se vio «clara» al menos una vez |
-| 2025-07-14 (v1 inicial) | Key de localStorage `concepts-app:v1` | Versión explícita para migrar formas de datos futuras |
-| 2025-07-14 (v1 inicial) | 9 tarjetas de seed | Demo inmediata sin que el usuario tenga que crear nada |
-| 2025-07-14 (v1 inicial) | CSS global (no módulos) | Un solo estilo por sección; prefijo `.flash-card` para el componente 3D |
-| 2026-09-18 | Rotación propia por cara en `.flash-face` | **Fix bug**: en Home se veía la respuesta en vez de la pregunta; las dos caras compartían plano 3D y la trasera pintaba encima. |
-| 2026-09-18 | Registro de requisitos en `AGENTS.md` | Fuente de verdad para agentes y humanos; actualizarse ante cada cambio |
-| 2026-09-18 | Volteo en la parrilla **solo por clic** (se elimina el hover) | El hover rotaba la tarjeta en Home; el requisito cambia a clic/teclado para revelar la respuesta. |
-| 2026-09-18 | Hint «Clic para revelar» permanece en el DOM al voltear (oculto con `opacity: 0` + transición) y pregunta centrada con `margin: auto` | **Fix bug**: al condicionar el hint con `{!isFlipped && …}`, la cara frontal perdía altura al girar y con `justify-content: space-between` la pregunta saltaba al borde inferior antes del flip |
-| 2026-09-18 | Scroll horizontal automático lento al hacer hover/foco, solo si el contenido es más ancho que la tarjeta | El texto de cada cara no envuelve (`white-space: nowrap` + `overflow-x: auto` con barra oculta). El hook `useHoverScroll` mide `scrollWidth > clientWidth` y, solo con desborde, arranca un scroll ping-pong a 16 px/s; se detiene al salir del hover/foco (posición → 0) y se interrumpe si el usuario hace un scroll manual. Se re-mide al editar la tarjeta y al redimensionar.
-| 2026-09-18 | El auto-scroll por hover pasa a **vertical**: el texto de las caras envuelve y el desborde es de altura | A petición del usuario: el contenido puede ser más alto que la cara (190/300 px). `overflow-y: auto` + **`min-height: 0`** en `.flash-face h3/p` (sin `min-height: 0` el ítem flex no encoge y nunca scrollea) + `overscroll-behavior: contain`. `.flash-face--overflow::after` añade un degradado inferior como pista visual (consume el estado `scrollable` del hook, antes sin uso). |
-| 2026-09-18 | El auto-scroll elimina el rebote: recorrido único de arriba abajo, con parada al llegar al final | A petición del usuario: al terminar el scroll descendente se detiene (antes hacía ping-pong de vuelta arriba). Para releer, basta salir del hover/foco y volver a entrar: rearranca desde arriba tras la pausa. |
-| 2026-09-18 | Volteo siempre controlado por el padre; la parrilla mantiene un único `flippedId` | A petición del usuario: al voltear una tarjeta se reinicia la anterior, de modo que solo se ve una respuesta a la vez. El modo no controlado de `FlashCard` (estado local de volteo) queda sin uso y se elimina. |
-
----
-
-## 8. Reglas para agentes que trabajan en este repo
-
-1. **Lee este archivo y el README antes de escribir código.**
-2. **Mantén este archivo actualizado**: cada requisito nuevo → sección 5 (con
-   `[ ]`/`[x]`); cada decisión → sección 7; cada fecha relevante → sección 5/7
-   y, si es grande, el changelog (sección 9).
-3. **No rompas invariantes del modelo de datos** (sección 4): si cambias el
-   schema, cambia la clave a `v2` y documenta la migración aquí antes de tocar
-   `useConcepts`.
-4. **No añadas dependencias** sin justificarlas aquí primero (sección 2).
-5. **Respetá las convenciones** (sección 2): JS (no TS), estados en hooks, CSS
-   global por secciones, `aria` en controles interactivos.
-6. **Después de un cambio visible** ejecuta `npm run lint` y, si cambia la UI,
-   verifica el estado de la tarjeta 3D en los **dos** modos (parrilla por clic
-   y tarjeta grande controlada).
-7. **Git**: una rama por cambio desde `develop`, commits Conventional
-   Commits (descripción en inglés) y PRs en inglés, según
-   `docs/GIT_CONVENTIONS.md`; si se cierra un requisito de la
-   sección 5, el commit debe mencionarlo en el footer (p. ej.
-   `Closes R5.4`).
-8. **Si un requisito entra en conflicto** con un invariantes (4), no lo resuelvas
-   en silencio: anótalo en la sección 7 y pide confirmación.
-
----
-
-## 9. Changelog (breve)
-
-| Fecha | Cambio |
+| Date | Change |
 |---|---|
-| 2026-09-18 | **v1 del proyecto en git**: primer commit (`1a3abe7`). |
-| 2026-09-18 | **Fix UI**: tarjetas de Home mostraban la respuesta en vez de la pregunta. Faltaban las rotaciones 3D por cara (`.flash-front`/`.flash-back`). Ver sección 7. |
-| 2026-09-18 | Añadido `AGENTS.md` como fuente de verdad de requisitos. |
-| 2026-09-18 | **UX**: se elimina el volteo por hover en «Mis tarjetas»: ahora solo clic (o teclado) revela la respuesta. Se sincronizan README, JSDoc de `FlashCard` y AGENTS.md. |
-| 2026-09-18 | **Fix UX**: al voltear una tarjeta, la pregunta se pegaba al borde inferior (el hint «Clic para revelar» se eliminaba del DOM justo al girar). El hint ahora se oculta con opacidad y la pregunta se centra con márgenes auto, en parrilla y en modo estudio. |
-| 2026-09-18 | **UX**: si una pregunta o respuesta es más ancha que la tarjeta, un scroll horizontal muy lento (ping-pong, 16 px/s) se activa al hacer hover/foco sobre la tarjeta; solo cuando hay desborde real, la tarjeta se mantiene estática y con su altura pequeña. Se crea `hooks/useHoverScroll.js`. |
-| 2026-09-18 | **UX**: el auto-scroll por hover pasa de horizontal a vertical (texto que envuelve, desborde de altura, `min-height: 0` en los ítems flex); nuevo degradado inferior (`.flash-face--overflow`) en caras con desborde. |
-| 2026-09-18 | **Fix**: el auto-scroll no avanzaba — `scrollTop` se cuantiza a píxeles enteros, así que releer la posición del DOM cada frame truncaba a 0 el incremento (~0,3 px/frame a 16 px/s). La posición ahora se acumula en `posRef` (patrón de animación) y solo se escribe en el DOM; `onScroll` tolera ±2 px por la cuantización. |
-| 2026-09-18 | **UX**: el auto-scroll por hover arranca tras una pausa de 750 ms (`HOVER_SCROLL_DELAY`), cancelable saliendo del hover/foco antes de que venza; también se limpia al desmontar. |
-| 2026-09-18 | **UX**: el auto-scroll deja de hacer ping-pong (rebote al final): recorrido único hacia abajo que se detiene al llegar al final; para releer, salir del hover/foco y volver a entrar. |
-| 2026-09-18 | **Home**: chip «Todos» en el filtro por etiqueta que limpia el filtro y muestra tarjetas de todas las temáticas; `aria-pressed` en todos los chips. |
-| 2026-09-18 | **Home**: al voltear una tarjeta se reinicia la anterior — solo una respuesta visible a la vez. `FlashCard` pasa a volteo siempre controlado (se elimina el modo no controlado, ya sin uso). |
-| 2026-09-18 | **Estudiar**: los botones de respuesta aparecen con retardo de 1500 ms tras voltear la tarjeta (fade-in sin salto de layout, temporizador cancelable). |
-| 2026-09-18 | **Home**: los iconos de editar/eliminar pasan a vivir dentro de la cara frontal (nueva prop `actions` de `FlashCard`) y voltean con la tarjeta; ocultos fuera del tab con la cara de espaldas. |
-| 2026-09-18 | **Modal**: más ancho (720px) y con textarea más alto (14rem) por encima de mobile, para textos largos; `max-height` + scroll interno como cota en ventanas bajas. |
-| 2026-09-18 | **Modal**: el textarea de respuesta sube también en mobile (`min-height: 10rem` en vez de las 4 filas por defecto). |
-| 2026-09-18 | **Proceso**: se crea `GIT_CONVENTIONS.md` (una rama por cambio desde `develop`; conventional commits) y se referencia en la regla 7 de la sección 8. |
-| 2026-09-19 | **Arquitectura**: migración a la estructura por capas `pages/` / `common/` / `application/` (rama `internal/INT-001-structure-migration`, 3 fases, sin cambios de comportamiento); constantes centralizadas en `application/config/constants.js`; `App.jsx` queda como shell. Detalle en `docs/ARCHITECTURE.md`. |
-| 2026-09-19 | **Docs**: sitio de documentación AsciiDoc con Antora (`npm run docs` → `build/site`); páginas `.adoc` en `docs/modules/ROOT/pages` con el comportamiento extraído de los comentarios del código (Antora solo devDeps — regla 4). |
-| 2026-09-19 | **Feature**: i18n ES/EN con `i18next` + `react-i18next` (selector en cabecera, idioma persistido en `concepts-app:locale`); textos en `application/i18n/locales/*.json`. Excepción justificada a «sin dependencias runtime» (regla 4). |
+| 2026-09-19 | **Feature**: ES/EN i18n with `i18next` + `react-i18next` (header switch, persisted locale) — first justified runtime dependency. |
+| 2026-09-19 | **Docs**: AsciiDoc documentation site with Antora (`npm run docs`); behavior extracted from code comments into `.adoc` pages. |
+| 2026-09-19 | **Architecture**: layered structure migration `pages/` / `common/` / `application/` (3 phases, no behavior changes). |
+| 2026-09-19 | **Docs**: AGENTS.md restructured as a lean English agent guide; full changelog moved to `docs/CHANGELOG.md`. |
 
 ---
 
-## 10. Backlog / ideas (sin orden)
+## 8. Backlog (unordered)
 
-- [ ] Probar con 1000+ tarjetas: medir rendimiento de la parrilla; decidir si
-      virtualizar.
-- [ ] Exportar/importar tarjetas (JSON).
-- [ ] Modo oscuro/light (si se añade, documentar aquí).
-- [ ] Persistencia de estadísticas de sesiones (actualmente solo la sesión
-      activa).
-- [ ] Soporte de sub-etiquetas o prioridad de repetición (SRS / Leitner).
-- [ ] Testes de la lógica de la pila de estudio (`StudyView` / `utils`) con
-      una herramienta de testing (requiere decisión de dependencia — regla 4).
+- [ ] Test with 1000+ cards: measure grid performance; decide on
+  virtualization.
+- [ ] Export/import cards (JSON).
+- [ ] Dark/light theme toggle.
+- [ ] Persist session statistics (currently per-session only).
+- [ ] Sub-tags or spaced-repetition priority (SRS / Leitner).
+- [ ] Tests for the study-deck logic and utils (requires a
+  dependency decision — rule 4).
