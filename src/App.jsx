@@ -1,10 +1,9 @@
 import { useState } from "react";
 
-import { ConceptForm } from "./components/ConceptForm";
-import { ConceptList } from "./components/ConceptList";
-import { StatsBar } from "./components/StatsBar";
-import { StudyView } from "./components/StudyView";
-import { useConcepts } from "./hooks/useConcepts";
+import { ConceptForm } from "./common/components/domain/concept-form";
+import { useConcepts } from "./application/store/use-concepts";
+import { HomePage } from "./pages/home";
+import { StudyPage } from "./pages/study";
 import "./App.css";
 
 const MODES = [
@@ -12,6 +11,10 @@ const MODES = [
   { id: "estudiar", label: "Estudiar" },
 ];
 
+/**
+ * Shell de la aplicación: cabecera con cambio de modo, página activa
+ * y modal de crear/editar tarjeta.
+ */
 export default function App() {
   const {
     concepts,
@@ -59,26 +62,14 @@ export default function App() {
 
       <main>
         {mode === "cartas" ? (
-          <>
-            <StatsBar concepts={concepts} resetToSeed={resetToSeed} />
-
-            <div className="add-row">
-              <button
-                className="btn btn-primary"
-                onClick={() => setEditing("nueva")}
-              >
-                ＋ Nueva tarjeta
-              </button>
-            </div>
-
-            <ConceptList
-              concepts={concepts}
-              deleteConcept={handleDelete}
-              onEdit={setEditing}
-            />
-          </>
+          <HomePage
+            concepts={concepts}
+            deleteConcept={handleDelete}
+            onEdit={setEditing}
+            resetToSeed={resetToSeed}
+          />
         ) : (
-          <StudyView concepts={concepts} onBack={() => setMode("cartas")} />
+          <StudyPage concepts={concepts} onBack={() => setMode("cartas")} />
         )}
       </main>
 

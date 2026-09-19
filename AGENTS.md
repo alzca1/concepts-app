@@ -60,33 +60,41 @@ Dos modos de uso:
 
 ## 3. Arquitectura (estructura del repo)
 
+> Detalle completo de capas, convenciones y migración en
+> `docs/ARCHITECTURE.md`.
+
 ```
 concepts-app/
 ├── index.html
 ├── vite.config.js
-├── AGENTS.md            ← ESTE ARCHIVO
-├── GIT_CONVENTIONS.md   ← convenciones de Git (ramas + commits)
+├── AGENTS.md              ← ESTE ARCHIVO
 ├── README.md
+├── docs/                  # Documentación de referencia (en inglés)
+│   ├── ARCHITECTURE.md    # Organización de archivos y código
+│   └── GIT_CONVENTIONS.md # Ramas, commits y PRs
 ├── package.json
 ├── public/
 │   └── favicon.svg
 └── src/
-    ├── main.jsx          # Punto de entrada (React 19 createRoot)
-    ├── App.jsx           # Modo (cartas / estudio), estado global, modal
-    ├── App.css           # Estilos de la aplicación (tarjeta 3D, grid, modal…)
-    ├── index.css         # Reset y estilos base (fondo oscuro, tipografía)
-    ├── components/
-    │   ├── FlashCard.jsx     # Tarjeta 3D reutilizable (front = pregunta, back = respuesta)
-    │   ├── ConceptList.jsx   # Home: búsqueda, filtros por etiqueta, parrilla
-    │   ├── ConceptForm.jsx   # Modal crear / editar tarjeta
-    │   ├── StudyView.jsx     # Sesión de estudio + resumen
-    │   └── StatsBar.jsx      # Estadísticas + restaurar a seed
-    ├── data/
-    │   └── seed.js           # 9 tarjetas de ejemplo (se carga solo si no hay nada guardado)
-    ├── hooks/
-    │   └── useConcepts.js    # Estado + persistencia en localStorage
-    └── lib/
-        └── utils.js          # uid, shuffle, tagColor
+    ├── main.jsx           # Punto de entrada (React 19 createRoot)
+    ├── App.jsx            # Shell: cambio de modo, página activa y modal
+    ├── App.css            # Estilos de la aplicación (tarjeta 3D, grid, modal…)
+    ├── index.css          # Reset y estilos base (fondo oscuro, tipografía)
+    ├── application/       # Infraestructura (sin UI)
+    │   ├── api/
+    │   │   ├── concepts-storage.js    # Persistencia localStorage (try/catch)
+    │   │   └── seed/seed-concepts.js  # 9 tarjetas de ejemplo
+    │   ├── config/constants.js        # Clave de storage y retardos compartidos
+    │   └── store/use-concepts/        # Estado global de tarjetas
+    ├── common/            # Reutilizable, agnóstico de página
+    │   ├── components/
+    │   │   ├── domain/concept-form/        # Modal crear / editar tarjeta
+    │   │   └── presentational/flash-card/  # Tarjeta 3D (front/back)
+    │   ├── hooks/use-hover-scroll/         # Auto-scroll lento en hover
+    │   └── utils/{uid,shuffle,tag-color}/  # Una utilidad por carpeta
+    └── pages/             # Una carpeta por vista
+        ├── home/          # «Mis tarjetas»: home.jsx + components/{concept-list,stats-bar}
+        └── study/         # «Estudiar»: study.jsx (sesión + resumen)
 ```
 
 **Flujo de datos (una sola fuente de verdad):**
@@ -94,11 +102,13 @@ concepts-app/
 ```
 localStorage (clave `concepts-app:v1`)
         ↑↓  JSON.stringify / parse
-   useConcepts()  (useState + useEffect de guardado)
+  application/api  (concepts-storage)
+        ↓
+  application/store  (use-concepts: useState + useEffect de guardado)
         ↓  props
-  App.jsx  ──►  ConceptList / StudyView / StatsBar
-                   ↓ props (concept, onEdit, deleteConcept…)
-            FlashCard (solo muestra, no muta)
+  App.jsx  ──►  pages/home  |  pages/study
+                     ↓ props (concept, onEdit, deleteConcept…)
+          common/components (solo muestran, no mutan)
 ```
 
 ---
@@ -119,7 +129,7 @@ localStorage (clave `concepts-app:v1`)
 
 - La clave de `localStorage` es **`concepts-app:v1`**. Si se necesita una nueva
   forma de datos, usar una nueva clave (`v2`) y migrar o conservar la antigua.
-- `id` se genera con `uid()` (`lib/utils.js`).
+- `id` se genera con `uid()` (`common/utils/uid`).
 - El campo `createdAt` se preserva al editar (no se sobreescribe).
 - En la primera carga, si no hay nada guardado (o está corrupto), se semilla
   con `seedConcepts()` (9 tarjetas).
@@ -264,11 +274,11 @@ localStorage (clave `concepts-app:v1`)
 6. **Después de un cambio visible** ejecuta `npm run lint` y, si cambia la UI,
    verifica el estado de la tarjeta 3D en los **dos** modos (parrilla por clic
    y tarjeta grande controlada).
-7. **Git**: una rama por cambio desde `develop` y commits con formato
-   Conventional Commits, según `GIT_CONVENTIONS.md`. Los commits son
-   pequeños y con descripción en español que explique el *por qué*;
-   si se cierra un requisito de la sección 5, el commit debe
-   mencionarlo en el footer (p. ej. `Cierra R5.4`).
+7. **Git**: una rama por cambio desde `develop`, commits Conventional
+   Commits (descripción en inglés) y PRs en inglés, según
+   `docs/GIT_CONVENTIONS.md`; si se cierra un requisito de la
+   sección 5, el commit debe mencionarlo en el footer (p. ej.
+   `Closes R5.4`).
 8. **Si un requisito entra en conflicto** con un invariantes (4), no lo resuelvas
    en silencio: anótalo en la sección 7 y pide confirmación.
 
@@ -295,6 +305,7 @@ localStorage (clave `concepts-app:v1`)
 | 2026-09-18 | **Modal**: más ancho (720px) y con textarea más alto (14rem) por encima de mobile, para textos largos; `max-height` + scroll interno como cota en ventanas bajas. |
 | 2026-09-18 | **Modal**: el textarea de respuesta sube también en mobile (`min-height: 10rem` en vez de las 4 filas por defecto). |
 | 2026-09-18 | **Proceso**: se crea `GIT_CONVENTIONS.md` (una rama por cambio desde `develop`; conventional commits) y se referencia en la regla 7 de la sección 8. |
+| 2026-09-19 | **Arquitectura**: migración a la estructura por capas `pages/` / `common/` / `application/` (rama `internal/INT-001-structure-migration`, 3 fases, sin cambios de comportamiento); constantes centralizadas en `application/config/constants.js`; `App.jsx` queda como shell. Detalle en `docs/ARCHITECTURE.md`. |
 
 ---
 
