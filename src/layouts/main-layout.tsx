@@ -20,10 +20,12 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="app">
       <header className="app-header">
-        <div>
-          <h1>Concepts</h1>
-          <p className="subtitle">{t("app.subtitle")}</p>
-        </div>
+        {!user && (
+          <div>
+            <h1>Concepts</h1>
+            <p className="subtitle">{t("app.subtitle")}</p>
+          </div>
+        )}
         <div className="header-controls">
           {user && (
             <div className="user-menu">
