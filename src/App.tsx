@@ -65,7 +65,7 @@ function AppContent() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/concepts-app">
       <AuthProvider>
         <ConceptModalProvider>
           <MainLayout>
