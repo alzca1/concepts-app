@@ -28,20 +28,6 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         )}
         <div className="header-controls">
           {user && (
-            <div className="user-menu">
-              <span className="user-menu__email" title={user.email ?? ""}>
-                {user.email}
-              </span>
-              <button
-                type="button"
-                className="btn btn-ghost btn-sm"
-                onClick={handleSignOut}
-              >
-                {t("auth.signOut")}
-              </button>
-            </div>
-          )}
-          {user && (
             <nav className="mode-tabs" aria-label={t("mode.tabsAria")}>
               <NavLink
                 to="/"
@@ -62,25 +48,41 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
               </NavLink>
             </nav>
           )}
-          <div
-            className="lang-switch"
-            role="group"
-            aria-label={t("language.aria")}
-          >
-            {LANGUAGES.map((lang) => {
-              const active = i18n.language === lang.id;
-              return (
+          <div className="header-controls__right">
+            <div
+              className="lang-switch"
+              role="group"
+              aria-label={t("language.aria")}
+            >
+              {LANGUAGES.map((lang) => {
+                const active = i18n.language === lang.id;
+                return (
+                  <button
+                    key={lang.id}
+                    type="button"
+                    className={`lang-switch__option${active ? " active" : ""}`}
+                    aria-pressed={active}
+                    onClick={() => changeLocale(lang.id)}
+                  >
+                    {lang.label}
+                  </button>
+                );
+              })}
+            </div>
+            {user && (
+              <div className="user-menu">
+                <span className="user-menu__email" title={user.email ?? ""}>
+                  {user.email}
+                </span>
                 <button
-                  key={lang.id}
                   type="button"
-                  className={`lang-switch__option${active ? " active" : ""}`}
-                  aria-pressed={active}
-                  onClick={() => changeLocale(lang.id)}
+                  className="btn btn-ghost btn-sm"
+                  onClick={handleSignOut}
                 >
-                  {lang.label}
+                  {t("auth.signOut")}
                 </button>
-              );
-            })}
+              </div>
+            )}
           </div>
         </div>
       </header>
