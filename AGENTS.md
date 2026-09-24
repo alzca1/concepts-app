@@ -21,10 +21,12 @@
 ## 1. Vision
 
 Flashcards web app to memorize tech and programming concepts.
-React + Vite (TypeScript, strict mode), 100% client-side, no
-backend. Two modes: **My cards** (browse, search, filter, edit,
-delete) and **Study** (active-recall sessions with a shuffled deck
-and a final summary).
+React + Vite (TypeScript, strict mode), static frontend hosted on
+GitHub Pages, **Supabase** as the managed backend (Auth + Postgres
++ RLS) for multi-user support. Two modes: **My cards** (browse,
+search, filter, edit, delete) and **Study** (active-recall sessions
+with a shuffled deck and a final summary). Each signed-in user
+sees and manages only their own cards.
 
 ---
 
@@ -42,11 +44,15 @@ npm run docs       # Antora docs site -> build/site
 **Dependency policy (no additions without justifying them here
 first):**
 
-- **Runtime**: React only, plus two justified exceptions —
+- **Runtime**: React only, plus three justified exceptions —
   `i18next` + `react-i18next` for ES/EN i18n (interpolation,
-  fallback and language reactivity would otherwise be hand-rolled), and
+  fallback and language reactivity would otherwise be hand-rolled),
   `react-router-dom` for client-side routing (URL-based navigation
-  enables deep links, browser history and future route extensibility).
+  enables deep links, browser history and future route extensibility),
+  and `@supabase/supabase-js` for the managed backend (auth, JWT
+  handling, refresh, and a typed Postgres client with row-level
+  security — re-implementing these in-house would multiply code and
+  re-open security holes).
 - **devDependencies**: `typescript` (strict; `tsc --noEmit` runs as
   part of `npm run build`) and `@antora/cli` + `@antora/site-generator`
   (docs site) — none of them loaded by the application bundle.
@@ -68,7 +74,7 @@ Commit footers reference these IDs (`Closes R5.x`).
 | R5.5 | Text search over question, answer and tag (case-insensitive, trimmed) | [x] | home.adoc |
 | R5.6 | Tag filter chips with a first «Todos»/«All» chip that clears the filter | [x] | home.adoc |
 | R5.7 | Distinct empty states (filters vs. empty deck) | [x] | home.adoc |
-| R5.8 | Stats bar (cards, tags) + restore-to-seed with confirmation | [x] | home.adoc |
+| R5.8 | Stats bar (cards, tags) | [x] | home.adoc |
 | R5.9 | Study session over a shuffled deck (Fisher–Yates) | [x] | [study-mode.adoc](docs/modules/ROOT/pages/study-mode.adoc) |
 | R5.10 | Study card flips on click/keyboard, page-controlled | [x] | study-mode.adoc |
 | R5.11 | Answer buttons appear 1500 ms after the flip (fade-in, cancelable, out of the tab order while waiting) | [x] | study-mode.adoc |
@@ -78,12 +84,15 @@ Commit footers reference these IDs (`Closes R5.x`).
 | R5.15 | Create/edit cards through a shared modal (same form, initial state per card) | [x] | — |
 | R5.16 | Modal wider/taller above mobile: `min(720px, 90vw)`, textarea `min-height` 14rem (10rem on mobile); `max-height` + internal scroll | [x] | — |
 | R5.17 | Form validation with a visible error when fields are missing | [x] | — |
-| R5.18 | Every change auto-persisted to `localStorage` | [x] | [data-model.adoc](docs/modules/ROOT/pages/data-model.adoc) |
-| R5.19 | 9 seed cards on first run (or when storage is corrupt) | [x] | data-model.adoc |
+| R5.18 | Every change auto-persisted to Postgres (`public.concepts`) scoped to the signed-in user via RLS | [x] | [data-model.adoc](docs/modules/ROOT/pages/data-model.adoc) |
 | R5.20 | 3D card: flip by click/keyboard only, always parent-controlled | [x] | [flash-card.adoc](docs/modules/ROOT/pages/flash-card.adoc) |
 | R5.21 | No layout jumps on flip (hint stays in the DOM, question centered) | [x] | flash-card.adoc |
 | R5.22 | Slow vertical hover/focus auto-scroll for overflowing text (750 ms pause, single pass, stops at the end) + bottom fade hint | [x] | flash-card.adoc |
-| R5.23 | ES/EN UI switch in the header, persisted, reactive; seed content stays Spanish | [x] | [index.adoc](docs/modules/ROOT/pages/index.adoc) |
+| R5.23 | ES/EN UI switch in the header, persisted, reactive | [x] | [index.adoc](docs/modules/ROOT/pages/index.adoc) |
+| R6.1 | Sign up / sign in / sign out via Supabase Auth (email + password) | [x] | [auth.adoc](docs/modules/ROOT/pages/auth.adoc) |
+| R6.2 | Every read/write is filtered by `auth.uid()` so users only see and manage their own cards | [x] | data-model.adoc |
+| R6.3 | Protected routes (`/`, `/study`) redirect unauthenticated users to `/login`, preserving the requested URL | [x] | auth.adoc |
+| R6.4 | New users start with an empty deck — there are no seed cards | [x] | home.adoc |
 
 **Open requirements:** none yet — register new ones here with
 `[ ]` and an ID.
@@ -92,10 +101,12 @@ Commit footers reference these IDs (`Closes R5.x`).
 
 ## 4. Non-functional requirements
 
-- [x] No backend: client-side only, `localStorage` is the only
-  persistence.
-- [x] Resilient persistence: all storage access wrapped in
-  `try/catch` (in-memory fallback; corrupt JSON → seed).
+- [x] Managed backend: Supabase (Postgres + Auth + RLS). The
+  frontend is a static SPA; all data lives in Supabase, scoped to
+  the signed-in user.
+- [x] No localStorage data persistence: the app no longer stores
+  cards in `localStorage` (that key is removed). The locale
+  preference is still in `localStorage`.
 - [x] Basic accessibility: ARIA roles, keyboard support on the
   card, dark-theme contrast.
 - [x] Global dark theme.
@@ -126,6 +137,9 @@ Unique historical record — current behavior is documented in the
 | 2026-09-18 | Edit/delete icons move inside the front face (`actions` prop) | They flip with the card instead of floating fixed over the animation |
 | 2026-09-19 | Types/interfaces/enums live in `utils/types.ts` / `utils/interfaces.ts` / `utils/enums.ts` of each unit | One role per file inside the unit's `utils/`; improves discoverability; only inline a type when the unit is a single-file (e.g. `App.tsx`) and the type is local |
 | 2026-09-19 | React Router v7 introduced with URL-based navigation | `/` renders HomePage (My cards), `/study` renders StudyPage; header nav tabs replaced with `<NavLink>`; `ConceptModalContext` created to share modal state across routes |
+| 2026-09-19 | Supabase managed backend replaces `localStorage` for cards | Family-scale multi-user requirement; `@supabase/supabase-js` is the third justified runtime dep; `public.concepts` table with RLS by `auth.uid()`; `useConcepts` becomes async and reacts to the session |
+| 2026-09-19 | Seed cards removed | New users start with an empty deck (R6.4); the migration from `localStorage` discards previous local data (intentional — different storage, no conversion path) |
+| 2026-09-19 | Auth flow with `<ProtectedRoute>` route guard | `/` and `/study` redirect to `/login` when no session; the requested URL is preserved through `location.state.from` and restored after sign-in |
 
 ---
 
@@ -184,6 +198,7 @@ Full history in [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
 | 2026-09-19 | **Architecture**: layered structure migration `pages/` / `common/` / `application/` (3 phases, no behavior changes). |
 | 2026-09-19 | **Docs**: AGENTS.md restructured as a lean English agent guide; full changelog moved to `docs/CHANGELOG.md`. |
 | 2026-09-19 | **Convention**: extract component/hook/page props and local types into `utils/{types,interfaces,enums}.ts`. | One file per kind (type alias vs. interface vs. enum); helpers private to the unit also live in the same `utils/`. |
+| 2026-09-19 | **Feature**: Supabase multi-user backend — Auth (email + password), `public.concepts` table with RLS scoped by `auth.uid()`, async `useConcepts` hook, protected routes, header user menu + sign out. Seed cards and `localStorage` persistence removed. |
 
 ---
 
