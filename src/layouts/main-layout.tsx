@@ -25,26 +25,20 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
           <p className="subtitle">{t("app.subtitle")}</p>
         </div>
         <div className="header-controls">
-          <div
-            className="lang-switch"
-            role="group"
-            aria-label={t("language.aria")}
-          >
-            {LANGUAGES.map((lang) => {
-              const active = i18n.language === lang.id;
-              return (
-                <button
-                  key={lang.id}
-                  type="button"
-                  className={`lang-switch__option${active ? " active" : ""}`}
-                  aria-pressed={active}
-                  onClick={() => changeLocale(lang.id)}
-                >
-                  {lang.label}
-                </button>
-              );
-            })}
-          </div>
+          {user && (
+            <div className="user-menu">
+              <span className="user-menu__email" title={user.email ?? ""}>
+                {user.email}
+              </span>
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                onClick={handleSignOut}
+              >
+                {t("auth.signOut")}
+              </button>
+            </div>
+          )}
           {user && (
             <nav className="mode-tabs" aria-label={t("mode.tabsAria")}>
               <NavLink
@@ -66,20 +60,26 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
               </NavLink>
             </nav>
           )}
-          {user && (
-            <div className="user-menu">
-              <span className="user-menu__email" title={user.email ?? ""}>
-                {user.email}
-              </span>
-              <button
-                type="button"
-                className="btn btn-ghost btn-sm"
-                onClick={handleSignOut}
-              >
-                {t("auth.signOut")}
-              </button>
-            </div>
-          )}
+          <div
+            className="lang-switch"
+            role="group"
+            aria-label={t("language.aria")}
+          >
+            {LANGUAGES.map((lang) => {
+              const active = i18n.language === lang.id;
+              return (
+                <button
+                  key={lang.id}
+                  type="button"
+                  className={`lang-switch__option${active ? " active" : ""}`}
+                  aria-pressed={active}
+                  onClick={() => changeLocale(lang.id)}
+                >
+                  {lang.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </header>
 
