@@ -8,9 +8,6 @@ export const DEFAULT_TAG = "General";
 /** Empty string sentinel for "no value" (e.g. clear search or filter). */
 export const EMPTY_STRING = "";
 
-/** Versioned localStorage key for the v1 data model. */
-export const STORAGE_KEY = "concepts-app:v1";
-
 /** localStorage key holding the UI language ("es" | "en"). */
 export const LOCALE_STORAGE_KEY = "concepts-app:locale";
 
