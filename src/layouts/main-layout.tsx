@@ -45,25 +45,27 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
               );
             })}
           </div>
-          <nav className="mode-tabs" aria-label={t("mode.tabsAria")}>
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                `mode-tab${isActive ? " active" : ""}`
-              }
-              end
-            >
-              🗂 {t("mode.cards")}
-            </NavLink>
-            <NavLink
-              to="/study"
-              className={({ isActive }) =>
-                `mode-tab${isActive ? " active" : ""}`
-              }
-            >
-              🎯 {t("mode.study")}
-            </NavLink>
-          </nav>
+          {user && (
+            <nav className="mode-tabs" aria-label={t("mode.tabsAria")}>
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  `mode-tab${isActive ? " active" : ""}`
+                }
+                end
+              >
+                🗂 {t("mode.cards")}
+              </NavLink>
+              <NavLink
+                to="/study"
+                className={({ isActive }) =>
+                  `mode-tab${isActive ? " active" : ""}`
+                }
+              >
+                🎯 {t("mode.study")}
+              </NavLink>
+            </nav>
+          )}
           {user && (
             <div className="user-menu">
               <span className="user-menu__email" title={user.email ?? ""}>
