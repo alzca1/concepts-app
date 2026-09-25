@@ -27,28 +27,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
           </div>
         )}
         <div className="header-controls">
-          {user && (
-            <nav className="mode-tabs" aria-label={t("mode.tabsAria")}>
-              <NavLink
-                to="/"
-                className={({ isActive }) =>
-                  `mode-tab${isActive ? " active" : ""}`
-                }
-                end
-              >
-                🗂 {t("mode.cards")}
-              </NavLink>
-              <NavLink
-                to="/study"
-                className={({ isActive }) =>
-                  `mode-tab${isActive ? " active" : ""}`
-                }
-              >
-                🎯 {t("mode.study")}
-              </NavLink>
-            </nav>
-          )}
-          <div className="header-controls__right">
+          <div className="header-row header-row--top">
             <div
               className="lang-switch"
               role="group"
@@ -69,7 +48,28 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
                 );
               })}
             </div>
-            {user && (
+          </div>
+          {user && (
+            <div className="header-row header-row--bottom">
+              <nav className="mode-tabs" aria-label={t("mode.tabsAria")}>
+                <NavLink
+                  to="/"
+                  className={({ isActive }) =>
+                    `mode-tab${isActive ? " active" : ""}`
+                  }
+                  end
+                >
+                  🗂 {t("mode.cards")}
+                </NavLink>
+                <NavLink
+                  to="/study"
+                  className={({ isActive }) =>
+                    `mode-tab${isActive ? " active" : ""}`
+                  }
+                >
+                  🎯 {t("mode.study")}
+                </NavLink>
+              </nav>
               <div className="user-menu">
                 <span className="user-menu__email" title={user.email ?? ""}>
                   {user.email}
@@ -82,8 +82,8 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
                   {t("auth.signOut")}
                 </button>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </header>
 
