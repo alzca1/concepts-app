@@ -13,7 +13,7 @@ export interface GuestRouteProps {
 export function GuestRoute({ children }: GuestRouteProps) {
   const { user, isLoading } = useAuth();
 
-  if (isLoading) return null;
+  if (isLoading) return <div className="spinner" aria-label="Loading" />;
 
   if (user) {
     return <Navigate to="/" replace />;
