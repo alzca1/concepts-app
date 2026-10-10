@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import type { ConceptInput } from "./application/api/types";
 import { ConceptForm } from "./common/components/domain/concept-form";
+import { GuestRoute } from "./common/components/protected-route/guest-route";
 import { ProtectedRoute } from "./common/components/protected-route";
 import { ConceptModalProvider } from "./context/concept-modal";
 import { AuthProvider } from "./context";
@@ -27,8 +28,22 @@ function AppContent() {
   return (
     <>
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
+        <Route
+          path="/login"
+          element={
+            <GuestRoute>
+              <LoginPage />
+            </GuestRoute>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <GuestRoute>
+              <SignupPage />
+            </GuestRoute>
+          }
+        />
         <Route
           path="/"
           element={
