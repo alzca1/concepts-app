@@ -13,6 +13,8 @@ export function AppHeader() {
   const { t, i18n } = useTranslation();
   const { user, signOut } = useAuth();
 
+  const userInitial = (user?.email ?? "").charAt(0).toUpperCase();
+
   async function handleSignOut() {
     await signOut();
   }
@@ -26,7 +28,17 @@ export function AppHeader() {
         </div>
       )}
       <div className="header-controls">
-        <div className="header-row header-row--top">
+        {user && (
+          <nav className="mode-tabs" aria-label={t("mode.tabsAria")}>
+            <NavLink to="/" className={({ isActive }) => `mode-tab${isActive ? " active" : ""}`} end>
+              🗂 {t("mode.cards")}
+            </NavLink>
+            <NavLink to="/study" className={({ isActive }) => `mode-tab${isActive ? " active" : ""}`}>
+              🎯 {t("mode.study")}
+            </NavLink>
+          </nav>
+        )}
+        <div className="header-controls__group">
           <div className="lang-switch" role="group" aria-label={t("language.aria")}>
             {LANGUAGES.map((lang) => {
               const active = i18n.language === lang.id;
@@ -43,27 +55,23 @@ export function AppHeader() {
               );
             })}
           </div>
-        </div>
-        {user && (
-          <div className="header-row header-row--bottom">
-            <nav className="mode-tabs" aria-label={t("mode.tabsAria")}>
-              <NavLink to="/" className={({ isActive }) => `mode-tab${isActive ? " active" : ""}`} end>
-                🗂 {t("mode.cards")}
-              </NavLink>
-              <NavLink to="/study" className={({ isActive }) => `mode-tab${isActive ? " active" : ""}`}>
-                🎯 {t("mode.study")}
-              </NavLink>
-            </nav>
+          {user && (
             <div className="user-menu">
-              <span className="user-menu__email" title={user.email ?? ""}>
-                {user.email}
+              <span className="user-menu__avatar" title={user.email ?? ""}>
+                {userInitial}
               </span>
-              <button type="button" className="btn btn-ghost btn-sm" onClick={handleSignOut}>
-                {t("auth.signOut")}
+              <button
+                type="button"
+                className="user-menu__signout"
+                aria-label={t("auth.signOut")}
+                title={t("auth.signOut")}
+                onClick={handleSignOut}
+              >
+                ⏻
               </button>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </header>
   );
