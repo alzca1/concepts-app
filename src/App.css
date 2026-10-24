@@ -8,6 +8,12 @@
   flex-direction: column;
 }
 
+@media (min-width: 1200px) {
+  .app {
+    max-width: 1280px;
+  }
+}
+
 /* --- Loading spinner --- */
 .spinner {
   width: 2.5rem;
@@ -20,7 +26,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* --- Header --- */
@@ -81,7 +89,9 @@ h1 {
   color: #64748b;
   background: transparent;
   cursor: pointer;
-  transition: color 0.15s ease, background 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
 }
 
 .lang-switch__option:hover {
@@ -119,7 +129,10 @@ h1 {
   background: transparent;
   cursor: pointer;
   text-decoration: none;
-  transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .mode-tab:hover {
@@ -154,7 +167,7 @@ h1 {
 .home-header__filters {
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
+  gap: 2rem;
 }
 
 /* --- Stats bar --- */
@@ -199,7 +212,10 @@ h1 {
   font-weight: 600;
   padding: 0.6rem 1.15rem;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 .btn:hover {
@@ -330,8 +346,20 @@ h1 {
 /* --- Card grid --- */
 .deck {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
+}
+
+@media (min-width: 700px) {
+  .deck {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .deck {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 .card-cell {
@@ -370,7 +398,9 @@ h1 {
   background: rgba(10, 10, 30, 0.6);
   color: #cbd5e1;
   backdrop-filter: blur(6px);
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .cell-actions button:hover {
@@ -601,7 +631,9 @@ h1 {
   /* The buttons appear with a delay after the card is flipped (see
    * `StudyPage`): the container reserves its space from the flip and
    * the buttons fade in when they become visible. */
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s ease;
 }
 
 .study-actions--waiting {
@@ -832,7 +864,9 @@ h1 {
   color: #94a3b8;
   font-size: 1rem;
   cursor: pointer;
-  transition: color 0.15s ease, background 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
 }
 
 .user-menu__signout:hover {
