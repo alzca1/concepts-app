@@ -151,21 +151,21 @@ h1 {
   box-shadow: 0 4px 16px rgba(99, 102, 241, 0.45);
 }
 
-/* --- Home header: stats + filters --- */
-.home-header {
+/* --- Cards header: stats + filters --- */
+.cards-header {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
   margin-bottom: 1.25rem;
 }
 
-.home-header__top {
+.cards-header__top {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.home-header__filters {
+.cards-header__filters {
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -196,10 +196,6 @@ h1 {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: #64748b;
-}
-
-.stats-bar__spacer {
-  flex: 1;
 }
 
 /* --- Buttons --- */
@@ -266,12 +262,6 @@ h1 {
 .btn-ghost:hover {
   background: rgba(255, 255, 255, 0.12);
   color: #f8fafc;
-}
-
-.btn-sm {
-  padding: 0.45rem 0.9rem;
-  font-size: 0.82rem;
-  border-radius: 999px;
 }
 
 .btn-icon {
@@ -827,10 +817,6 @@ h1 {
   .stats-bar {
     flex-wrap: wrap;
     gap: 1.25rem;
-  }
-
-  .stats-bar__spacer {
-    display: none;
   }
 
   .study-actions .btn {

@@ -46,8 +46,8 @@ export function CardsPage({ concepts, isLoading, error }: CardsPageProps) {
     <>
       <ModeTabs />
 
-      <div className="home-header">
-        <div className="home-header__top">
+      <div className="cards-header">
+        <div className="cards-header__top">
           <StatsBar concepts={concepts} />
           <div className="add-row">
             <button
@@ -58,7 +58,7 @@ export function CardsPage({ concepts, isLoading, error }: CardsPageProps) {
             </button>
           </div>
         </div>
-        <div className="home-header__filters">
+        <div className="cards-header__filters">
           <input
             className="search"
             type="search"
