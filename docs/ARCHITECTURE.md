@@ -19,7 +19,7 @@ is scoped to the signed-in user by the database policy.
 
 Global state lives in custom hooks (`useAuth`, `useConcepts`);
 components are presentational and receive behavior through props.
-Routes (`/`, `/study`, `/login`, `/signup`) are protected by
+Routes (`/`, `/cards`, `/study`, `/login`, `/signup`) are protected by
 `<ProtectedRoute>` which redirects unauthenticated users to
 `/login` while preserving the requested URL.
 
@@ -97,13 +97,16 @@ src/
 │   ├── use-concept-modal.ts
 │   └── index.ts                  # Auth barrel
 └── pages/                 # One folder per view
-    ├── home/
-    │   ├── home.tsx       # Page: stats bar + new-card action + grid
+    ├── cards/
+    │   ├── cards.tsx      # Page: mode tabs + stats bar + new-card action + grid
     │   ├── index.ts
-    │   ├── utils/interfaces.ts   # HomePageProps
+    │   ├── utils/interfaces.ts   # CardsPageProps
     │   └── components/
     │       ├── concept-list/  # Search, tag filters, card grid
     │       └── stats-bar/     # Cards + tags counts
+    ├── welcome-user/
+    │   ├── welcome-user.tsx  # Landing page (placeholder)
+    │   └── index.ts
     ├── study/
     │   ├── study.tsx      # Page: study session + summary
     │   ├── index.ts
@@ -129,13 +132,16 @@ src/
 ├── main.tsx                          # Entry point — do not modify
 ├── App.tsx                           # Shell: AuthProvider + routes + modal
 ├── pages/                            # One folder per view
-│   ├── home/                         # My cards
+│   ├── cards/                        # My cards
 │   │   ├── index.ts                  # Page barrel
-│   │   ├── home.tsx
+│   │   ├── cards.tsx
 │   │   ├── utils/                    # Page-local types
 │   │   └── components/
 │   │       ├── concept-list/
 │   │       └── stats-bar/
+│   ├── welcome-user/                 # Landing page (placeholder)
+│   │   ├── index.ts
+│   │   └── welcome-user.tsx
 │   ├── study/                        # Active-recall sessions
 │   │   ├── index.ts
 │   │   ├── study.tsx
@@ -209,7 +215,7 @@ branch per phase), with no behavior changes:
 | `data/seed.js` + localStorage logic in `useConcepts` | `application/api/` | 2 |
 | `hooks/useConcepts.js` | `application/store/use-concepts/` | 2 |
 | `components/ConceptForm.jsx` | `common/components/domain/concept-form/` | 2 |
-| `components/ConceptList.jsx` + `StatsBar.jsx` | `pages/home/` | 3 |
+| `components/ConceptList.jsx` + `StatsBar.jsx` | `pages/cards/` | 3 |
 | `components/StudyView.jsx` | `pages/study/` | 3 |
 | Scattered constants (`STORAGE_KEY`, delays, scroll speed) | `application/config/constants.js` | 3 |
 
@@ -288,7 +294,7 @@ application/api  (concepts-storage)
         ↓
 application/store  (use-concepts: useState + save useEffect)
         ↓ props
-App.tsx  ──► pages/home  |  pages/study
+App.tsx  ──► pages/cards  |  pages/study
                    ↓ props (concept, onEdit, deleteConcept…)
         common/components (render only, never mutate)
 ```

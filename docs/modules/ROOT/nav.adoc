@@ -2,7 +2,7 @@
 * xref:index.adoc[Application overview]
 
 .User guide
-* xref:home.adoc[My cards (home)]
+* xref:cards.adoc[My cards]
 * xref:study-mode.adoc[Study mode]
 * xref:auth.adoc[Authentication]
 

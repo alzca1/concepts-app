@@ -1,6 +1,6 @@
 import type { Concept } from "../../../application/api/types";
 
-export interface HomePageProps {
+export interface CardsPageProps {
   concepts: Concept[];
   isLoading: boolean;
   error: Error | null;

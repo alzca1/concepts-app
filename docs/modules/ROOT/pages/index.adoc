@@ -4,9 +4,10 @@ Concepts is a 100% client-side *flashcards* SPA built with React +
 Vite (TypeScript). It helps you memorize tech and programming
 concepts with two modes:
 
-* *My cards (home)* — responsive card grid with search, tag filters,
-  inline card actions and session stats.
-* *Study mode* — a shuffled deck session with a final summary.
+* *My cards* (`/cards`) — responsive card grid with search, tag
+  filters, inline card actions and session stats.
+* *Study mode* (`/study`) — a shuffled deck session with a final
+  summary.
 
 There is no backend and there are no external runtime dependencies:
 the only persistence is the browser's `localStorage`.

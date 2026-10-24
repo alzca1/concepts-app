@@ -8,7 +8,8 @@ import { AuthProvider } from "./context";
 import { useConceptModal } from "./context/use-concept-modal";
 import { useConcepts } from "./application/store/use-concepts";
 import { MainLayout } from "./layouts/main-layout";
-import { HomePage } from "./pages/home/home";
+import { CardsPage } from "./pages/cards";
+import { WelcomeUserPage } from "./pages/welcome-user";
 import { StudyPage } from "./pages/study/study";
 import { LoginPage, SignupPage } from "./pages/auth";
 import "./App.css";
@@ -33,7 +34,15 @@ function AppContent() {
           path="/"
           element={
             <ProtectedRoute>
-              <HomePage concepts={concepts} isLoading={isLoading} error={error} />
+              <WelcomeUserPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/cards"
+          element={
+            <ProtectedRoute>
+              <CardsPage concepts={concepts} isLoading={isLoading} error={error} />
             </ProtectedRoute>
           }
         />

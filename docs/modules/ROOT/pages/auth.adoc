@@ -19,8 +19,8 @@ current session through `useAuth()`.
 == Route protection
 
 `<ProtectedRoute>` (`common/components/protected-route/`) wraps
-the `/` and `/study` routes in `App.tsx`. While the session is
-loading the component renders nothing; once loaded it redirects to
+the `/`, `/cards` and `/study` routes in `App.tsx`. While the session
+is loading the component renders nothing; once loaded it redirects to
 `/login` (replace + `state.from`) when the user is null. After
 sign-in the original URL is restored.
 

@@ -33,7 +33,7 @@ h1 {
   margin-top: 2px;
 }
 
-/* --- Language switch and mode tabs (header right side) --- */
+/* --- Language switch and user menu (header right side) --- */
 .header-controls {
   display: flex;
   flex-direction: column;
@@ -69,11 +69,12 @@ h1 {
   color: #fff;
 }
 
-/* --- Mode tabs --- */
+/* --- Mode tabs (inside the cards page) --- */
 .mode-tabs {
   display: inline-flex;
   gap: 5px;
   padding: 6px;
+  margin-bottom: 1.25rem;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.08);

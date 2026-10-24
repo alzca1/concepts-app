@@ -1,7 +1,14 @@
-= My cards (home)
+= My cards
 
-The home page shows the whole deck: stats bar, new-card action and a
-responsive card grid (`minmax(250px, 1fr)`).
+The `/cards` page shows the whole deck: the mode switcher, stats bar,
+new-card action and a responsive card grid (`minmax(250px, 1fr)`).
+
+== Mode switcher
+
+The «Mis tarjetas / Estudiar» switcher lives **inside the page**, not
+in the header: it is a `<nav class="mode-tabs">` rendered by
+`CardsPage` that links to `/cards` and `/study`. The header only
+carries the language selector and the user menu.
 
 == Card grid
 

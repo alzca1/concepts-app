@@ -1,3 +1,4 @@
+import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { NEW_CARD_SENTINEL } from "../../App";
@@ -6,9 +7,9 @@ import { useConceptModal } from "../../context/use-concept-modal";
 import { ConceptList } from "./components/concept-list";
 import { StatsBar } from "./components/stats-bar";
 
-import type { HomePageProps } from "./utils/interfaces";
+import type { CardsPageProps } from "./utils/interfaces";
 
-export function HomePage({ concepts, isLoading, error }: HomePageProps) {
+export function CardsPage({ concepts, isLoading, error }: CardsPageProps) {
   const { t } = useTranslation();
   const { deleteConcept } = useConcepts();
   const { openModal } = useConceptModal();
@@ -27,6 +28,22 @@ export function HomePage({ concepts, isLoading, error }: HomePageProps) {
 
   return (
     <>
+      <nav className="mode-tabs" aria-label={t("mode.tabsAria")}>
+        <NavLink
+          to="/cards"
+          className={({ isActive }) => `mode-tab${isActive ? " active" : ""}`}
+          end
+        >
+          🗂 {t("mode.cards")}
+        </NavLink>
+        <NavLink
+          to="/study"
+          className={({ isActive }) => `mode-tab${isActive ? " active" : ""}`}
+        >
+          🎯 {t("mode.study")}
+        </NavLink>
+      </nav>
+
       <StatsBar concepts={concepts} />
 
       <div className="add-row">

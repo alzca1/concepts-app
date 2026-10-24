@@ -67,14 +67,14 @@ Commit footers reference these IDs (`Closes R5.x`).
 
 | ID | Requirement | Status | Details |
 |---|---|---|---|
-| R5.1 | Responsive card grid (CSS Grid, `minmax(250px, 1fr)`) | [x] | [home.adoc](docs/modules/ROOT/pages/home.adoc) |
-| R5.2 | Card actions (edit/delete) inside the front face: flip with the card, out of the tab order while flipped | [x] | home.adoc |
-| R5.3 | Only one visible answer at a time (grid-level `flippedId`) | [x] | home.adoc |
-| R5.4 | Delete confirmation naming the card | [x] | home.adoc |
-| R5.5 | Text search over question, answer and tag (case-insensitive, trimmed) | [x] | home.adoc |
-| R5.6 | Tag filter chips with a first «Todos»/«All» chip that clears the filter | [x] | home.adoc |
-| R5.7 | Distinct empty states (filters vs. empty deck) | [x] | home.adoc |
-| R5.8 | Stats bar (cards, tags) | [x] | home.adoc |
+| R5.1 | Responsive card grid (CSS Grid, `minmax(250px, 1fr)`) | [x] | [cards.adoc](docs/modules/ROOT/pages/cards.adoc) |
+| R5.2 | Card actions (edit/delete) inside the front face: flip with the card, out of the tab order while flipped | [x] | cards.adoc |
+| R5.3 | Only one visible answer at a time (grid-level `flippedId`) | [x] | cards.adoc |
+| R5.4 | Delete confirmation naming the card | [x] | cards.adoc |
+| R5.5 | Text search over question, answer and tag (case-insensitive, trimmed) | [x] | cards.adoc |
+| R5.6 | Tag filter chips with a first «Todos»/«All» chip that clears the filter | [x] | cards.adoc |
+| R5.7 | Distinct empty states (filters vs. empty deck) | [x] | cards.adoc |
+| R5.8 | Stats bar (cards, tags) | [x] | cards.adoc |
 | R5.9 | Study session over a shuffled deck (Fisher–Yates) | [x] | [study-mode.adoc](docs/modules/ROOT/pages/study-mode.adoc) |
 | R5.10 | Study card flips on click/keyboard, page-controlled | [x] | study-mode.adoc |
 | R5.11 | Answer buttons appear 1500 ms after the flip (fade-in, cancelable, out of the tab order while waiting) | [x] | study-mode.adoc |
@@ -91,8 +91,9 @@ Commit footers reference these IDs (`Closes R5.x`).
 | R5.23 | ES/EN UI switch in the header, persisted, reactive | [x] | [index.adoc](docs/modules/ROOT/pages/index.adoc) |
 | R6.1 | Sign up / sign in / sign out via Supabase Auth (email + password) | [x] | [auth.adoc](docs/modules/ROOT/pages/auth.adoc) |
 | R6.2 | Every read/write is filtered by `auth.uid()` so users only see and manage their own cards | [x] | data-model.adoc |
-| R6.3 | Protected routes (`/`, `/study`) redirect unauthenticated users to `/login`, preserving the requested URL | [x] | auth.adoc |
-| R6.4 | New users start with an empty deck — there are no seed cards | [x] | home.adoc |
+| R6.3 | Protected routes (`/`, `/cards`, `/study`) redirect unauthenticated users to `/login`, preserving the requested URL | [x] | auth.adoc |
+| R6.4 | New users start with an empty deck — there are no seed cards | [x] | cards.adoc |
+| R6.5 | Landing page at `/` (welcome-user, no content yet); the card grid lives at `/cards` and the mode switcher belongs to that page, not to the header | [x] | cards.adoc |
 
 **Open requirements:** none yet — register new ones here with
 `[ ]` and an ID.
@@ -140,6 +141,7 @@ Unique historical record — current behavior is documented in the
 | 2026-09-19 | Supabase managed backend replaces `localStorage` for cards | Family-scale multi-user requirement; `@supabase/supabase-js` is the third justified runtime dep; `public.concepts` table with RLS by `auth.uid()`; `useConcepts` becomes async and reacts to the session |
 | 2026-09-19 | Seed cards removed | New users start with an empty deck (R6.4); the migration from `localStorage` discards previous local data (intentional — different storage, no conversion path) |
 | 2026-09-19 | Auth flow with `<ProtectedRoute>` route guard | `/` and `/study` redirect to `/login` when no session; the requested URL is preserved through `location.state.from` and restored after sign-in |
+| 2026-10-24 | Card grid moves from `/` to `/cards`; `/` becomes a welcome-user landing page (no content yet) | `pages/home/` → `pages/cards/`; the «Mis tarjetas / Estudiar» switcher moves out of the header into the cards page; the header keeps only the language selector and the user menu |
 
 ---
 
@@ -192,6 +194,7 @@ Full history in [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
 
 | Date | Change |
 |---|---|
+| 2026-10-24 | **Feature**: card grid moved to `/cards` (`pages/cards/`), `/` is now a welcome-user placeholder; the mode switcher belongs to the cards page, not to the header. |
 | 2026-09-19 | **Architecture**: full TypeScript migration (strict `tsconfig`, `tsc --noEmit` inside `npm run build`, typed data model). |
 | 2026-09-19 | **Feature**: ES/EN i18n with `i18next` + `react-i18next` (header switch, persisted locale) — first justified runtime dependency. |
 | 2026-09-19 | **Docs**: AsciiDoc documentation site with Antora (`npm run docs`); behavior extracted from code comments into `.adoc` pages. |
