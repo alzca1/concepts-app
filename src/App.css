@@ -8,6 +8,29 @@
   flex-direction: column;
 }
 
+@media (min-width: 1200px) {
+  .app {
+    max-width: 1280px;
+  }
+}
+
+/* --- Loading spinner --- */
+.spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #818cf8;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 4rem auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* --- Header --- */
 .app-header {
   display: flex;
@@ -30,43 +53,59 @@ h1 {
 
 .subtitle {
   color: #8b94a9;
-  margin-top: 2px;
+  margin: 0.25rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
 /* --- Language switch and user menu (header right side) --- */
 .header-controls {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.7rem;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+}
+
+.header-controls__group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: auto;
 }
 
 .lang-switch {
   display: inline-flex;
-  gap: 4px;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .lang-switch__option {
-  border: 1px solid transparent;
-  border-radius: 999px;
-  padding: 0.2rem 0.6rem;
+  border: none;
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: #94a3b8;
+  color: #64748b;
   background: transparent;
   cursor: pointer;
-  transition: color 0.2s ease, background 0.2s ease;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
 }
 
 .lang-switch__option:hover {
   color: #e2e8f0;
 }
 
+.lang-switch__option:focus-visible {
+  outline: 2px solid rgba(129, 140, 248, 0.6);
+  outline-offset: 1px;
+}
+
 .lang-switch__option.active {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.14);
-  color: #fff;
+  background: rgba(99, 102, 241, 0.15);
+  color: #a5b4fc;
 }
 
 /* --- Mode tabs (inside the cards page) --- */
@@ -90,11 +129,20 @@ h1 {
   color: #94a3b8;
   background: transparent;
   cursor: pointer;
-  transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .mode-tab:hover {
   color: #e2e8f0;
+}
+
+.mode-tab:focus-visible {
+  outline: 2px solid rgba(129, 140, 248, 0.6);
+  outline-offset: 2px;
 }
 
 .mode-tab.active {
@@ -103,12 +151,31 @@ h1 {
   box-shadow: 0 4px 16px rgba(99, 102, 241, 0.45);
 }
 
+/* --- Home header: stats + filters --- */
+.home-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.home-header__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.home-header__filters {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
 /* --- Stats bar --- */
 .stats-bar {
   display: flex;
   align-items: center;
   gap: 1.75rem;
-  margin-bottom: 1.25rem;
 }
 
 .stat {
@@ -146,7 +213,10 @@ h1 {
   font-weight: 600;
   padding: 0.6rem 1.15rem;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 .btn:hover {
@@ -214,15 +284,6 @@ h1 {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1.25rem;
-}
-
-/* --- Deck controls --- */
-.deck-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-  margin-bottom: 1.1rem;
 }
 
 .search {
@@ -286,8 +347,20 @@ h1 {
 /* --- Card grid --- */
 .deck {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
+}
+
+@media (min-width: 700px) {
+  .deck {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .deck {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 .card-cell {
@@ -326,7 +399,9 @@ h1 {
   background: rgba(10, 10, 30, 0.6);
   color: #cbd5e1;
   backdrop-filter: blur(6px);
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .cell-actions button:hover {
@@ -557,7 +632,9 @@ h1 {
   /* The buttons appear with a delay after the card is flipped (see
    * `StudyPage`): the container reserves its space from the flip and
    * the buttons fade in when they become visible. */
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s ease;
 }
 
 .study-actions--waiting {
@@ -761,24 +838,46 @@ h1 {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding-left: 1rem;
-  border-left: 1px solid rgba(148, 163, 184, 0.2);
-  margin-left: 0.25rem;
 }
 
-.user-menu__email {
-  font-size: 0.8rem;
+.user-menu__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: #6366f1;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.user-menu__signout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: transparent;
   color: #94a3b8;
-  max-width: 12rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: 1rem;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
 }
 
-@media (max-width: 640px) {
-  .user-menu__email {
-    display: none;
-  }
+.user-menu__signout:hover {
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.user-menu__signout:focus-visible {
+  outline: 2px solid rgba(129, 140, 248, 0.6);
+  outline-offset: 1px;
 }
 
 /* --- Auth pages --- */

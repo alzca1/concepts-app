@@ -67,7 +67,7 @@ Commit footers reference these IDs (`Closes R5.x`).
 
 | ID | Requirement | Status | Details |
 |---|---|---|---|
-| R5.1 | Responsive card grid (CSS Grid, `minmax(250px, 1fr)`) | [x] | [cards.adoc](docs/modules/ROOT/pages/cards.adoc) |
+| R5.1 | Responsive card grid (CSS Grid, 2/3/4 columns by breakpoint) | [x] | [cards.adoc](docs/modules/ROOT/pages/cards.adoc) |
 | R5.2 | Card actions (edit/delete) inside the front face: flip with the card, out of the tab order while flipped | [x] | cards.adoc |
 | R5.3 | Only one visible answer at a time (grid-level `flippedId`) | [x] | cards.adoc |
 | R5.4 | Delete confirmation naming the card | [x] | cards.adoc |

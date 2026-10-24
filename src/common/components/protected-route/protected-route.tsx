@@ -15,7 +15,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, isLoading } = useAuth();
   const location = useLocation();
 
-  if (isLoading) return null;
+  if (isLoading) return <div className="spinner" aria-label="Loading" />;
 
   if (!user) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
