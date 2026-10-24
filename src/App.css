@@ -592,6 +592,16 @@ h1 {
   text-align: center;
 }
 
+.study .mode-tabs,
+.summary .mode-tabs,
+.empty-state .mode-tabs {
+  display: flex;
+  width: fit-content;
+  margin-left: 0;
+  margin-right: auto;
+  text-align: left;
+}
+
 .study-progress {
   display: inline-flex;
   flex-direction: column;

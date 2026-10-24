@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import type { Concept } from "../../application/api/types";
 import { STUDY_ACTIONS_DELAY } from "../../application/config/constants";
+import { ModeTabs } from "../../common/components/domain/mode-tabs";
 import { FlashCard } from "../../common/components/presentational/flash-card";
 import { shuffle } from "../../common/utils/shuffle";
 
@@ -85,9 +86,10 @@ export function StudyPage({ concepts }: StudyPageProps) {
   if (stats.initial === 0) {
     return (
       <div className="empty-state">
+        <ModeTabs />
         <p>{t("study.empty")}</p>
         <div className="study-actions">
-          <button className="btn btn-primary" onClick={() => navigate("/")}>
+          <button className="btn btn-primary" onClick={() => navigate("/cards")}>
             {t("study.back")}
           </button>
         </div>
@@ -99,6 +101,7 @@ export function StudyPage({ concepts }: StudyPageProps) {
   if (queue.length === 0) {
     return (
       <section className="summary">
+        <ModeTabs />
         <div className="summary__emoji">🎉</div>
         <h2 className="summary__title">{t("study.summaryTitle")}</h2>
         <div className="summary__pct">{pct}%</div>
@@ -124,7 +127,7 @@ export function StudyPage({ concepts }: StudyPageProps) {
           <button className="btn btn-primary" onClick={restart}>
             {t("study.restart")}
           </button>
-          <button className="btn btn-ghost" onClick={() => navigate("/")}>
+          <button className="btn btn-ghost" onClick={() => navigate("/cards")}>
             {t("study.back")}
           </button>
         </div>
@@ -134,6 +137,8 @@ export function StudyPage({ concepts }: StudyPageProps) {
 
   return (
     <section className="study">
+      <ModeTabs />
+
       <div className="study-progress">
         <span className="study-progress__label">
           {t("study.progressLabel", {

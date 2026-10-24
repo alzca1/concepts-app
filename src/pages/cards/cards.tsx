@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { DEFAULT_TAG, EMPTY_STRING } from "../../application/config/constants";
 import { NEW_CARD_SENTINEL } from "../../App";
 import { tagColor } from "../../common/utils/tag-color";
+import { ModeTabs } from "../../common/components/domain/mode-tabs";
 import { useConcepts } from "../../application/store/use-concepts";
 import { useConceptModal } from "../../context/use-concept-modal";
 import { ConceptList } from "./components/concept-list";
@@ -44,21 +44,7 @@ export function CardsPage({ concepts, isLoading, error }: CardsPageProps) {
 
   return (
     <>
-      <nav className="mode-tabs" aria-label={t("mode.tabsAria")}>
-        <NavLink
-          to="/cards"
-          className={({ isActive }) => `mode-tab${isActive ? " active" : ""}`}
-          end
-        >
-          🗂 {t("mode.cards")}
-        </NavLink>
-        <NavLink
-          to="/study"
-          className={({ isActive }) => `mode-tab${isActive ? " active" : ""}`}
-        >
-          🎯 {t("mode.study")}
-        </NavLink>
-      </nav>
+      <ModeTabs />
 
       <div className="home-header">
         <div className="home-header__top">
