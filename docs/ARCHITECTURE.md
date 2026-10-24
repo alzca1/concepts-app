@@ -58,7 +58,6 @@ section 5).
 src/
 ├── main.tsx               # Entry point (createRoot) — do not modify
 ├── App.tsx                # Shell: AuthProvider + routes + modal
-├── App.css                # Application styles (by sections)
 ├── index.css              # Reset and base styles
 ├── vite-env.d.ts          # Vite client types (CSS/asset imports)
 ├── application/           # Infrastructure (no UI)
@@ -78,12 +77,16 @@ src/
 ├── common/                # Reusable, page-agnostic
 │   ├── components/
 │   │   ├── domain/
-│   │   │   └── concept-form/     # Create/edit card modal
+│   │   │   ├── concept-form/     # Create/edit card modal
+│   │   │   └── mode-tabs/        # «Mis tarjetas / Estudiar» switcher
 │   │   ├── presentational/
 │   │   │   └── flash-card/       # 3D card (front/back)
-│   │   └── protected-route/      # <ProtectedRoute> route guard
+│   │   └── protected-route/      # Route guards (<ProtectedRoute>, <GuestRoute>)
 │   ├── hooks/
 │   │   └── use-hover-scroll/     # Slow auto-scroll on hover
+│   ├── styles/              # Rules shared by several components
+│   │   ├── buttons.css
+│   │   └── empty-state.css
 │   └── utils/
 │       ├── shuffle/
 │       ├── tag-color/
@@ -98,22 +101,25 @@ src/
 │   └── index.ts                  # Auth barrel
 └── pages/                 # One folder per view
     ├── cards/
-    │   ├── cards.tsx      # Page: mode tabs + stats bar + new-card action + grid
+    │   ├── cards.tsx      # Page: mode tabs + stats bar + filters + grid
+    │   ├── cards.css
     │   ├── index.ts
     │   ├── utils/interfaces.ts   # CardsPageProps
     │   └── components/
-    │       ├── concept-list/  # Search, tag filters, card grid
+    │       ├── concept-list/  # Card grid + add-card placeholder
     │       └── stats-bar/     # Cards + tags counts
     ├── welcome-user/
     │   ├── welcome-user.tsx  # Landing page (placeholder)
     │   └── index.ts
     ├── study/
     │   ├── study.tsx      # Page: study session + summary
+    │   ├── study.css
     │   ├── index.ts
     │   └── utils/interfaces.ts
     └── auth/
         ├── login.tsx
         ├── signup.tsx
+        ├── auth.css
         ├── index.ts
         └── utils/interfaces.ts
 ```
@@ -135,6 +141,7 @@ src/
 │   ├── cards/                        # My cards
 │   │   ├── index.ts                  # Page barrel
 │   │   ├── cards.tsx
+│   │   ├── cards.css
 │   │   ├── utils/                    # Page-local types
 │   │   └── components/
 │   │       ├── concept-list/
@@ -145,11 +152,13 @@ src/
 │   ├── study/                        # Active-recall sessions
 │   │   ├── index.ts
 │   │   ├── study.tsx
+│   │   ├── study.css
 │   │   └── utils/
 │   └── auth/                         # Login + signup pages
 │       ├── index.ts
 │       ├── login.tsx
 │       ├── signup.tsx
+│       ├── auth.css
 │       └── utils/
 ├── context/                          # React contexts shared across pages
 │   ├── auth-context.ts               # AuthContext type
@@ -164,10 +173,14 @@ src/
 │   │   ├── presentational/
 │   │   │   └── flash-card/           # 3D card
 │   │   ├── domain/
-│   │   │   └── concept-form/         # Create/edit card modal
-│   │   └── protected-route/          # Route guard
+│   │   │   ├── concept-form/         # Create/edit card modal
+│   │   │   └── mode-tabs/            # «Mis tarjetas / Estudiar»
+│   │   └── protected-route/          # Route guards
 │   ├── hooks/
 │   │   └── use-hover-scroll/
+│   ├── styles/                       # Rules shared by several components
+│   │   ├── buttons.css
+│   │   └── empty-state.css
 │   └── utils/
 │       ├── uid/
 │       ├── shuffle/
@@ -219,11 +232,12 @@ branch per phase), with no behavior changes:
 | `components/StudyView.jsx` | `pages/study/` | 3 |
 | Scattered constants (`STORAGE_KEY`, delays, scroll speed) | `application/config/constants.js` | 3 |
 
-Open decision: **CSS**. It is currently global by sections
-(`App.css`, decision from 2025-07-14). The long-term goal is
-colocation (one `.css` per component with BEM classes, imported by
-the component), which leaves no orphans when deleting a component.
-Migrate only once the stylesheet layout is stable.
+Resolved decision: **CSS is colocated**. The global `App.css` is gone;
+every component owns a `.css` file that it imports itself (BEM class
+names). Rules shared by several components live in `common/styles/`
+(`buttons.css`, `empty-state.css`) and `index.css` keeps only the
+reset and the base styles (body, `*`, selection). Deleting a
+component now deletes its styles with it — no orphans.
 
 ---
 
@@ -259,6 +273,10 @@ Migrate only once the stylesheet layout is stable.
   inline; the rule applies once the unit lives in its own folder.
 - Pure functions are named after their intent: verbs for actions
   (`shuffle`), `should-*` / `is-*` / `has-*` for predicates.
+- A unit's **stylesheet lives in its own folder** and is imported by
+  its `.tsx` (`flash-card.tsx` → `flash-card.css`). Rules used by
+  more than one component go to `common/styles/`; the reset and the
+  base styles stay in `index.css`. No new global stylesheet.
 
 ### Barrels
 

@@ -1,15 +1,20 @@
 = My cards
 
 The `/cards` page shows the whole deck: the mode switcher, stats bar,
-new-card action and a responsive card grid (2 columns on mobile, 3 from
-700 px and 4 from 1200 px).
+search and tag filters, and a responsive card grid (2 columns on
+mobile, 3 from 700 px and 4 from 1200 px).
 
 == Mode switcher
 
 The «Mis tarjetas / Estudiar» switcher lives **inside the page**, not
-in the header: it is a `<nav class="mode-tabs">` rendered by
-`CardsPage` that links to `/cards` and `/study`. The header only
-carries the language selector and the user menu.
+in the header: it is the shared `ModeTabs` component
+(`common/components/domain/mode-tabs/`), a `<nav class="mode-tabs">`
+that links to `/cards` and `/study` and marks the active one. The
+header only carries the language selector and the user menu.
+
+`ModeTabs` is rendered by the cards page *and* by the study page (in
+its session, summary and empty states), so the switcher is always
+reachable — see xref:study-mode.adoc[study mode].
 
 == Card grid
 
@@ -27,6 +32,22 @@ carries the language selector and the user menu.
 * The fixed face heights (190 px grid, 300 px study) are preserved
   even with long content — see xref:flash-card.adoc[flash card].
 
+== Add card
+
+There is no separate «new card» button: the action is a **dashed
+placeholder card** (`AddCard`) that always occupies the **first cell
+of the grid**, even when the deck is empty or filtered out.
+
+It mimics the look of a regular card (same padding, radius and
+translucent background) but with a dashed border, and it shows:
+
+* the tag chip replaced by the word «Tópico»,
+* the title «Añade una nueva tarjeta»,
+* the hint «Clic para crear nueva tarjeta».
+
+It is a real `<button>`, so it is reachable with the keyboard and
+exposes an accessible name.
+
 == Search and filters
 
 * **Search** matches `front`, `back` and `tag`, case-insensitive and
@@ -36,7 +57,8 @@ carries the language selector and the user menu.
   tag is selected. Clicking the active chip also clears it. All
   chips expose `aria-pressed`.
 * **Empty state**: distinct messages for "no results with active
-  filters" vs. "deck is actually empty".
+  filters" vs. "deck is actually empty". It is shown above the grid,
+  which always renders (at least the add card).
 
 == Stats bar
 

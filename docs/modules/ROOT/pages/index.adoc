@@ -29,7 +29,12 @@ the only persistence is the browser's `localStorage`.
 
 |`docs/modules/ROOT/pages/` (this site)
 |Application documentation: behavior of each mode and component.
+
 |===
++
+Styles live next to the code that uses them: each component owns a
+`.css` file that it imports itself, and the rules shared by several
+components are in `src/common/styles/`.
 
 == Language
 

@@ -20,15 +20,23 @@ current session through `useAuth()`.
 
 `<ProtectedRoute>` (`common/components/protected-route/`) wraps
 the `/`, `/cards` and `/study` routes in `App.tsx`. While the session
-is loading the component renders nothing; once loaded it redirects to
+is loading the component renders a spinner; once loaded it redirects to
 `/login` (replace + `state.from`) when the user is null. After
 sign-in the original URL is restored.
 
+== Guest routes
+
+`<GuestRoute>` (`common/components/protected-route/guest-route.tsx`)
+wraps `/login` and `/signup`: a user who is already signed in is
+redirected to `/` instead of seeing the auth forms.
+
 == Sign out
 
-The header (`layouts/main-layout.tsx`) shows the user's email and a
-**Sign out** button when the session is present. `signOut()` clears
-the Supabase session and `onAuthStateChange` flips the context to
+The header (`layouts/components/app-header/app-header.tsx`) shows the
+user's **initial** (the first letter of the email, uppercased) and a
+**sign-out** icon button when the session is present. The full email
+stays available as the avatar tooltip. `signOut()` clears the
+Supabase session and `onAuthStateChange` flips the context to
 `null`, sending the user back to `/login` through the same guard.
 
 == Multi-user guarantee

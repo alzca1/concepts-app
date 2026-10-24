@@ -85,6 +85,7 @@ Commit footers reference these IDs (`Closes R5.x`).
 | R5.16 | Modal wider/taller above mobile: `min(720px, 90vw)`, textarea `min-height` 14rem (10rem on mobile); `max-height` + internal scroll | [x] | — |
 | R5.17 | Form validation with a visible error when fields are missing | [x] | — |
 | R5.18 | Every change auto-persisted to Postgres (`public.concepts`) scoped to the signed-in user via RLS | [x] | [data-model.adoc](docs/modules/ROOT/pages/data-model.adoc) |
+| R5.19 | Add card as a dashed placeholder card, always the first cell of the grid (chip «Tópico», title «Añade una nueva tarjeta», hint «Clic para crear nueva tarjeta») | [x] | cards.adoc |
 | R5.20 | 3D card: flip by click/keyboard only, always parent-controlled | [x] | [flash-card.adoc](docs/modules/ROOT/pages/flash-card.adoc) |
 | R5.21 | No layout jumps on flip (hint stays in the DOM, question centered) | [x] | flash-card.adoc |
 | R5.22 | Slow vertical hover/focus auto-scroll for overflowing text (750 ms pause, single pass, stops at the end) + bottom fade hint | [x] | flash-card.adoc |
@@ -142,6 +143,9 @@ Unique historical record — current behavior is documented in the
 | 2026-09-19 | Seed cards removed | New users start with an empty deck (R6.4); the migration from `localStorage` discards previous local data (intentional — different storage, no conversion path) |
 | 2026-09-19 | Auth flow with `<ProtectedRoute>` route guard | `/` and `/study` redirect to `/login` when no session; the requested URL is preserved through `location.state.from` and restored after sign-in |
 | 2026-10-24 | Card grid moves from `/` to `/cards`; `/` becomes a welcome-user landing page (no content yet) | `pages/home/` → `pages/cards/`; the «Mis tarjetas / Estudiar» switcher moves out of the header into the cards page; the header keeps only the language selector and the user menu |
+| 2026-10-24 | The mode switcher is a shared `ModeTabs` component rendered by both the cards and the study pages | It must stay visible in both views, but it does not belong to the header; `common/components/domain/mode-tabs/` owns the markup and its stylesheet |
+| 2026-10-24 | The «new card» action becomes a dashed placeholder card, always the first cell of the grid | Keeps the call to action inside the deck; it reuses the flash-card look (same padding, radius and background) with a dashed border and its own tag/title/hint |
+| 2026-10-24 | CSS is colocated: one stylesheet per component, imported by its `.tsx`; `App.css` is deleted | Replaces the 2025-07-14 global-stylesheet decision; shared rules live in `common/styles/` (`buttons.css`, `empty-state.css`) and `index.css` keeps only the reset and base styles |
 
 ---
 
@@ -158,11 +162,15 @@ Unique historical record — current behavior is documented in the
 4. **No new dependency** without justifying it in section 2 first.
 5. **Respect the conventions** in
    [ARCHITECTURE.md](docs/ARCHITECTURE.md): TypeScript (strict),
-   state in hooks, global sectioned CSS, ARIA on interactive
+   state in hooks, colocated CSS, ARIA on interactive
    controls, English comments.
    TypeScript types, interfaces and enums live in the unit's
    `utils/` folder — never inlined in the component file (see
    ARCHITECTURE.md §6).
+   **Stylesheets live next to their component**: one `.css` per
+   component, imported by its `.tsx`; shared rules go to
+   `common/styles/` and `index.css` keeps only the reset and base
+   styles. Never create a new global stylesheet.
 6. **After a visible change** run `npm run lint` and, if the UI
    changed, verify the 3D card in **both** modes (grid via click,
    large study card).
@@ -194,6 +202,8 @@ Full history in [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
 
 | Date | Change |
 |---|---|
+| 2026-10-24 | **Architecture**: CSS colocated — one stylesheet per component (imported by its `.tsx`); the global `App.css` is deleted and shared rules move to `common/styles/`. |
+| 2026-10-24 | **Feature**: the «new card» action is now a dashed placeholder card, always the first cell of the deck. |
 | 2026-10-24 | **Feature**: card grid moved to `/cards` (`pages/cards/`), `/` is now a welcome-user placeholder; the mode switcher belongs to the cards page, not to the header. |
 | 2026-09-19 | **Architecture**: full TypeScript migration (strict `tsconfig`, `tsc --noEmit` inside `npm run build`, typed data model). |
 | 2026-09-19 | **Feature**: ES/EN i18n with `i18next` + `react-i18next` (header switch, persisted locale) — first justified runtime dependency. |
