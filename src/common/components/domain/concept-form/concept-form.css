@@ -1,0 +1,100 @@
+/* --- Modal --- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(5, 8, 24, 0.65);
+  backdrop-filter: blur(4px);
+}
+
+.modal {
+  width: min(520px, 100%);
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #1d1b3f;
+  padding: 1.6rem 1.6rem 1.75rem;
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+}
+
+.modal__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.1rem;
+}
+
+.modal__head h2 {
+  font-size: 1.3rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.field span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #94a3b8;
+}
+
+.field input,
+.field textarea {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  padding: 0.65rem 0.8rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: #f8fafc;
+  resize: vertical;
+}
+
+/* The answer textarea starts taller than the default 4 rows: on
+ * mobile it already shows more text, and from 641px on the
+ * responsive block raises it further (14rem). */
+.field textarea {
+  min-height: 10rem;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+}
+
+.form-error {
+  color: #fca5a5;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.25rem;
+}
+
+/* Above mobile the modal is wider and the answer textarea taller:
+ * long texts read better while creating or editing them. Mobile
+ * keeps the compact sizes. */
+@media (min-width: 641px) {
+  .modal {
+    width: min(720px, 90vw);
+  }
+
+  .field textarea {
+    min-height: 14rem;
+  }
+}

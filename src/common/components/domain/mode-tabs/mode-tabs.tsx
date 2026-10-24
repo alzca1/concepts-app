@@ -1,6 +1,8 @@
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+import "./mode-tabs.css";
+
 /**
  * Mode switcher shared by the cards page and the study page:
  * links to /cards and /study, marking the active one.

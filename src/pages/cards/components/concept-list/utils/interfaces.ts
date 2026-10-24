@@ -4,4 +4,5 @@ export interface ConceptListProps {
   concepts: Concept[];
   deleteConcept: (id: string) => void;
   onEdit: (id: string) => void;
+  onAdd: () => void;
 }

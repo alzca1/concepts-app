@@ -2,16 +2,24 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { FlashCard } from "../../../../common/components/presentational/flash-card";
+import { AddCard } from "../add-card";
+import "./concept-list.css";
 
 import type { ConceptListProps } from "./utils/interfaces";
 
-export function ConceptList({ concepts, deleteConcept, onEdit }: ConceptListProps) {
+export function ConceptList({
+  concepts,
+  deleteConcept,
+  onEdit,
+  onAdd,
+}: ConceptListProps) {
   const { t } = useTranslation();
   const [flippedId, setFlippedId] = useState<string | null>(null);
 
   return (
     <section className="deck-section">
       <div className="deck" aria-label={t("list.gridAria")}>
+        <AddCard onClick={onAdd} />
         {concepts.map((concept) => (
           <div key={concept.id} className="card-cell">
             <FlashCard

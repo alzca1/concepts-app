@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { DEFAULT_TAG } from "../../../../application/config/constants";
 import { useHoverScroll } from "../../../hooks/use-hover-scroll";
 import { tagColor } from "../../../utils/tag-color";
+import "./flash-card.css";
 
 import type { FlashCardProps } from "./utils/interfaces";
 

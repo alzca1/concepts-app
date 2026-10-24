@@ -7,6 +7,9 @@ import { STUDY_ACTIONS_DELAY } from "../../application/config/constants";
 import { ModeTabs } from "../../common/components/domain/mode-tabs";
 import { FlashCard } from "../../common/components/presentational/flash-card";
 import { shuffle } from "../../common/utils/shuffle";
+import "../../common/styles/buttons.css";
+import "../../common/styles/empty-state.css";
+import "./study.css";
 
 import type { SessionStats, StudyPageProps } from "./utils/interfaces";
 

@@ -9,6 +9,8 @@ import { useConcepts } from "../../application/store/use-concepts";
 import { useConceptModal } from "../../context/use-concept-modal";
 import { ConceptList } from "./components/concept-list";
 import { StatsBar } from "./components/stats-bar";
+import "../../common/styles/empty-state.css";
+import "./cards.css";
 
 import type { CardsPageProps } from "./utils/interfaces";
 
@@ -30,6 +32,8 @@ export function CardsPage({ concepts, isLoading, error }: CardsPageProps) {
         `${c.front} ${c.back} ${c.tag}`.toLowerCase().includes(query))
   );
 
+  const hasFilters = Boolean(search || activeTag);
+
   if (isLoading) {
     return <p className="empty-state">{t("home.loading")}</p>;
   }
@@ -49,14 +53,6 @@ export function CardsPage({ concepts, isLoading, error }: CardsPageProps) {
       <div className="cards-header">
         <div className="cards-header__top">
           <StatsBar concepts={concepts} />
-          <div className="add-row">
-            <button
-              className="btn btn-primary"
-              onClick={() => openModal(NEW_CARD_SENTINEL)}
-            >
-              {t("home.addCard")}
-            </button>
-          </div>
         </div>
         <div className="cards-header__filters">
           <input
@@ -95,19 +91,18 @@ export function CardsPage({ concepts, isLoading, error }: CardsPageProps) {
         </div>
       </div>
 
-      {filtered.length === 0 ? (
+      {filtered.length === 0 && (
         <p className="empty-state">
-          {search || activeTag
-            ? t("list.emptyWithFilters")
-            : t("list.emptyNoCards")}
+          {hasFilters ? t("list.emptyWithFilters") : t("list.emptyNoCards")}
         </p>
-      ) : (
-        <ConceptList
-          concepts={filtered}
-          deleteConcept={deleteConcept}
-          onEdit={openModal}
-        />
       )}
+
+      <ConceptList
+        concepts={filtered}
+        deleteConcept={deleteConcept}
+        onEdit={openModal}
+        onAdd={() => openModal(NEW_CARD_SENTINEL)}
+      />
     </>
   );
 }

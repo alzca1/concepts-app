@@ -1,6 +1,7 @@
 import { Navigate, useLocation } from "react-router-dom";
 
 import { useAuth } from "../../../context/use-auth";
+import "./protected-route.css";
 
 export interface ProtectedRouteProps {
   children: React.ReactNode;

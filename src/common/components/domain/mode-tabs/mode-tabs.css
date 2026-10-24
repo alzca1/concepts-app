@@ -1,0 +1,54 @@
+/* --- Mode tabs (cards and study pages) --- */
+.mode-tabs {
+  display: inline-flex;
+  gap: 5px;
+  padding: 6px;
+  margin-bottom: 3.5rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+}
+
+.mode-tab {
+  border: none;
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #94a3b8;
+  background: transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.mode-tab:hover {
+  color: #e2e8f0;
+}
+
+.mode-tab:focus-visible {
+  outline: 2px solid rgba(129, 140, 248, 0.6);
+  outline-offset: 2px;
+}
+
+.mode-tab.active {
+  background: #6366f1;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.45);
+}
+
+/* The study page centres its content, so the switcher is pinned back
+ * to the left edge there. */
+.study .mode-tabs,
+.summary .mode-tabs,
+.empty-state .mode-tabs {
+  display: flex;
+  width: fit-content;
+  margin-left: 0;
+  margin-right: auto;
+  text-align: left;
+}

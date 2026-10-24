@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 
 import { useAuth } from "../../../context/use-auth";
+import "./protected-route.css";
 
 export interface GuestRouteProps {
   children: React.ReactNode;

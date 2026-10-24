@@ -1,0 +1,42 @@
+/* --- Add card (dashed placeholder, first cell of the deck) --- */
+.add-card {
+  --tag-color: #a78bfa;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.6rem;
+  width: 100%;
+  min-height: 190px;
+  padding: 1.1rem 1.2rem;
+  border: 1px dashed rgba(255, 255, 255, 0.28);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.add-card:hover {
+  border-color: rgba(129, 140, 248, 0.7);
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.add-card:focus-visible {
+  outline: 2px solid rgba(129, 140, 248, 0.6);
+  outline-offset: 2px;
+}
+
+.add-card__title {
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.45;
+  overflow-wrap: break-word;
+  margin-top: auto;
+  margin-bottom: auto;
+}

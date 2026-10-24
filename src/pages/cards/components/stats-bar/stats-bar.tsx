@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 
 import { DEFAULT_TAG } from "../../../../application/config/constants";
+import "./stats-bar.css";
 
 import type { StatsBarProps } from "./utils/interfaces";
 

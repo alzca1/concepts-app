@@ -2,6 +2,8 @@ import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 
 import { DEFAULT_TAG } from "../../../../application/config/constants";
+import "../../../styles/buttons.css";
+import "./concept-form.css";
 
 import type { ConceptFormProps } from "./utils/interfaces";
 

@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 
 import { APP_LANGUAGES, changeLocale, type Locale } from "../../../application/i18n";
 import { useAuth } from "../../../context/use-auth";
+import "./app-header.css";
 
 const LANGUAGES: { id: Locale; label: string }[] = [
   { id: APP_LANGUAGES.ES, label: "ES" },

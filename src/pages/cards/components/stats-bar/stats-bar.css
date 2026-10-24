@@ -1,0 +1,33 @@
+/* --- Stats bar --- */
+.stats-bar {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.stat span {
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.stat em {
+  font-style: normal;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b;
+}
+
+@media (max-width: 640px) {
+  .stats-bar {
+    flex-wrap: wrap;
+    gap: 1.25rem;
+  }
+}

@@ -1,0 +1,10 @@
+/* --- Empty state (shared by the cards page, the study page and the
+ * route guards) --- */
+.empty-state {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: #8b94a9;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+}

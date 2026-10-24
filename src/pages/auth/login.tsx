@@ -3,6 +3,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { useAuth } from "../../context/use-auth";
+import "../../common/styles/buttons.css";
+import "./auth.css";
 
 import type { AuthFormProps } from "./utils/interfaces";
 

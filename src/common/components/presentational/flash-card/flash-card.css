@@ -1,0 +1,170 @@
+/* --- 3D card --- */
+.flash-card {
+  --tag-color: #a78bfa;
+  width: 100%;
+  perspective: 1200px;
+  cursor: pointer;
+}
+
+/* The faces are absolute; the container needs a height so they do
+ * not overflow below and paint over later elements (e.g. the
+ * «Estudiar» action buttons). */
+.flash-card-inner {
+  position: relative;
+  min-height: 190px;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.flash-card.flipped .flash-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flash-face {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  padding: 1.1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.6rem;
+  min-height: 190px;
+  overflow: hidden;
+}
+
+.card-tag {
+  align-self: flex-start;
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.22rem 0.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tag-color) 22%, transparent);
+  color: var(--tag-color);
+  display: inline-block;
+}
+
+/* Face text wraps: if the question or the answer is taller than the
+ * card, the element becomes scrollable and, on hover (or focus), a
+ * very slow vertical auto-scroll (16 px/s, single pass that stops at
+ * the end — see `common/hooks/use-hover-scroll`) makes the overflow
+ * readable. When the content fits, the card stays static and keeps
+ * its small height (190/300 px).
+ * `min-height: 0` is essential: without it the flex item does not
+ * shrink below its content inside the face and never becomes
+ * scrollable. */
+.flash-face h3 {
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.45;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-height: 0;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  box-sizing: border-box;
+  /* Auto margins absorb the free space (also with
+    `justify-content: space-between`), so the text stays vertically
+    centered. */
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.flash-face p {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-height: 0;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  box-sizing: border-box;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+/* Hides the scrollbar: movement is driven by the hover/focus
+ * auto-scroll, not a draggable bar. */
+.flash-face h3::-webkit-scrollbar,
+.flash-face p::-webkit-scrollbar {
+  display: none;
+}
+
+/* Overflow hint: when the face content is taller than the card,
+ * `FlashCard` adds `flash-face--overflow` (from the `scrollable`
+ * state of `useHoverScroll`) and a bottom gradient indicates there
+ * is more text to read. */
+.flash-face--overflow::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2.5rem;
+  background: linear-gradient(transparent, #101530);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* The hint is hidden with opacity (not removed from the DOM): it
+ * keeps occupying its space, so the front face does not lose height
+ * and the question stays in place when the flip starts. */
+.flip-hint {
+  font-size: 0.72rem;
+  font-style: italic;
+  color: #64748b;
+  transition: opacity 0.3s ease;
+}
+
+.flip-hint--hidden {
+  opacity: 0;
+}
+
+/* Each face stacks in 3D: the back one is pre-rotated 180°.
+ * Without this both faces share the same plane and the back face
+ * (answer) paints over the front one.
+ */
+.flash-face.flash-front {
+  transform: rotateY(0deg);
+}
+
+.flash-face.flash-back {
+  transform: rotateY(180deg);
+}
+
+/* Big card (study mode) */
+.flash-card--big .flash-face {
+  min-height: 300px;
+  padding: 2rem 2.1rem;
+}
+
+.flash-card--big .flash-card-inner {
+  min-height: 300px;
+}
+
+.flash-card--big .flash-face h3 {
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.flash-card--big .flash-face p {
+  font-size: 1.05rem;
+}
+
+/* The action icons live inside the front face (the `actions` prop)
+ * and flip with the card; while the card faces away,
+ * `visibility: hidden` also takes them out of the tab order. */
+.flash-card.flipped .cell-actions {
+  visibility: hidden;
+}

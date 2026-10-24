@@ -13,7 +13,6 @@ import { CardsPage } from "./pages/cards";
 import { WelcomeUserPage } from "./pages/welcome-user";
 import { StudyPage } from "./pages/study/study";
 import { LoginPage, SignupPage } from "./pages/auth";
-import "./App.css";
 
 export const NEW_CARD_SENTINEL = "new";
 
